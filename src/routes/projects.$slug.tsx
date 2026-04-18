@@ -35,7 +35,7 @@ export const Route = createFileRoute("/projects/$slug")({
 });
 
 function ProjectPage() {
-  const { project } = Route.useLoaderData();
+  const { project } = Route.useLoaderData() as { project: (typeof projects)[number] };
   const ref = useReveal<HTMLDivElement>();
   const idx = projects.findIndex((p) => p.id === project.id);
   const next = projects[(idx + 1) % projects.length];
