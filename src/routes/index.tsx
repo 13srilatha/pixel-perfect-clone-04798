@@ -5,6 +5,7 @@ import { RotatingHouse } from "@/components/site/RotatingHouse";
 import { Work } from "@/components/site/Work";
 import { Interiors } from "@/components/site/Interiors";
 import { Process } from "@/components/site/Process";
+import { Reel } from "@/components/site/Reel";
 import { Architect } from "@/components/site/Architect";
 import { Contact } from "@/components/site/Contact";
 import { BackToTop } from "@/components/site/BackToTop";
@@ -12,7 +13,7 @@ import { BackToTop } from "@/components/site/BackToTop";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Terra Space Studio — Architecture & Interior Design" },
+      { title: "Terra Space Studio — Architecture & Interior Design, Hyderabad" },
       {
         name: "description",
         content:
@@ -33,6 +34,7 @@ function Index() {
       <Interiors />
       <Process />
       <RotatingHouse />
+      <Reel />
       <Architect />
       <Contact />
       <BackToTop />

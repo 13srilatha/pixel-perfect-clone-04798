@@ -18,6 +18,7 @@ export function Nav() {
     { href: "#interiors", label: "Interiors" },
     { href: "#process", label: "Before · After" },
     { href: "#rotate", label: "Best Project" },
+    { href: "#reel", label: "Launch Reel" },
     { href: "#architect", label: "Architect" },
     { href: "#contact", label: "Contact" },
   ];
