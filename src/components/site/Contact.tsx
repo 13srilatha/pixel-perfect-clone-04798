@@ -49,13 +49,13 @@ export function Contact() {
             <div className="mt-12 border-t border-cream/15 pt-8">
               <p className="label mb-3 text-gold">Follow the studio</p>
               <a
-                href={`https://instagram.com/${studio.instagram.replace("@", "")}`}
+                href={studio.instagramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group flex items-center justify-between gap-4 border border-cream/20 px-5 py-4 transition-colors hover:border-gold hover:bg-cream/5"
               >
                 <span>
-                  <span className="font-display text-xl font-light text-cream block">{studio.instagram}</span>
+                  <span className="font-display text-xl font-light text-cream block">@{studio.instagram}</span>
                   <span className="label text-cream/60">See our updates · Know our work</span>
                 </span>
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center border border-cream/30 text-cream transition-all group-hover:border-gold group-hover:text-gold">
@@ -66,12 +66,29 @@ export function Contact() {
           </Reveal>
         </div>
 
-        <footer className="mt-24 flex flex-col gap-6 border-t border-cream/10 pt-8">
+        <footer className="mt-24 border-t border-cream/10 pt-8">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <p className="label text-cream/50">© {new Date().getFullYear()} {studio.name}. All rights reserved.</p>
             <p className="label text-cream/50">Crafted with restraint.</p>
           </div>
         </footer>
+      </div>
+
+      {/* Designer credit marquee */}
+      <div className="mt-16 overflow-hidden border-t border-cream/10 py-6">
+        <div className="flex whitespace-nowrap" style={{ animation: "marquee 38s linear infinite" }}>
+          {Array.from({ length: 4 }).map((_, i) => (
+            <span key={i} className="flex items-center gap-6 px-6 font-display text-base font-light italic text-cream/60 md:text-lg">
+              This portfolio is designed and managed by Srilatha
+              <span className="text-gold">·</span>
+              <a href="mailto:imsrilathaa@gmail.com" className="not-italic underline-offset-4 hover:text-gold-lt hover:underline">imsrilathaa@gmail.com</a>
+              <span className="text-gold">·</span>
+              for queries or suggestions regarding the portfolio
+              <span className="text-gold">✦</span>
+            </span>
+          ))}
+        </div>
+        <style>{`@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }`}</style>
       </div>
     </section>
   );
