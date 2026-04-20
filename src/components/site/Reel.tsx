@@ -4,7 +4,7 @@ import { Reveal } from "./Nav";
 import poster from "@/assets/projects/munny-3d.jpeg";
 
 export function Reel() {
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLAnchorElement>(null);
   const [inView, setInView] = useState(false);
 
   useEffect(() => {
@@ -39,7 +39,7 @@ export function Reel() {
             href={studio.reelUrl}
             target="_blank"
             rel="noopener noreferrer"
-            ref={ref as React.RefObject<HTMLAnchorElement>}
+            ref={ref}
             className="group relative mx-auto block aspect-[9/16] w-full max-w-[420px] overflow-hidden bg-espresso md:aspect-[16/9] md:max-w-none"
           >
             <img
