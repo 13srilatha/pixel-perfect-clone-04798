@@ -13,6 +13,11 @@ const architect = {
     "I don't build houses. I build the place a family will keep their first photograph, the corner a child will read in, the window someone will grow old beside. That reminder is what makes me work hard, every single day.",
 };
 
+/**
+ * Drop a real portrait at: src/assets/architect-portrait.jpeg
+ * Square or 4:5 portrait works best. Replaces the existing file in place —
+ * the rest of the layout stays the same.
+ */
 export function Architect() {
   return (
     <section id="architect" className="relative bg-cream py-24 md:py-36">
@@ -20,14 +25,17 @@ export function Architect() {
         <div className="grid gap-12 md:grid-cols-12 md:gap-16">
           <Reveal className="md:col-span-5">
             <div className="relative">
+              {/* Decorative offset frame */}
               <div className="absolute -left-3 -top-3 hidden h-full w-full border border-caramel/40 md:block" />
+              <div className="absolute -right-3 -bottom-3 hidden h-1/2 w-1/2 border border-gold/30 md:block" />
+
               <img
                 src={portrait}
                 alt={architect.name}
                 width={1024}
-                height={1024}
+                height={1280}
                 loading="lazy"
-                className="relative aspect-[4/5] w-full object-cover grayscale-[15%]"
+                className="relative aspect-[4/5] w-full object-cover"
               />
               <p className="label mt-4 text-caramel">{architect.role}</p>
               <h3 className="font-display text-3xl font-light text-espresso md:text-4xl">{architect.name}</h3>
