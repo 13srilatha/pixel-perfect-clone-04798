@@ -1,19 +1,14 @@
-export function Logo({ compact = false }: { compact?: boolean }) {
+import logoSrc from "@/assets/terra-logo.jpeg";
+
+export function Logo({ compact = false, invert = false }: { compact?: boolean; invert?: boolean }) {
   return (
-    <span className="flex items-center gap-3 select-none">
-      <span
-        aria-hidden
-        className="relative flex h-10 w-10 items-center justify-center border border-espresso text-espresso md:h-11 md:w-11"
-      >
-        <span className="font-display text-[15px] font-light tracking-[0.15em] leading-none">TS</span>
-        <span className="absolute -right-px -bottom-px h-1.5 w-1.5 bg-caramel" />
-      </span>
-      {!compact && (
-        <span className="flex flex-col leading-tight">
-          <span className="font-display text-[15px] font-light tracking-[0.32em] text-espresso uppercase">Terra</span>
-          <span className="label text-[10px] tracking-[0.4em] text-caramel">Space Studio</span>
-        </span>
-      )}
+    <span className="flex items-center gap-3 select-none" aria-label="Terra Space Studio">
+      <img
+        src={logoSrc}
+        alt="Terra Space Studio"
+        className={`h-9 w-auto md:h-11 ${invert ? "invert brightness-200" : ""} ${compact ? "h-8 md:h-9" : ""}`}
+        style={{ mixBlendMode: invert ? "screen" : "multiply" }}
+      />
     </span>
   );
 }
