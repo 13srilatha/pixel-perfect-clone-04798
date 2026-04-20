@@ -2,13 +2,13 @@ import portrait from "@/assets/architect-portrait.jpeg";
 import { Reveal } from "./Nav";
 
 const architect = {
-  name: "Srilatha",
-  role: "Founder · Lead Architect",
+  name: "Ar. Kalava Vaasanthi",
+  role: "Founder · Architect & Interior Designer",
   intro:
     "I'm the one who designs every home that leaves this studio. Architecture, for me, is not about buildings — it's about the small, quiet moments people will live inside them years from now.",
-  education: "B.Arch · School of Planning & Architecture",
+  education: "B.Arch · Council of Architecture, India",
   experience: "6+ years · 40+ residences across India",
-  certifications: ["COA Registered Architect", "Council certified · Sustainable Design"],
+  certifications: ["COA Registered Architect", "Interior Designer · Residential & Commercial"],
   vision:
     "I don't build houses. I build the place a family will keep their first photograph, the corner a child will read in, the window someone will grow old beside. That reminder is what makes me work hard, every single day.",
 };

@@ -37,27 +37,43 @@ export function Walkthrough() {
       id="walkthrough"
       ref={sectionRef}
       className="relative bg-ink text-cream"
-      style={{ height: `${walkthrough.length * 110}vh` }}
+      style={{ height: `${walkthrough.length * 60}vh` }}
     >
       <div className="sticky top-0 h-screen w-full overflow-hidden">
         {walkthrough.map((step, i) => {
-          const distance = Math.abs(i - (activeIdx + progress));
-          const opacity = i === activeIdx ? 1 : i === activeIdx + 1 ? progress : 0;
-          const zoom = step.side === "exterior"
-            ? 1.0 + (i === activeIdx ? progress * 0.08 : 0)
-            : 1.08 - (i === activeIdx ? progress * 0.08 : 0);
+          // Continuous crossfade — each frame fades in over its segment, no gaps
+          const local = activeIdx + progress - i;
+          let opacity = 0;
+          if (local >= 0 && local < 1) {
+            // current frame: full at start, eases out as next takes over
+            opacity = 1 - Math.max(0, local - 0.7) / 0.3;
+          } else if (local < 0 && local > -0.3) {
+            // upcoming frame: fades in during last 30% of previous
+            opacity = 1 + local / 0.3;
+          } else if (local >= 1) {
+            opacity = 0;
+          }
+          opacity = Math.max(0, Math.min(1, opacity));
+
+          // Continuous Ken Burns: gentle zoom across the full segment for video-like motion
+          const zoomProgress = Math.max(0, Math.min(1, local));
+          const zoom = 1.0 + zoomProgress * 0.12;
+          const translateY = (zoomProgress - 0.5) * 2; // subtle drift
           return (
             <div
               key={step.image}
-              className="absolute inset-0 transition-opacity duration-200 ease-out"
+              className="absolute inset-0"
               style={{ opacity, willChange: "opacity" }}
-              aria-hidden={i !== activeIdx}
+              aria-hidden={opacity < 0.5}
             >
               <img
                 src={step.image}
                 alt={step.title}
-                className="h-full w-full object-cover transition-transform duration-300 ease-out"
-                style={{ transform: `scale(${zoom})`, willChange: "transform" }}
+                className="h-full w-full object-cover"
+                style={{
+                  transform: `scale(${zoom}) translate3d(0, ${translateY}%, 0)`,
+                  willChange: "transform",
+                }}
                 loading={i < 2 ? "eager" : "lazy"}
               />
               <div
@@ -66,14 +82,6 @@ export function Walkthrough() {
                     ? "bg-gradient-to-t from-ink/85 via-ink/30 to-ink/40"
                     : "bg-gradient-to-t from-ink/85 via-ink/20 to-ink/30"
                 }`}
-              />
-              <div
-                className="absolute inset-0"
-                style={{
-                  background:
-                    "radial-gradient(ellipse at center, transparent 35%, oklch(0.150 0.030 40 / 0.55) 100%)",
-                  opacity: 0.7 + Math.min(distance, 1) * 0.2,
-                }}
               />
             </div>
           );
