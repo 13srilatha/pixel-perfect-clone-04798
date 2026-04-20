@@ -13,47 +13,73 @@ export function Nav() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Note: Interiors is now inside Work (Interior filter), so no separate link.
+  // Reel is now inside the rotating-house section, no separate link.
   const links = [
     { href: "#work", label: "Work" },
-    { href: "#interiors", label: "Interiors" },
     { href: "#process", label: "Before · After" },
     { href: "#rotate", label: "Best Project" },
-    { href: "#reel", label: "Launch Reel" },
     { href: "#architect", label: "Architect" },
     { href: "#contact", label: "Contact" },
   ];
 
   return (
-    <nav
-      className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
-        scrolled ? "bg-cream/85 backdrop-blur-md border-b border-sand" : "bg-transparent"
-      }`}
-    >
-      <div className="mx-auto flex max-w-[1600px] items-center justify-between px-6 py-4 md:px-10">
-        <a href="#top" aria-label={studio.name}>
-          <Logo />
-        </a>
+    <>
+      {/* Top scroll progress rail */}
+      <ScrollProgress />
 
-        <ul className="hidden items-center gap-8 md:flex">
-          {links.map((l) => (
-            <li key={l.href}>
-              <a href={l.href} className="label hover:text-espresso transition-colors">
-                {l.label}
-              </a>
-            </li>
-          ))}
-        </ul>
+      <nav
+        className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
+          scrolled ? "bg-cream/85 backdrop-blur-md border-b border-sand" : "bg-transparent"
+        }`}
+      >
+        <div className="mx-auto flex max-w-[1600px] items-center justify-between px-6 py-4 md:px-10">
+          <a href="#top" aria-label={studio.name}>
+            <Logo />
+          </a>
 
-        <a
-          href="#contact"
-          className="label hidden border border-espresso px-4 py-2 text-espresso transition-colors hover:bg-espresso hover:text-cream md:inline-block"
-        >
-          Begin a Project
-        </a>
+          <ul className="hidden items-center gap-8 md:flex">
+            {links.map((l) => (
+              <li key={l.href}>
+                <a href={l.href} className="label hover:text-espresso transition-colors">
+                  {l.label}
+                </a>
+              </li>
+            ))}
+          </ul>
 
-        <MobileMenu links={links} />
-      </div>
-    </nav>
+          <a
+            href="#contact"
+            className="label hidden border border-espresso px-4 py-2 text-espresso transition-colors hover:bg-espresso hover:text-cream md:inline-block"
+          >
+            Begin a Project
+          </a>
+
+          <MobileMenu links={links} />
+        </div>
+      </nav>
+    </>
+  );
+}
+
+function ScrollProgress() {
+  const [p, setP] = useState(0);
+  useEffect(() => {
+    const onScroll = () => {
+      const h = document.documentElement;
+      const total = h.scrollHeight - h.clientHeight;
+      setP(total > 0 ? (h.scrollTop || window.scrollY) / total : 0);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  return (
+    <span
+      aria-hidden
+      className="pointer-events-none fixed inset-x-0 top-0 z-[60] h-[2px] origin-left bg-gold"
+      style={{ transform: `scaleX(${p})` }}
+    />
   );
 }
 
@@ -113,6 +139,18 @@ export function Hero() {
         />
       </div>
 
+      {/* Marquee strip with studio words */}
+      <div className="pointer-events-none absolute inset-x-0 top-20 overflow-hidden border-y border-sand/60 py-3 opacity-70">
+        <div className="flex whitespace-nowrap" style={{ animation: "tsmarquee 50s linear infinite" }}>
+          {Array.from({ length: 6 }).map((_, i) => (
+            <span key={i} className="flex items-center gap-6 px-6 font-display text-sm italic text-caramel md:text-base">
+              Stone · Walnut · Lime · Brass · Linen · Terracotta · Earth · Light · Craft
+              <span className="text-caramel/50">✦</span>
+            </span>
+          ))}
+        </div>
+      </div>
+
       <div className="relative mx-auto grid max-w-[1600px] gap-12 px-6 py-12 md:grid-cols-12 md:px-10 md:py-24">
         <div className="md:col-span-8">
           <p className="label mb-8 inline-flex items-center gap-3">
@@ -162,6 +200,13 @@ export function Hero() {
       </div>
 
       <ScrollHint />
+
+      <style>{`
+        @keyframes tsmarquee {
+          from { transform: translateX(0); }
+          to   { transform: translateX(-50%); }
+        }
+      `}</style>
     </section>
   );
 }

@@ -3,12 +3,12 @@ import { Hero, Nav } from "@/components/site/Nav";
 import { Walkthrough } from "@/components/site/Walkthrough";
 import { RotatingHouse } from "@/components/site/RotatingHouse";
 import { Work } from "@/components/site/Work";
-import { Interiors } from "@/components/site/Interiors";
 import { Process } from "@/components/site/Process";
-import { Reel } from "@/components/site/Reel";
+import { ExplodedView } from "@/components/site/ExplodedView";
 import { Architect } from "@/components/site/Architect";
 import { Contact } from "@/components/site/Contact";
 import { BackToTop } from "@/components/site/BackToTop";
+import { SmoothScroll } from "@/components/site/SmoothScroll";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -27,14 +27,14 @@ export const Route = createFileRoute("/")({
 function Index() {
   return (
     <main className="bg-cream text-espresso">
+      <SmoothScroll />
       <Nav />
       <Hero />
       <Walkthrough />
       <Work />
-      <Interiors />
       <Process />
+      <ExplodedView />
       <RotatingHouse />
-      <Reel />
       <Architect />
       <Contact />
       <BackToTop />

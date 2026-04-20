@@ -73,23 +73,6 @@ export function Contact() {
           </div>
         </footer>
       </div>
-
-      {/* Designer credit marquee */}
-      <div className="mt-16 overflow-hidden border-t border-cream/10 py-6">
-        <div className="flex whitespace-nowrap" style={{ animation: "marquee 38s linear infinite" }}>
-          {Array.from({ length: 4 }).map((_, i) => (
-            <span key={i} className="flex items-center gap-6 px-6 font-display text-base font-light italic text-cream/60 md:text-lg">
-              This portfolio is designed and managed by Srilatha
-              <span className="text-gold">·</span>
-              <a href="mailto:imsrilathaa@gmail.com" className="not-italic underline-offset-4 hover:text-gold-lt hover:underline">imsrilathaa@gmail.com</a>
-              <span className="text-gold">·</span>
-              for queries or suggestions regarding the portfolio
-              <span className="text-gold">✦</span>
-            </span>
-          ))}
-        </div>
-        <style>{`@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }`}</style>
-      </div>
     </section>
   );
 }
