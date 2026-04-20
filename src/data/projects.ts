@@ -102,10 +102,13 @@ export const projects: Project[] = [
 export const studio = {
   name: "Terra Space Studio",
   tagline: "Architecture rooted in earth, light, and craft.",
-  city: "Chandigarh, India",
-  email: "hello@terraspacestudio.in",
-  phone: "+91 00000 00000",
-  instagram: "@terraspacestudio",
+  city: "Hyderabad, Telangana, India",
+  address: "Street-2, Viharika Colony, Hyderabad, Telangana, 50098",
+  email: "terraspacestudios07@gmail.com",
+  phone: "+91 6305707859",
+  instagram: "terra_spacestudio",
+  instagramUrl: "https://www.instagram.com/terra_spacestudio?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==",
+  reelUrl: "https://www.instagram.com/reel/DXHC-RsgerM/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
   founded: "2019",
   stats: [
     { label: "Projects Completed", value: "40+" },

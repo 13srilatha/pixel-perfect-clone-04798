@@ -25,8 +25,10 @@ export const interiors: Interior[] = [
   { id: "media-wall", title: "Forest Media Wall", room: "Living · Media", location: "Punjab, India", image: i2, description: "Deep-green panelled media wall with linear oak ceiling and asymmetric oak shelving." },
 ];
 
-import b1 from "@/assets/process/before-1.jpeg";
-import b2 from "@/assets/process/before-2.jpeg";
+import beforeMedia from "@/assets/process/before-media.jpeg";
+import afterMedia from "@/assets/process/after-media.jpeg";
+import beforeStructure from "@/assets/process/before-structure.jpeg";
+import afterStructure from "@/assets/process/after-structure.jpeg";
 
 export interface ProcessPair {
   id: string;
@@ -39,16 +41,16 @@ export interface ProcessPair {
 export const processPairs: ProcessPair[] = [
   {
     id: "media-wall-evolution",
-    title: "From bare board to forest wall",
-    caption: "Plywood substrate, ceiling battens and base cabinetry — sketched on site, finished in deep green panelling and oak.",
-    before: b1,
-    after: i2,
+    title: "From green board to marble feature",
+    caption: "Plywood substrate, deep-green panelling and slatted ceiling on day one — finished in book-matched marble, rose-gold trims and lacquered cabinetry.",
+    before: beforeMedia,
+    after: afterMedia,
   },
   {
     id: "structure-to-skin",
-    title: "From structure to skin",
-    caption: "Cast columns and shuttering on day one — the same volume, months later, dressed in walnut, glass and warm light.",
-    before: b2,
-    after: i1,
+    title: "From shuttering to sculpted façade",
+    caption: "Cast columns, props and raw RCC on site — the same volume completed as a curved walnut and stone façade with deep balconies.",
+    before: beforeStructure,
+    after: afterStructure,
   },
 ];
