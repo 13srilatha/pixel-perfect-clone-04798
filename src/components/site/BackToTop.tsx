@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /**
  * Back-to-top arrow + a small but always-visible portfolio credit pinned
@@ -7,12 +7,28 @@ import { useEffect, useState } from "react";
  */
 export function BackToTop() {
   const [visible, setVisible] = useState(false);
+  const [showCredit, setShowCredit] = useState(false);
+  const creditTriggerRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     const onScroll = () => setVisible(window.scrollY > window.innerHeight * 0.8);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    const target = document.getElementById("contact");
+    if (!target) return;
+    creditTriggerRef.current = target;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setShowCredit(entry.isIntersecting),
+      { threshold: 0.45 },
+    );
+
+    observer.observe(target);
+    return () => observer.disconnect();
   }, []);
 
   return (
@@ -36,20 +52,21 @@ export function BackToTop() {
         </button>
       </div>
 
-      {/* Always-visible portfolio credit (bottom-left) — small but legible */}
-      <div className="pointer-events-none fixed bottom-3 left-3 z-50 max-w-[260px] md:bottom-4 md:left-5 md:max-w-[320px]">
-        <p className="font-display text-[10px] italic leading-snug text-espresso/75 md:text-[11px]">
-          Portfolio designed & managed by{" "}
-          <span className="not-italic text-caramel">Srilatha</span>
-          {" — "}
-          <a
-            href="mailto:imsrilathaa@gmail.com"
-            className="pointer-events-auto not-italic underline-offset-2 hover:underline"
-          >
-            imsrilathaa@gmail.com
-          </a>
-        </p>
-      </div>
+      {showCredit && (
+        <div className="fixed bottom-3 left-3 z-50 max-w-[260px] md:bottom-4 md:left-5 md:max-w-[320px]">
+          <p className="font-display text-[10px] italic leading-snug text-cream/65 md:text-[11px]">
+            Portfolio designed & managed by{" "}
+            <span className="not-italic text-gold-lt">Srilatha</span>
+            {" — "}
+            <a
+              href="mailto:imsrilathaa@gmail.com"
+              className="underline-offset-2 hover:underline"
+            >
+              imsrilathaa@gmail.com
+            </a>
+          </p>
+        </div>
+      )}
     </>
   );
 }
