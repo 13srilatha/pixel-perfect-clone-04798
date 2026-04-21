@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 /**
  * Back-to-top arrow + a small but always-visible portfolio credit pinned
@@ -8,7 +8,6 @@ import { useEffect, useRef, useState } from "react";
 export function BackToTop() {
   const [visible, setVisible] = useState(false);
   const [showCredit, setShowCredit] = useState(false);
-  const creditTriggerRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     const onScroll = () => setVisible(window.scrollY > window.innerHeight * 0.8);
@@ -20,7 +19,6 @@ export function BackToTop() {
   useEffect(() => {
     const target = document.getElementById("contact");
     if (!target) return;
-    creditTriggerRef.current = target;
 
     const observer = new IntersectionObserver(
       ([entry]) => setShowCredit(entry.isIntersecting),
