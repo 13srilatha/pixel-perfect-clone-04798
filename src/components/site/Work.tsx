@@ -383,7 +383,6 @@ function CategoryGallery({
 }
 
 /* IntersectionObserver hook for the sticky-content-switch */
-import { useEffect } from "react";
 function useScrollObserver(
   refs: React.MutableRefObject<(HTMLDivElement | null)[]>,
   onActive: (i: number) => void,
