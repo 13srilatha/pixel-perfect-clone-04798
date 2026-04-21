@@ -36,6 +36,7 @@ export function ExplodedView() {
 
   return (
     <section
+      id="exploded"
       ref={ref}
       className="relative bg-cream"
       style={{ height: "260vh" }}

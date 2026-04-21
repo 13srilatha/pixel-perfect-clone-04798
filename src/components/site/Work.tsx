@@ -86,7 +86,11 @@ function FeaturedInProgress({ project }: { project: Project }) {
     <Reveal>
       <article className="group relative grid gap-8 overflow-hidden border border-sand bg-cream/40 p-6 md:grid-cols-12 md:p-10">
         <div className="md:col-span-7">
-          <div className="relative aspect-[16/10] overflow-hidden bg-sand">
+          <a
+            href="#exploded"
+            className="relative block aspect-[16/10] overflow-hidden bg-sand"
+            aria-label="Scroll to see the drawings, plan and palette behind this render"
+          >
             <img
               src={project.image}
               alt={project.title}
@@ -94,7 +98,21 @@ function FeaturedInProgress({ project }: { project: Project }) {
               className="h-full w-full object-cover transition-transform duration-[1500ms] ease-out group-hover:scale-[1.04]"
             />
             <span className="label absolute left-4 top-4 bg-gold px-2 py-1 text-ink">In Progress</span>
-          </div>
+
+            {/* Scroll-to-drawings invitation overlay */}
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 bg-gradient-to-t from-ink/85 via-ink/30 to-transparent p-5 md:p-6">
+              <div>
+                <p className="label text-gold-lt">Behind the render</p>
+                <p className="mt-1 font-display text-base font-light text-cream md:text-lg">
+                  Scroll to see the drawings, plan & palette
+                </p>
+              </div>
+              <span className="label inline-flex items-center gap-2 border border-cream/60 bg-ink/40 px-3 py-2 text-cream backdrop-blur-sm transition-colors group-hover:border-gold group-hover:bg-gold/20">
+                Open
+                <span aria-hidden>↓</span>
+              </span>
+            </div>
+          </a>
         </div>
         <div className="flex flex-col justify-between md:col-span-5">
           <div>
