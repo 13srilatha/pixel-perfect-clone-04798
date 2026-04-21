@@ -1,5 +1,6 @@
 # Project Memory
 
 ## Core
+User wants the Srilatha credit only on the last page/section, not globally.
 
 ## Memories
