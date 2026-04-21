@@ -483,13 +483,34 @@ function CategoryGallery({
     itemRefs.current[i] = el;
   };
 
-  // Lock the page behind the modal so the background doesn't scroll while
-  // the user is reading the gallery — the modal itself remains scrollable.
+  // Freeze the page exactly where it is, then let only the gallery overlay
+  // handle vertical scrolling. On close we restore the previous page position.
   useEffect(() => {
-    const previous = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const scrollY = window.scrollY;
+    const bodyStyle = document.body.style;
+    const htmlStyle = document.documentElement.style;
+
+    const previousBody = {
+      overflow: bodyStyle.overflow,
+      position: bodyStyle.position,
+      top: bodyStyle.top,
+      width: bodyStyle.width,
+    };
+    const previousHtmlOverflow = htmlStyle.overflow;
+
+    htmlStyle.overflow = "hidden";
+    bodyStyle.overflow = "hidden";
+    bodyStyle.position = "fixed";
+    bodyStyle.top = `-${scrollY}px`;
+    bodyStyle.width = "100%";
+
     return () => {
-      document.body.style.overflow = previous;
+      htmlStyle.overflow = previousHtmlOverflow;
+      bodyStyle.overflow = previousBody.overflow;
+      bodyStyle.position = previousBody.position;
+      bodyStyle.top = previousBody.top;
+      bodyStyle.width = previousBody.width;
+      window.scrollTo({ top: scrollY, left: 0, behavior: "auto" });
     };
   }, []);
 
@@ -504,7 +525,7 @@ function CategoryGallery({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.4 }}
-      className="fixed inset-0 z-[60] overflow-y-auto bg-cream"
+      className="fixed inset-0 z-[60] overflow-y-auto overscroll-y-contain bg-cream"
     >
       {/* Sticky header bar */}
       <div className="sticky top-0 z-20 flex items-center justify-between border-b border-sand bg-cream/95 px-6 py-4 backdrop-blur md:px-10">

@@ -1,4 +1,4 @@
-import logoUrl from "@/assets/terra-logo-trimmed.png";
+import logoUrl from "@/assets/terra-logo-transparent.png";
 
 /**
  * Terra Space Studio — official wordmark logo (client-supplied artwork).
