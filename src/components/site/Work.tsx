@@ -280,9 +280,15 @@ function CategoryGallery({
     itemRefs.current[i] = el;
   };
 
-  useState(() => {
-    // noop — placeholder so React doesn't complain about hook order
-  });
+  // Lock the page behind the modal so the background doesn't scroll while
+  // the user is reading the gallery — the modal itself remains scrollable.
+  useEffect(() => {
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, []);
 
   // IntersectionObserver wired in effect via callback ref pattern
   useScrollObserver(itemRefs, setActiveIdx);
