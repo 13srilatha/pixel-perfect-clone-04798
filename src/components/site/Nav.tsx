@@ -140,39 +140,24 @@ export function Hero() {
       </div>
 
       {/* Intro copy */}
-      <div className="absolute inset-x-0 top-[78%] z-10 mx-auto flex max-w-3xl flex-col items-center px-6 text-center md:top-[80%]">
-          <p className="font-display text-base italic leading-relaxed text-cream/85 md:text-lg">
-            We are <strong className="font-normal text-cream">{studio.name}</strong> — a
-            residential architecture and interior design practice based in {studio.city}.
-            We build slowly, with stone, wood, and the kind of light you forget to photograph.
-          </p>
+      <div className="absolute inset-x-0 top-[72%] z-10 mx-auto flex max-w-3xl flex-col items-center px-6 text-center md:top-[74%]">
+        <p className="font-display text-base italic leading-relaxed text-espresso/85 md:text-lg">
+          We are <strong className="font-normal text-espresso">{studio.name}</strong> — a
+          residential architecture and interior design practice based in {studio.city}.
+          We build slowly, with stone, wood, and the kind of light you forget to photograph.
+        </p>
 
-          <div className="mt-10 flex flex-wrap items-center gap-6">
-            <a
-              href="#walkthrough"
-              className="label group inline-flex items-center gap-3 bg-espresso px-6 py-4 text-cream"
-            >
-              Walk Through a Home
-              <span className="transition-transform group-hover:translate-x-1">→</span>
-            </a>
-            <a href="#work" className="label inline-flex items-center gap-3 text-espresso underline-offset-4 hover:underline">
-              See the Work
-            </a>
-          </div>
-        </div>
-
-        <div className="hidden md:col-span-4 md:flex md:flex-col md:items-end md:justify-end">
-          <div className="text-right">
-            <p className="label mb-4">Selected Numbers</p>
-            <dl className="space-y-3">
-              {studio.stats.map((s) => (
-                <div key={s.label} className="flex items-baseline justify-end gap-3">
-                  <dd className="font-display text-3xl font-light text-espresso">{s.value}</dd>
-                  <dt className="label">{s.label}</dt>
-                </div>
-              ))}
-            </dl>
-          </div>
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-6">
+          <a
+            href="#walkthrough"
+            className="label group inline-flex items-center gap-3 bg-espresso px-6 py-4 text-cream"
+          >
+            Walk Through a Home
+            <span className="transition-transform group-hover:translate-x-1">→</span>
+          </a>
+          <a href="#work" className="label inline-flex items-center gap-3 text-espresso underline-offset-4 hover:underline">
+            See the Work
+          </a>
         </div>
       </div>
 
