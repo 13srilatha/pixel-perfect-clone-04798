@@ -311,32 +311,6 @@ function CategoryGallery({
   );
 }
 
-/* IntersectionObserver hook for the sticky-content-switch */
-function useScrollObserver(
-  refs: React.MutableRefObject<(HTMLDivElement | null)[]>,
-  onActive: (i: number) => void,
-) {
-  useEffect(() => {
-    const obs = new IntersectionObserver(
-      (entries) => {
-        // Pick the entry whose intersection ratio is highest and closest to centre
-        let best: IntersectionObserverEntry | null = null;
-        for (const e of entries) {
-          if (!e.isIntersecting) continue;
-          if (!best || e.intersectionRatio > best.intersectionRatio) best = e;
-        }
-        if (best) {
-          const idx = Number((best.target as HTMLElement).dataset.idx);
-          if (!Number.isNaN(idx)) onActive(idx);
-        }
-      },
-      { threshold: [0.3, 0.5, 0.7], rootMargin: "-20% 0px -30% 0px" },
-    );
-    refs.current.forEach((el) => el && obs.observe(el));
-    return () => obs.disconnect();
-  }, [refs, onActive]);
-}
-
 /* ─────────────────────────────────────────────────────────────────────── */
 
 function FlipCard({ project }: { project: Project }) {
