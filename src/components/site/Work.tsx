@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { projects, type Project, type ProjectCategory } from "@/data/projects";
 import { Reveal } from "./Nav";
