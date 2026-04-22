@@ -139,63 +139,25 @@ export function Hero() {
         />
       </div>
 
-      {/* Marquee strip with studio words */}
-      <div className="pointer-events-none absolute inset-x-0 top-20 overflow-hidden border-y border-sand/60 py-3 opacity-70">
-        <div className="flex whitespace-nowrap" style={{ animation: "tsmarquee 50s linear infinite" }}>
-          {Array.from({ length: 6 }).map((_, i) => (
-            <span key={i} className="flex items-center gap-6 px-6 font-display text-sm italic text-caramel md:text-base">
-              Stone · Walnut · Lime · Brass · Linen · Terracotta · Earth · Light · Craft
-              <span className="text-caramel/50">✦</span>
-            </span>
-          ))}
-        </div>
-      </div>
+      {/* Intro copy */}
+      <div className="absolute inset-x-0 top-[72%] z-10 mx-auto flex max-w-3xl flex-col items-center px-6 text-center md:top-[74%]">
+        <p className="font-display text-base italic leading-relaxed text-espresso/85 md:text-lg">
+          We are <strong className="font-normal text-espresso">{studio.name}</strong> — a
+          residential architecture and interior design practice based in {studio.city}.
+          We build slowly, with stone, wood, and the kind of light you forget to photograph.
+        </p>
 
-      <div className="relative mx-auto grid max-w-[1600px] gap-12 px-6 py-12 md:grid-cols-12 md:px-10 md:py-24">
-        <div className="md:col-span-8">
-          <p className="label mb-8 inline-flex items-center gap-3">
-            <span className="h-px w-10 bg-caramel" />
-            Architecture · Interiors · Since {studio.founded}
-          </p>
-
-          <h1 className="display text-[clamp(3rem,9vw,9.5rem)] text-espresso text-balance">
-            Spaces that
-            <br />
-            <em className="font-light italic text-caramel">remember</em> you.
-          </h1>
-
-          <p className="mt-10 max-w-xl text-lg leading-relaxed text-brown text-pretty">
-            We are <strong className="font-normal text-espresso">{studio.name}</strong> — a
-            residential architecture and interior design practice based in {studio.city}.
-            We build slowly, with stone, wood, and the kind of light you forget to photograph.
-          </p>
-
-          <div className="mt-10 flex flex-wrap items-center gap-6">
-            <a
-              href="#walkthrough"
-              className="label group inline-flex items-center gap-3 bg-espresso px-6 py-4 text-cream"
-            >
-              Walk Through a Home
-              <span className="transition-transform group-hover:translate-x-1">→</span>
-            </a>
-            <a href="#work" className="label inline-flex items-center gap-3 text-espresso underline-offset-4 hover:underline">
-              See the Work
-            </a>
-          </div>
-        </div>
-
-        <div className="hidden md:col-span-4 md:flex md:flex-col md:items-end md:justify-end">
-          <div className="text-right">
-            <p className="label mb-4">Selected Numbers</p>
-            <dl className="space-y-3">
-              {studio.stats.map((s) => (
-                <div key={s.label} className="flex items-baseline justify-end gap-3">
-                  <dd className="font-display text-3xl font-light text-espresso">{s.value}</dd>
-                  <dt className="label">{s.label}</dt>
-                </div>
-              ))}
-            </dl>
-          </div>
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-6">
+          <a
+            href="#walkthrough"
+            className="label group inline-flex items-center gap-3 bg-espresso px-6 py-4 text-cream"
+          >
+            Walk Through a Home
+            <span className="transition-transform group-hover:translate-x-1">→</span>
+          </a>
+          <a href="#work" className="label inline-flex items-center gap-3 text-espresso underline-offset-4 hover:underline">
+            See the Work
+          </a>
         </div>
       </div>
 
