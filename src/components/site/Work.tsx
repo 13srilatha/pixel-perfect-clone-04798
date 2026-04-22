@@ -210,13 +210,6 @@ function CategoryGallery({
   onClose: () => void;
 }) {
   const items = ALL_PROJECTS.filter((p) => p.category === category);
-  const [activeIdx, setActiveIdx] = useState(0);
-  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
-
-  // Observe each image — the one most centered drives the heading
-  const setRef = (i: number) => (el: HTMLDivElement | null) => {
-    itemRefs.current[i] = el;
-  };
 
   // Freeze the page exactly where it is, then let only the gallery overlay
   // handle vertical scrolling. On close we restore the previous page position.
@@ -249,11 +242,6 @@ function CategoryGallery({
     };
   }, []);
 
-  // IntersectionObserver wired in effect via callback ref pattern
-  useScrollObserver(itemRefs, setActiveIdx);
-
-  const active = items[activeIdx] ?? items[0];
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -279,48 +267,30 @@ function CategoryGallery({
 
       <div className="mx-auto max-w-[1600px] px-6 py-12 md:px-10 md:py-20">
         <div className="grid gap-12 md:grid-cols-12 md:gap-16">
-          {/* Sticky left heading */}
+          {/* Sticky left intro — stays the same while images scroll on the right */}
           <div className="md:col-span-5">
             <div className="sticky top-32">
-              <p className="label mb-4 text-caramel">
-                Project {String(activeIdx + 1).padStart(2, "0")} / {String(items.length).padStart(2, "0")}
+              <p className="label mb-4 inline-flex items-center gap-3 text-caramel">
+                <span className="h-px w-8 bg-caramel" />
+                {category}
               </p>
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={active?.id}
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -16 }}
-                  transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                >
-                  <h3 className="display text-[clamp(2.25rem,5vw,4.25rem)] text-espresso">
-                    {active?.title}
-                  </h3>
-                  <p className="label mt-3 normal-case tracking-normal text-brown">
-                    {active?.location}{active?.year && active.year !== "—" ? ` · ${active.year}` : ""}
-                  </p>
-                  <p className="mt-6 max-w-lg text-base leading-relaxed text-brown text-pretty">
-                    {active?.description}
-                  </p>
-                  {active?.intent && (
-                    <p className="mt-6 border-l-2 border-caramel pl-4 font-display text-lg italic text-espresso">
-                      "{active.intent}"
-                    </p>
-                  )}
-                  {active?.materials && active.materials.length > 0 && (
-                    <dl className="mt-6 border-t border-sand pt-5">
-                      <dt className="label mb-2 text-caramel">Materials</dt>
-                      <dd className="flex flex-wrap gap-2">
-                        {active.materials.map((m) => (
-                          <span key={m} className="label border border-sand px-3 py-1 normal-case tracking-wider text-espresso">
-                            {m}
-                          </span>
-                        ))}
-                      </dd>
-                    </dl>
-                  )}
-                </motion.div>
-              </AnimatePresence>
+              <h3 className="display text-[clamp(2.25rem,5vw,4.25rem)] text-espresso">
+                {category}.
+              </h3>
+              <p className="mt-6 max-w-lg text-base leading-relaxed text-brown text-pretty">
+                {CATEGORY_BLURB[category]}
+              </p>
+              <p className="mt-6 max-w-lg text-base leading-relaxed text-brown text-pretty">
+                Every project below is built around the materials we love — stone, walnut, lime,
+                brass and unglazed terracotta — and the way light moves through a room. Hover any
+                image to flip it and read the intent, materials and the why behind it.
+              </p>
+
+              <div className="mt-10 flex items-center gap-3">
+                <span className="label text-caramel">Scroll to see my work</span>
+                <span className="block h-px w-12 bg-caramel" />
+                <span className="label text-caramel" aria-hidden>↓</span>
+              </div>
             </div>
           </div>
 
@@ -329,8 +299,8 @@ function CategoryGallery({
             {items.length === 0 && (
               <p className="font-display text-2xl text-brown">No projects yet in this category.</p>
             )}
-            {items.map((p, i) => (
-              <div key={p.id} ref={setRef(i)} data-idx={i}>
+            {items.map((p) => (
+              <div key={p.id}>
                 <FlipCard project={p} />
               </div>
             ))}
