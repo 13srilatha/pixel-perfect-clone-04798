@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { projects, type Project, type ProjectCategory } from "@/data/projects";
 import { Reveal } from "./Nav";
@@ -35,13 +35,12 @@ const interiorAsProjects: Project[] = interiors.map((it) => ({
 const ALL_PROJECTS: Project[] = [...projects, ...interiorAsProjects];
 
 export function Work() {
-  const inProgress = useMemo(() => ALL_PROJECTS.find((p) => p.status === "in-progress"), []);
   const [openCategory, setOpenCategory] = useState<ProjectCategory | null>(null);
 
   return (
     <>
       <section id="work" className="relative bg-cream">
-        {/* Header + featured in-progress card */}
+        {/* Header */}
         <div className="mx-auto max-w-[1600px] px-6 pt-24 pb-16 md:px-10 md:pt-36">
           <Reveal className="mb-12 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div>
@@ -53,12 +52,7 @@ export function Work() {
                 Houses that hold <em className="italic text-caramel">memory</em>.
               </h2>
             </div>
-            <p className="max-w-md text-base leading-relaxed text-brown text-pretty">
-              Scroll horizontally through every category. Tap a panel to open the gallery — hover any image to read the materials and the why.
-            </p>
           </Reveal>
-
-          {inProgress && <FeaturedInProgress project={inProgress} />}
         </div>
 
         {/* Horizontal sticky-scroll category panels */}
