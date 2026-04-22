@@ -53,12 +53,7 @@ export function Work() {
                 Houses that hold <em className="italic text-caramel">memory</em>.
               </h2>
             </div>
-            <p className="max-w-md text-base leading-relaxed text-brown text-pretty">
-              Scroll horizontally through every category. Tap a panel to open the gallery — hover any image to read the materials and the why.
-            </p>
           </Reveal>
-
-          {inProgress && <FeaturedInProgress project={inProgress} />}
         </div>
 
         {/* Horizontal sticky-scroll category panels */}
