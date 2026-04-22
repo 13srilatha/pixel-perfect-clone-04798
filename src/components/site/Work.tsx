@@ -35,7 +35,6 @@ const interiorAsProjects: Project[] = interiors.map((it) => ({
 const ALL_PROJECTS: Project[] = [...projects, ...interiorAsProjects];
 
 export function Work() {
-  const inProgress = useMemo(() => ALL_PROJECTS.find((p) => p.status === "in-progress"), []);
   const [openCategory, setOpenCategory] = useState<ProjectCategory | null>(null);
 
   return (
