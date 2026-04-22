@@ -202,6 +202,29 @@ function CategoryPanel({
  * images scroll past on the right; heading text updates per active image
  * via IntersectionObserver.
  */
+const CATEGORY_INTRO: Record<ProjectCategory, { lede: string; materials: string[] }> = {
+  Residential: {
+    lede:
+      "Family homes designed to age slowly — composed in stone, walnut and lime, around the way light moves through the house from morning to evening.",
+    materials: ["Dholpur sandstone", "Burma teak", "Lime plaster", "Low-iron glass", "Patinated brass"],
+  },
+  Interior: {
+    lede:
+      "Joinery, partitions, lighting and built-ins drawn for each home and crafted on site. Backlit niches, fluted walnut, hand-finished veneer — interiors that feel built, not installed.",
+    materials: ["Walnut veneer", "Brass inlay", "Travertine", "Fluted oak", "Hand-finished plaster"],
+  },
+  Commercial: {
+    lede:
+      "Workplaces, cafés and showrooms with the warmth of a private home. Calm authority over loud branding — fluted walnut, polished travertine, soft pin-spot lighting.",
+    materials: ["Fluted walnut", "Travertine", "Brass", "Tan leather", "Polished concrete"],
+  },
+  Renovation: {
+    lede:
+      "Old buildings, listened to. Mosaic floors preserved, teak beams uncovered, lime walls re-washed — repaired where possible, updated only where needed.",
+    materials: ["Lime wash", "Restored teak", "Mosaic flooring", "Mangalore tile", "Antique brass"],
+  },
+};
+
 function CategoryGallery({
   category,
   onClose,
@@ -210,13 +233,7 @@ function CategoryGallery({
   onClose: () => void;
 }) {
   const items = ALL_PROJECTS.filter((p) => p.category === category);
-  const [activeIdx, setActiveIdx] = useState(0);
-  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
-
-  // Observe each image — the one most centered drives the heading
-  const setRef = (i: number) => (el: HTMLDivElement | null) => {
-    itemRefs.current[i] = el;
-  };
+  const intro = CATEGORY_INTRO[category];
 
   // Freeze the page exactly where it is, then let only the gallery overlay
   // handle vertical scrolling. On close we restore the previous page position.
@@ -249,11 +266,6 @@ function CategoryGallery({
     };
   }, []);
 
-  // IntersectionObserver wired in effect via callback ref pattern
-  useScrollObserver(itemRefs, setActiveIdx);
-
-  const active = items[activeIdx] ?? items[0];
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -279,48 +291,32 @@ function CategoryGallery({
 
       <div className="mx-auto max-w-[1600px] px-6 py-12 md:px-10 md:py-20">
         <div className="grid gap-12 md:grid-cols-12 md:gap-16">
-          {/* Sticky left heading */}
+          {/* Sticky left intro — STATIC, does not change on scroll */}
           <div className="md:col-span-5">
             <div className="sticky top-32">
-              <p className="label mb-4 text-caramel">
-                Project {String(activeIdx + 1).padStart(2, "0")} / {String(items.length).padStart(2, "0")}
+              <p className="label mb-4 text-caramel">{category} · Our work</p>
+              <h3 className="display text-[clamp(2.25rem,5vw,4.25rem)] text-espresso">
+                {category}.
+              </h3>
+              <p className="mt-6 max-w-lg text-base leading-relaxed text-brown text-pretty">
+                {intro.lede}
               </p>
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={active?.id}
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -16 }}
-                  transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                >
-                  <h3 className="display text-[clamp(2.25rem,5vw,4.25rem)] text-espresso">
-                    {active?.title}
-                  </h3>
-                  <p className="label mt-3 normal-case tracking-normal text-brown">
-                    {active?.location}{active?.year && active.year !== "—" ? ` · ${active.year}` : ""}
-                  </p>
-                  <p className="mt-6 max-w-lg text-base leading-relaxed text-brown text-pretty">
-                    {active?.description}
-                  </p>
-                  {active?.intent && (
-                    <p className="mt-6 border-l-2 border-caramel pl-4 font-display text-lg italic text-espresso">
-                      "{active.intent}"
-                    </p>
-                  )}
-                  {active?.materials && active.materials.length > 0 && (
-                    <dl className="mt-6 border-t border-sand pt-5">
-                      <dt className="label mb-2 text-caramel">Materials</dt>
-                      <dd className="flex flex-wrap gap-2">
-                        {active.materials.map((m) => (
-                          <span key={m} className="label border border-sand px-3 py-1 normal-case tracking-wider text-espresso">
-                            {m}
-                          </span>
-                        ))}
-                      </dd>
-                    </dl>
-                  )}
-                </motion.div>
-              </AnimatePresence>
+
+              <dl className="mt-8 border-t border-sand pt-5">
+                <dt className="label mb-3 text-caramel">Materials we work with</dt>
+                <dd className="flex flex-wrap gap-2">
+                  {intro.materials.map((m) => (
+                    <span key={m} className="label border border-sand px-3 py-1 normal-case tracking-wider text-espresso">
+                      {m}
+                    </span>
+                  ))}
+                </dd>
+              </dl>
+
+              <p className="mt-10 inline-flex items-center gap-3 font-display text-base italic text-caramel">
+                <span className="h-px w-8 bg-caramel" />
+                Scroll to see the work — hover any image to read the why
+              </p>
             </div>
           </div>
 
@@ -329,10 +325,8 @@ function CategoryGallery({
             {items.length === 0 && (
               <p className="font-display text-2xl text-brown">No projects yet in this category.</p>
             )}
-            {items.map((p, i) => (
-              <div key={p.id} ref={setRef(i)} data-idx={i}>
-                <FlipCard project={p} />
-              </div>
+            {items.map((p) => (
+              <FlipCard key={p.id} project={p} />
             ))}
           </div>
         </div>
