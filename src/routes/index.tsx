@@ -3,7 +3,6 @@ import { Hero, Nav } from "@/components/site/Nav";
 import { Walkthrough } from "@/components/site/Walkthrough";
 import { RotatingHouse } from "@/components/site/RotatingHouse";
 import { Work } from "@/components/site/Work";
-import { MunnyInProgress } from "@/components/site/MunnyInProgress";
 import { Process } from "@/components/site/Process";
 
 import { Architect } from "@/components/site/Architect";
@@ -30,7 +29,6 @@ function Index() {
       <Nav />
       <Hero />
       <Walkthrough />
-      <MunnyInProgress />
       <Work />
       <Process />
       <RotatingHouse />
