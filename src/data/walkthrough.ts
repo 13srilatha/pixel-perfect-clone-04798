@@ -14,10 +14,10 @@ export interface WalkStep {
 }
 
 export const walkthrough: WalkStep[] = [
-  { image: s1, label: "01 · Approach", title: "You arrive.", body: "The driveway softens under your feet. Palms part. A wall of white render, a lantern of warm light beyond.", side: "exterior" },
-  { image: s2, label: "02 · Façade", title: "You pause.", body: "Walnut battens, raw stone, the brass house number warmed by the last of the sun. Architecture that wants to be touched.", side: "exterior" },
-  { image: s3, label: "03 · Threshold", title: "You step inside.", body: "The pivot door swings. The world is suddenly quieter. A double-height foyer holds the silence.", side: "interior" },
-  { image: s4, label: "04 · Living", title: "You exhale.", body: "Linen, walnut, marble. Light that has travelled through trees. A room designed for slow conversations.", side: "interior" },
-  { image: s5, label: "05 · Refuge", title: "You drift.", body: "Sheers filter golden hour into the bedroom. The wood absorbs sound. Your shoulders drop without permission.", side: "interior" },
-  { image: s6, label: "06 · Sky", title: "You arrive — again.", body: "On the roof, the city falls away. The pergola frames the sun. This is what we build for.", side: "interior" },
+  { image: s1, label: "01 · Approach", title: "You arrive.", body: "Home calls you in — softly, like amma's voice.", side: "exterior" },
+  { image: s2, label: "02 · Façade", title: "You pause.", body: "The walls hold the warmth of the evening sun.", side: "exterior" },
+  { image: s3, label: "03 · Threshold", title: "You step in.", body: "The world quiets. The house begins to listen.", side: "interior" },
+  { image: s4, label: "04 · Living", title: "You exhale.", body: "Light, laughter, the clink of chai cups — a room made for togetherness.", side: "interior" },
+  { image: s5, label: "05 · Refuge", title: "You rest.", body: "Sheers, soft wood, slow breaths. Your shoulders drop.", side: "interior" },
+  { image: s6, label: "06 · Sky", title: "You belong.", body: "On the terrace, the sky leans down to meet you. This is home.", side: "interior" },
 ];
