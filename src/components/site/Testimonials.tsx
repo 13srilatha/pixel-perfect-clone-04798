@@ -154,14 +154,19 @@ function TestimonialCard({ t }: { t: Testimonial }) {
   return (
     <motion.div
       ref={ref}
+      initial={{ opacity: 0, y: 40, scale: 0.96 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, amount: 0.25 }}
+      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
       style={{ rotateX, opacity, transformPerspective: 1000 }}
+      whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
       className="relative overflow-hidden rounded-2xl border border-cream/15 bg-cream/[0.06] p-6 backdrop-blur-md md:p-8"
     >
       {/* Bubble-glass highlight */}
       <span className="pointer-events-none absolute -left-10 -top-10 h-32 w-32 rounded-full bg-gold/15 blur-2xl" />
       <span className="pointer-events-none absolute -right-12 -bottom-12 h-40 w-40 rounded-full bg-cream/10 blur-3xl" />
 
-      <p className="font-display text-lg italic leading-relaxed text-cream md:text-xl">
+      <p className="font-display text-base italic leading-relaxed text-cream md:text-lg">
         "{t.quote}"
       </p>
       <div className="mt-5 flex items-center gap-3 border-t border-cream/15 pt-4">
