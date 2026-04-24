@@ -17,8 +17,8 @@ export function Nav() {
   // Reel is now inside the rotating-house section, no separate link.
   const links = [
     { href: "#work", label: "Work" },
-    { href: "#process", label: "Before · After" },
-    { href: "#rotate", label: "Best Project" },
+    { href: "#process", label: "Before to After" },
+    { href: "#testimonials", label: "Happiness Speaks" },
     { href: "#architect", label: "Architect" },
     { href: "#contact", label: "Contact" },
   ];
