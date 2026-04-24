@@ -152,7 +152,7 @@ function HorizontalCategories({ onOpen }: { onOpen: (c: ProjectCategory) => void
 
         {/* progress rail */}
         <div className="pointer-events-none absolute inset-x-10 bottom-6 z-20 flex items-center gap-4">
-          <span className="label text-caramel">Categories</span>
+          <span className="label text-caramel">Services</span>
           <span className="relative h-px flex-1 bg-sand">
             <motion.span
               className="absolute left-0 top-0 block h-full bg-espresso"
