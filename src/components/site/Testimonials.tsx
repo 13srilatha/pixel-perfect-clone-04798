@@ -84,10 +84,10 @@ export function Testimonials() {
             <span className="text-gold">Happiness Speaks</span>
           </p>
           <h2 className="display text-[clamp(2.5rem,6vw,5rem)] text-cream">
-            What our families <em className="italic text-gold-lt">whisper</em> back.
+            What our clients <em className="italic text-gold-lt">say</em>.
           </h2>
-          <p className="mt-6 text-lg leading-relaxed text-cream/75">
-            The homes we build are kind enough to send their love back to us. Here is some of it.
+          <p className="mt-6 text-base leading-relaxed text-cream/75 md:text-lg">
+            Honest feedback from the families and owners we have worked with.
           </p>
         </Reveal>
 
