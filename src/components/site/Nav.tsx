@@ -235,9 +235,6 @@ export function Hero() {
   );
 }
 
-function _ScrollHintUnused() {
-  return (
-
 export function Reveal({
   children,
   className = "",
