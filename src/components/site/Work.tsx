@@ -343,11 +343,6 @@ function CategoryGallery({
                   <p className="mt-6 max-w-lg text-base leading-relaxed text-brown text-pretty">
                     {active?.description}
                   </p>
-                  {active?.intent && (
-                    <p className="mt-6 border-l-2 border-caramel pl-4 font-display text-lg italic text-espresso">
-                      "{active.intent}"
-                    </p>
-                  )}
                   {active?.materials && active.materials.length > 0 && (
                     <dl className="mt-6 border-t border-sand pt-5">
                       <dt className="label mb-2 text-caramel">Materials</dt>
@@ -411,109 +406,20 @@ function useScrollObserver(
 /* ─────────────────────────────────────────────────────────────────────── */
 
 function FlipCard({ project }: { project: Project }) {
-  const [hovered, setHovered] = useState(false);
-
   return (
-    <article
-      className="group relative w-full"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      onFocus={() => setHovered(true)}
-      onBlur={() => setHovered(false)}
-      tabIndex={0}
-      style={{ perspective: "1600px" }}
-    >
-      <motion.div
-        className="relative aspect-[4/3] w-full"
-        style={{ transformStyle: "preserve-3d" }}
-        animate={{ rotateY: hovered ? 180 : 0 }}
-        transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
-      >
-        {/* Front */}
-        <div
-          className="absolute inset-0 overflow-hidden bg-sand"
-          style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}
-        >
-          <img
-            src={project.image}
-            alt={project.title}
-            loading="lazy"
-            className="h-full w-full object-cover"
-          />
-          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/85 to-transparent p-6">
-            <p className="label text-gold-lt">{project.category} · {project.year}</p>
-            <h4 className="font-display text-2xl font-light text-cream md:text-3xl">{project.title}</h4>
-            <p className="label mt-2 text-cream/70">Hover to read the why →</p>
-          </div>
+    <article className="relative w-full">
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-sand">
+        <img
+          src={project.image}
+          alt={project.title}
+          loading="lazy"
+          className="h-full w-full object-cover"
+        />
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/85 to-transparent p-6">
+          <p className="label text-gold-lt">{project.category}</p>
+          <h4 className="font-display text-2xl font-light text-cream md:text-3xl">{project.title}</h4>
         </div>
-
-        {/* Back */}
-        <div
-          className="absolute inset-0 flex flex-col justify-between bg-espresso p-8 text-cream md:p-10"
-          style={{
-            backfaceVisibility: "hidden",
-            WebkitBackfaceVisibility: "hidden",
-            transform: "rotateY(180deg)",
-          }}
-        >
-          <div>
-            <p className="label text-gold">Design Intent</p>
-            <p className="mt-3 font-display text-xl italic leading-snug text-cream md:text-2xl">
-              "{project.intent ?? project.description}"
-            </p>
-          </div>
-
-          {project.materials && project.materials.length > 0 && (
-            <div>
-              <p className="label mt-6 text-gold">Materials Used</p>
-              <ul className="mt-2 flex flex-wrap gap-2">
-                {project.materials.map((m) => (
-                  <li key={m} className="label border border-cream/30 px-3 py-1 normal-case tracking-wider text-cream">
-                    {m}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {project.approach && (
-            <div className="mt-6 border-t border-cream/15 pt-4">
-              <p className="label text-gold">Working Style</p>
-              <p className="mt-2 text-sm leading-relaxed text-cream/80">{project.approach}</p>
-            </div>
-          )}
-        </div>
-      </motion.div>
+      </div>
     </article>
-  );
-}
-
-/* ─────────────────────────────────────────────────────────────────────── */
-
-import { studio } from "@/data/projects";
-
-function Studio() {
-  return (
-    <section id="studio" className="mx-auto mt-24 grid max-w-[1600px] gap-10 border-t border-sand px-6 pb-24 pt-20 md:grid-cols-12 md:px-10">
-      <Reveal className="md:col-span-5">
-        <p className="label mb-4">The Studio</p>
-        <h2 className="display text-[clamp(2.25rem,5vw,4rem)] text-espresso">
-          Architecture, slowed
-          <br />
-          to the speed of <em className="italic text-caramel">life</em>.
-        </h2>
-      </Reveal>
-      <Reveal className="md:col-span-6 md:col-start-7" delay={150}>
-        <div className="space-y-5 text-lg leading-relaxed text-brown">
-          <p>
-            {studio.name} is a residential architecture and interior practice rooted in {studio.city}. We design for stillness — homes you can sink into, not just look at.
-          </p>
-          <p>
-            Our buildings are made from earth's vocabulary: stone, plaster, walnut, unglazed terracotta, raw cotton, brushed brass. We compose them around the way your light moves, the way your family gathers, the way a room should feel at six in the morning.
-          </p>
-          <p>Founded {studio.founded}. Currently working across India.</p>
-        </div>
-      </Reveal>
-    </section>
   );
 }
