@@ -145,7 +145,7 @@ function ContactForm() {
           Send Enquiry
           <span className="transition-transform group-hover:translate-x-1">→</span>
         </button>
-        <p className="label mt-3 text-cream/40">Opens your email app · we reply within 48 hours</p>
+        <p className="label mt-3 text-cream/40">We reply within 48 hours</p>
       </div>
     </form>
   );

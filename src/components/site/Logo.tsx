@@ -9,7 +9,7 @@ import logoUrl from "@/assets/terra-logo-transparent.png";
  * background so it sits naturally on the cream nav bar.
  */
 export function Logo({ compact = false }: { compact?: boolean; invert?: boolean }) {
-  const height = compact ? 28 : 40;
+  const height = compact ? 40 : 64;
   return (
     <span
       className="flex items-center select-none"

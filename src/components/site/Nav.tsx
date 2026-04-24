@@ -17,8 +17,8 @@ export function Nav() {
   // Reel is now inside the rotating-house section, no separate link.
   const links = [
     { href: "#work", label: "Work" },
-    { href: "#process", label: "Before · After" },
-    { href: "#rotate", label: "Best Project" },
+    { href: "#process", label: "Before to After" },
+    { href: "#testimonials", label: "Happiness Speaks" },
     { href: "#architect", label: "Architect" },
     { href: "#contact", label: "Contact" },
   ];
@@ -122,112 +122,116 @@ function MobileMenu({ links }: { links: { href: string; label: string }[] }) {
   );
 }
 
+import heroFeature from "@/assets/hero-feature.jpg";
+
 export function Hero() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [p, setP] = useState(0);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const el = ref.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const vh = window.innerHeight;
+      // progress 0 → 1 across the hero section
+      const total = el.offsetHeight - vh;
+      const scrolled = Math.min(Math.max(-rect.top, 0), total);
+      setP(total > 0 ? scrolled / total : 0);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Image expands from a small centered frame to full bleed as you scroll.
+  const expand = Math.min(1, p * 1.4);
+  const frameWidth = 38 + expand * 62; // 38vw → 100vw
+  const frameHeight = 50 + expand * 50; // 50vh → 100vh
+  const radius = (1 - expand) * 6; // px
+  const overlayOpacity = expand * 0.55;
+
   return (
     <section
       id="top"
-      className="relative flex min-h-[100svh] items-center overflow-hidden bg-cream pt-24"
+      ref={ref}
+      className="relative bg-cream"
+      style={{ height: "200vh" }}
     >
-      <div className="pointer-events-none absolute inset-0 opacity-[0.06]">
-        <div
-          className="h-full w-full"
-          style={{
-            backgroundImage:
-              "linear-gradient(var(--espresso) 1px, transparent 1px), linear-gradient(90deg, var(--espresso) 1px, transparent 1px)",
-            backgroundSize: "80px 80px",
-          }}
-        />
-      </div>
-
-      {/* Marquee strip with studio words */}
-      <div className="pointer-events-none absolute inset-x-0 top-20 overflow-hidden border-y border-sand/60 py-3 opacity-70">
-        <div className="flex whitespace-nowrap" style={{ animation: "tsmarquee 50s linear infinite" }}>
-          {Array.from({ length: 6 }).map((_, i) => (
-            <span key={i} className="flex items-center gap-6 px-6 font-display text-sm italic text-caramel md:text-base">
-              Stone · Walnut · Lime · Brass · Linen · Terracotta · Earth · Light · Craft
-              <span className="text-caramel/50">✦</span>
-            </span>
-          ))}
+      <div className="sticky top-0 flex h-screen w-full items-center justify-center overflow-hidden">
+        {/* Subtle architectural grid in the background */}
+        <div className="pointer-events-none absolute inset-0 opacity-[0.05]">
+          <div
+            className="h-full w-full"
+            style={{
+              backgroundImage:
+                "linear-gradient(var(--espresso) 1px, transparent 1px), linear-gradient(90deg, var(--espresso) 1px, transparent 1px)",
+              backgroundSize: "80px 80px",
+            }}
+          />
         </div>
-      </div>
 
-      <div className="relative mx-auto grid max-w-[1600px] gap-12 px-6 py-12 md:grid-cols-12 md:px-10 md:py-24">
-        <div className="md:col-span-8">
-          <p className="label mb-8 inline-flex items-center gap-3">
-            <span className="h-px w-10 bg-caramel" />
-            Architecture · Interiors · Since {studio.founded}
+        {/* The expanding feature image */}
+        <div
+          className="relative overflow-hidden shadow-2xl transition-[width,height,border-radius] duration-200 ease-out"
+          style={{
+            width: `${frameWidth}vw`,
+            height: `${frameHeight}vh`,
+            borderRadius: `${radius}px`,
+          }}
+        >
+          <img
+            src={heroFeature}
+            alt="Terra Space Studio — a residence at golden hour"
+            className="h-full w-full object-cover"
+          />
+          <div
+            className="absolute inset-0 bg-gradient-to-b from-ink/30 via-ink/10 to-ink/70"
+            style={{ opacity: overlayOpacity }}
+          />
+        </div>
+
+        {/* Three-sided word labels — Architecture · Interior · Planning */}
+        <span
+          className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 -rotate-90 origin-center font-display text-xl font-light tracking-[0.5em] text-espresso md:left-8 md:text-3xl"
+          style={{ opacity: 1 - expand * 0.7 }}
+        >
+          ARCHITECTURE
+        </span>
+        <span
+          className="pointer-events-none absolute left-1/2 top-28 -translate-x-1/2 font-display text-xl font-light tracking-[0.5em] text-espresso md:top-32 md:text-3xl"
+          style={{ opacity: 1 - expand * 0.7 }}
+        >
+          INTERIOR
+        </span>
+        <span
+          className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 rotate-90 origin-center font-display text-xl font-light tracking-[0.5em] text-espresso md:right-8 md:text-3xl"
+          style={{ opacity: 1 - expand * 0.7 }}
+        >
+          PLANNING
+        </span>
+
+        {/* Headline + intro overlay (fades in as image expands) */}
+        <div
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-10 mx-auto max-w-[1600px] px-6 pb-16 md:px-10 md:pb-24"
+          style={{ opacity: expand }}
+        >
+          <p className="label mb-4 inline-flex items-center gap-3 text-gold-lt">
+            <span className="h-px w-10 bg-gold/70" />
+            Architecture · Interiors · Planning
           </p>
-
-          <h1 className="display text-[clamp(3rem,9vw,9.5rem)] text-espresso text-balance">
+          <h1 className="display text-[clamp(2.5rem,7vw,7rem)] text-cream text-balance">
             Spaces that
             <br />
-            <em className="font-light italic text-caramel">remember</em> you.
+            <em className="font-light italic text-gold-lt">remember</em> you.
           </h1>
-
-          <p className="mt-10 max-w-xl text-lg leading-relaxed text-brown text-pretty">
-            We are <strong className="font-normal text-espresso">{studio.name}</strong> — a
+          <p className="mt-6 max-w-xl text-base leading-relaxed text-cream/85 md:text-lg">
+            We are <strong className="font-normal text-cream">{studio.name}</strong> — a
             residential architecture and interior design practice based in {studio.city}.
-            We build slowly, with stone, wood, and the kind of light you forget to photograph.
           </p>
-
-          <div className="mt-10 flex flex-wrap items-center gap-6">
-            <a
-              href="#walkthrough"
-              className="label group inline-flex items-center gap-3 bg-espresso px-6 py-4 text-cream"
-            >
-              Walk Through a Home
-              <span className="transition-transform group-hover:translate-x-1">→</span>
-            </a>
-            <a href="#work" className="label inline-flex items-center gap-3 text-espresso underline-offset-4 hover:underline">
-              See the Work
-            </a>
-          </div>
-        </div>
-
-        <div className="hidden md:col-span-4 md:flex md:flex-col md:items-end md:justify-end">
-          <div className="text-right">
-            <p className="label mb-4">Selected Numbers</p>
-            <dl className="space-y-3">
-              {studio.stats.map((s) => (
-                <div key={s.label} className="flex items-baseline justify-end gap-3">
-                  <dd className="font-display text-3xl font-light text-espresso">{s.value}</dd>
-                  <dt className="label">{s.label}</dt>
-                </div>
-              ))}
-            </dl>
-          </div>
         </div>
       </div>
-
-      <ScrollHint />
-
-      <style>{`
-        @keyframes tsmarquee {
-          from { transform: translateX(0); }
-          to   { transform: translateX(-50%); }
-        }
-      `}</style>
     </section>
-  );
-}
-
-function ScrollHint() {
-  return (
-    <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3">
-      <span className="label">Scroll</span>
-      <span className="block h-12 w-px overflow-hidden bg-sand">
-        <span
-          className="block h-1/2 w-full bg-espresso"
-          style={{ animation: "scrollLine 2s ease-in-out infinite" }}
-        />
-      </span>
-      <style>{`
-        @keyframes scrollLine {
-          0%   { transform: translateY(-100%); }
-          100% { transform: translateY(200%); }
-        }
-      `}</style>
-    </div>
   );
 }
 

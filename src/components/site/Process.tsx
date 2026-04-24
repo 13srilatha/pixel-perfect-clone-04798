@@ -9,7 +9,7 @@ export function Process() {
         <Reveal className="mb-14 max-w-3xl">
           <p className="label mb-4 inline-flex items-center gap-3">
             <span className="h-px w-10 bg-caramel" />
-            Before · After
+            Before to After
           </p>
           <h2 className="display text-[clamp(2.5rem,6vw,5rem)] text-espresso">
             Drawings become <em className="italic text-caramel">rooms</em>.
@@ -68,9 +68,8 @@ function BeforeAfter({ pair }: { pair: (typeof processPairs)[number] }) {
         />
       </div>
 
-      <div className="mt-5 flex flex-col gap-2 md:flex-row md:items-baseline md:justify-between">
+      <div className="mt-5">
         <h3 className="font-display text-2xl font-light text-espresso md:text-3xl">{pair.title}</h3>
-        <p className="max-w-xl text-base leading-relaxed text-brown text-pretty">{pair.caption}</p>
       </div>
     </div>
   );

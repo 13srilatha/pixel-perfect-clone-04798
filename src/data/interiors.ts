@@ -16,13 +16,13 @@ export interface Interior {
 }
 
 export const interiors: Interior[] = [
-  { id: "wood-arch-niche", title: "Walnut Arch Niche", room: "Living · Display", location: "Chandigarh, India", image: i1, description: "Backlit walnut arches frame a sculptural display niche — soft glow, mirrored insets, hand-finished veneer." },
-  { id: "fluted-partition", title: "Fluted Walnut Partition", room: "Foyer · Divider", location: "Mohali, India", image: i3, description: "A floor-to-ceiling fluted screen separates foyer and living without closing the space." },
-  { id: "reeded-glass-screen", title: "Reeded Glass Screen", room: "Living · Pooja", location: "Punjab, India", image: i4, description: "Reeded glass and arched openings shape a quiet pooja vignette behind the lounge." },
-  { id: "lit-display-spine", title: "Lit Display Spine", room: "Living · Niche", location: "Punjab, India", image: i5, description: "Coloured pin-spots illuminate a curated spine of family heirlooms." },
-  { id: "wardrobe-system", title: "Glossy Wardrobe System", room: "Bedroom · Storage", location: "Chandigarh, India", image: i6, description: "High-gloss lacquer and matte oak in a built-in wardrobe — soft-close, brassless pulls." },
-  { id: "fluted-glass-bar", title: "Fluted Glass Bar Cabinet", room: "Dining · Bar", location: "Chandigarh, India", image: i7, description: "A four-door bar cabinet in fluted glass and dark steel, internally lit." },
-  { id: "media-wall", title: "Forest Media Wall", room: "Living · Media", location: "Punjab, India", image: i2, description: "Deep-green panelled media wall with linear oak ceiling and asymmetric oak shelving." },
+  { id: "wood-arch-niche", title: "Walnut Arch Niche", room: "Living · Display", location: "Hyderabad, India", image: i1, description: "Backlit walnut arches frame a sculptural display niche — soft glow, mirrored insets, hand-finished veneer." },
+  { id: "fluted-partition", title: "Fluted Walnut Partition", room: "Foyer · Divider", location: "Hyderabad, India", image: i3, description: "A floor-to-ceiling fluted screen separates foyer and living without closing the space." },
+  { id: "reeded-glass-screen", title: "Reeded Glass Screen", room: "Living · Pooja", location: "Hyderabad, India", image: i4, description: "Reeded glass and arched openings shape a quiet pooja vignette behind the lounge." },
+  { id: "lit-display-spine", title: "Lit Display Spine", room: "Living · Niche", location: "Hyderabad, India", image: i5, description: "Coloured pin-spots illuminate a curated spine of family heirlooms." },
+  { id: "wardrobe-system", title: "Glossy Wardrobe System", room: "Bedroom · Storage", location: "Hyderabad, India", image: i6, description: "High-gloss lacquer and matte oak in a built-in wardrobe — soft-close, brassless pulls." },
+  { id: "fluted-glass-bar", title: "Fluted Glass Bar Cabinet", room: "Dining · Bar", location: "Hyderabad, India", image: i7, description: "A four-door bar cabinet in fluted glass and dark steel, internally lit." },
+  { id: "media-wall", title: "Forest Media Wall", room: "Living · Media", location: "Hyderabad, India", image: i2, description: "Deep-green panelled media wall with linear oak ceiling and asymmetric oak shelving." },
 ];
 
 import beforeMedia from "@/assets/process/before-media.jpeg";
