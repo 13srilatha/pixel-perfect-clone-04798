@@ -43,19 +43,14 @@ export function Work() {
       <section id="work" className="relative bg-cream">
         {/* Header + featured in-progress card */}
         <div className="mx-auto max-w-[1600px] px-6 pt-24 pb-16 md:px-10 md:pt-36">
-          <Reveal className="mb-12 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-            <div>
-              <p className="label mb-4 inline-flex items-center gap-3">
-                <span className="h-px w-10 bg-caramel" />
-                Selected Work
-              </p>
-              <h2 className="display max-w-2xl text-[clamp(2.5rem,6vw,5rem)] text-espresso">
-                Houses that hold <em className="italic text-caramel">memory</em>.
-              </h2>
-            </div>
-            <p className="max-w-md text-base leading-relaxed text-brown text-pretty">
-              Scroll horizontally through every category. Tap a panel to open the gallery — hover any image to read the materials and the why.
+          <Reveal className="mb-12">
+            <p className="label mb-4 inline-flex items-center gap-3">
+              <span className="h-px w-10 bg-caramel" />
+              Work
             </p>
+            <h2 className="display max-w-2xl text-[clamp(2.5rem,6vw,5rem)] text-espresso">
+              Houses that hold <em className="italic text-caramel">memory</em>.
+            </h2>
           </Reveal>
 
           {inProgress && <FeaturedInProgress project={inProgress} />}
@@ -63,8 +58,6 @@ export function Work() {
 
         {/* Horizontal sticky-scroll category panels */}
         <HorizontalCategories onOpen={setOpenCategory} />
-
-        <Studio />
       </section>
 
       <AnimatePresence>
