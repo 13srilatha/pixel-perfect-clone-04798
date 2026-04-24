@@ -50,21 +50,25 @@ export function BackToTop() {
         </button>
       </div>
 
-      {showCredit && (
-        <div className="fixed bottom-3 left-3 z-50 max-w-[260px] md:bottom-4 md:left-5 md:max-w-[320px]">
-          <p className="font-display text-[10px] italic leading-snug text-cream/65 md:text-[11px]">
-            Portfolio designed & managed by{" "}
-            <span className="not-italic text-gold-lt">Srilatha</span>
-            {" — "}
-            <a
-              href="mailto:imsrilathaa@gmail.com"
-              className="underline-offset-2 hover:underline"
-            >
-              imsrilathaa@gmail.com
-            </a>
-          </p>
-        </div>
-      )}
+      {/* Credit — appears when contact section is in view, readable on every device.
+          Sits at bottom-left of the viewport, well clear of the back-to-top button. */}
+      <div
+        className={`fixed bottom-2 left-2 z-50 max-w-[calc(100vw-90px)] transition-opacity duration-500 sm:bottom-3 sm:left-3 sm:max-w-[280px] md:bottom-4 md:left-5 md:max-w-[340px] ${
+          showCredit ? "opacity-100" : "pointer-events-none opacity-0"
+        }`}
+      >
+        <p className="rounded-md bg-ink/55 px-2.5 py-1.5 font-display text-[10px] italic leading-snug text-cream/90 backdrop-blur-sm sm:text-[11px] md:text-xs">
+          Designed &amp; managed by{" "}
+          <span className="not-italic text-gold-lt">Srilatha</span>
+          {" — "}
+          <a
+            href="mailto:imsrilathaa@gmail.com"
+            className="break-all underline-offset-2 hover:underline"
+          >
+            imsrilathaa@gmail.com
+          </a>
+        </p>
+      </div>
     </>
   );
 }

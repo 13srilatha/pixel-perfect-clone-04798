@@ -27,49 +27,49 @@ const TESTIMONIALS: Testimonial[][] = [
       name: "Charry",
       city: "Hyderabad",
       quote:
-        "Vaasanthi garu didn't design a house — she designed where my mother makes filter coffee on Sunday mornings. That's the only review I can give.",
+        "We were clear about the budget from day one and the team respected it. The drawings were detailed and we knew what to expect at every stage.",
     },
     {
       name: "Pranay & Divya",
       city: "Hyderabad",
       quote:
-        "We told her we wanted 'a quiet house'. She gave us a home where even the doorbell sounds gentle.",
+        "Good communication throughout the project. They listened to small things — like where we wanted plug points — and remembered them in the final layout.",
     },
   ],
   // Column 2 (centre)
   [
     {
       name: "Muthyam",
-      city: "Chandigarh",
+      city: "Hyderabad",
       quote:
-        "She walked our plot for two hours before drawing a single line. That patience is now in every wall of our home.",
+        "They visited our site multiple times before finalising the plan. The orientation of the rooms turned out exactly as discussed.",
     },
     {
-      name: "Lakshmi Aunty",
-      city: "Mohali",
+      name: "Lakshmi",
+      city: "Hyderabad",
       quote:
-        "I asked for a pooja room. She gave me a corner of light. My grandchildren now sit there to study.",
+        "The pooja room and kitchen layout came out well. Storage was planned thoughtfully — we didn't have to add anything later.",
     },
     {
       name: "Ravi Tej",
       city: "Hyderabad",
       quote:
-        "Every contractor I had worked with rushed me. Terra Space Studio waited with me. The house feels the difference.",
+        "Timelines were realistic, not exaggerated. When small delays happened on site, they kept us informed instead of going quiet.",
     },
   ],
   // Column 3
   [
     {
       name: "Ananya",
-      city: "Punjab",
-      quote:
-        "I cried the first morning I had chai in my new kitchen. The light fell exactly where she said it would.",
-    },
-    {
-      name: "Krishna & Family",
       city: "Hyderabad",
       quote:
-        "She didn't build us a 'modern home'. She built us our amma's old verandah, with new bones. Bless her.",
+        "We renovated our 2BHK with them. The before-after difference is genuine, and the work was clean — no surprises in the final bill.",
+    },
+    {
+      name: "Krishna",
+      city: "Hyderabad",
+      quote:
+        "Liked that they explained material choices instead of just picking for us. We understood why each thing was used in our home.",
     },
   ],
 ];
@@ -84,10 +84,10 @@ export function Testimonials() {
             <span className="text-gold">Happiness Speaks</span>
           </p>
           <h2 className="display text-[clamp(2.5rem,6vw,5rem)] text-cream">
-            What our families <em className="italic text-gold-lt">whisper</em> back.
+            What our clients <em className="italic text-gold-lt">say</em>.
           </h2>
-          <p className="mt-6 text-lg leading-relaxed text-cream/75">
-            The homes we build are kind enough to send their love back to us. Here is some of it.
+          <p className="mt-6 text-base leading-relaxed text-cream/75 md:text-lg">
+            Honest feedback from the families and owners we have worked with.
           </p>
         </Reveal>
 
@@ -154,14 +154,19 @@ function TestimonialCard({ t }: { t: Testimonial }) {
   return (
     <motion.div
       ref={ref}
+      initial={{ opacity: 0, y: 40, scale: 0.96 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, amount: 0.25 }}
+      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
       style={{ rotateX, opacity, transformPerspective: 1000 }}
+      whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
       className="relative overflow-hidden rounded-2xl border border-cream/15 bg-cream/[0.06] p-6 backdrop-blur-md md:p-8"
     >
       {/* Bubble-glass highlight */}
       <span className="pointer-events-none absolute -left-10 -top-10 h-32 w-32 rounded-full bg-gold/15 blur-2xl" />
       <span className="pointer-events-none absolute -right-12 -bottom-12 h-40 w-40 rounded-full bg-cream/10 blur-3xl" />
 
-      <p className="font-display text-lg italic leading-relaxed text-cream md:text-xl">
+      <p className="font-display text-base italic leading-relaxed text-cream md:text-lg">
         "{t.quote}"
       </p>
       <div className="mt-5 flex items-center gap-3 border-t border-cream/15 pt-4">
