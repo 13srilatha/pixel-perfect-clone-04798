@@ -237,23 +237,6 @@ export function Hero() {
 
 function _ScrollHintUnused() {
   return (
-    <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3">
-      <span className="label">Scroll</span>
-      <span className="block h-12 w-px overflow-hidden bg-sand">
-        <span
-          className="block h-1/2 w-full bg-espresso"
-          style={{ animation: "scrollLine 2s ease-in-out infinite" }}
-        />
-      </span>
-      <style>{`
-        @keyframes scrollLine {
-          0%   { transform: translateY(-100%); }
-          100% { transform: translateY(200%); }
-        }
-      `}</style>
-    </div>
-  );
-}
 
 export function Reveal({
   children,
