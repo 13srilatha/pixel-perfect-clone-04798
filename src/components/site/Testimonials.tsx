@@ -27,49 +27,49 @@ const TESTIMONIALS: Testimonial[][] = [
       name: "Charry",
       city: "Hyderabad",
       quote:
-        "Vaasanthi garu didn't design a house — she designed where my mother makes filter coffee on Sunday mornings. That's the only review I can give.",
+        "We were clear about the budget from day one and the team respected it. The drawings were detailed and we knew what to expect at every stage.",
     },
     {
       name: "Pranay & Divya",
       city: "Hyderabad",
       quote:
-        "We told her we wanted 'a quiet house'. She gave us a home where even the doorbell sounds gentle.",
+        "Good communication throughout the project. They listened to small things — like where we wanted plug points — and remembered them in the final layout.",
     },
   ],
   // Column 2 (centre)
   [
     {
       name: "Muthyam",
-      city: "Chandigarh",
+      city: "Hyderabad",
       quote:
-        "She walked our plot for two hours before drawing a single line. That patience is now in every wall of our home.",
+        "They visited our site multiple times before finalising the plan. The orientation of the rooms turned out exactly as discussed.",
     },
     {
-      name: "Lakshmi Aunty",
-      city: "Mohali",
+      name: "Lakshmi",
+      city: "Hyderabad",
       quote:
-        "I asked for a pooja room. She gave me a corner of light. My grandchildren now sit there to study.",
+        "The pooja room and kitchen layout came out well. Storage was planned thoughtfully — we didn't have to add anything later.",
     },
     {
       name: "Ravi Tej",
       city: "Hyderabad",
       quote:
-        "Every contractor I had worked with rushed me. Terra Space Studio waited with me. The house feels the difference.",
+        "Timelines were realistic, not exaggerated. When small delays happened on site, they kept us informed instead of going quiet.",
     },
   ],
   // Column 3
   [
     {
       name: "Ananya",
-      city: "Punjab",
-      quote:
-        "I cried the first morning I had chai in my new kitchen. The light fell exactly where she said it would.",
-    },
-    {
-      name: "Krishna & Family",
       city: "Hyderabad",
       quote:
-        "She didn't build us a 'modern home'. She built us our amma's old verandah, with new bones. Bless her.",
+        "We renovated our 2BHK with them. The before-after difference is genuine, and the work was clean — no surprises in the final bill.",
+    },
+    {
+      name: "Krishna",
+      city: "Hyderabad",
+      quote:
+        "Liked that they explained material choices instead of just picking for us. We understood why each thing was used in our home.",
     },
   ],
 ];
