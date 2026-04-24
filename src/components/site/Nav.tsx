@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { studio } from "@/data/projects";
 import { Logo } from "./Logo";
+import heroFeature from "@/assets/hero-feature.jpg";
 
 export function Nav() {
   const [scrolled, setScrolled] = useState(false);
@@ -121,8 +122,6 @@ function MobileMenu({ links }: { links: { href: string; label: string }[] }) {
     </>
   );
 }
-
-import heroFeature from "@/assets/hero-feature.jpg";
 
 export function Hero() {
   const ref = useRef<HTMLDivElement>(null);
