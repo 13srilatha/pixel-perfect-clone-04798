@@ -36,7 +36,7 @@ export const projects: Project[] = [
   {
     id: "munny-residence",
     title: "Munny Residence",
-    location: "Chandigarh, India",
+    location: "Hyderabad, India",
     year: "2025",
     category: "Residential",
     status: "in-progress",
@@ -51,7 +51,7 @@ export const projects: Project[] = [
   {
     id: "tree-of-life-villa",
     title: "Tree of Life Villa",
-    location: "Chandigarh, India",
+    location: "Hyderabad, India",
     year: "2025",
     category: "Residential",
     status: "completed",
@@ -65,7 +65,7 @@ export const projects: Project[] = [
   {
     id: "tree-of-life-villa-alt",
     title: "Tree of Life Villa · Side View",
-    location: "Chandigarh, India",
+    location: "Hyderabad, India",
     year: "2025",
     category: "Residential",
     status: "completed",
@@ -79,7 +79,7 @@ export const projects: Project[] = [
   {
     id: "curved-residence",
     title: "Curved Residence",
-    location: "Mohali, India",
+    location: "Hyderabad, India",
     year: "2024",
     category: "Residential",
     status: "completed",
@@ -93,7 +93,7 @@ export const projects: Project[] = [
   {
     id: "vertical-fin-house",
     title: "Vertical Fin House",
-    location: "Punjab, India",
+    location: "Hyderabad, India",
     year: "2024",
     category: "Residential",
     status: "completed",
@@ -107,7 +107,7 @@ export const projects: Project[] = [
   {
     id: "twilight-house",
     title: "Twilight House",
-    location: "Punjab, India",
+    location: "Hyderabad, India",
     year: "2024",
     category: "Residential",
     status: "completed",
@@ -121,7 +121,7 @@ export const projects: Project[] = [
   {
     id: "stair-light-residence",
     title: "Stair-Light Residence",
-    location: "Punjab, India",
+    location: "Hyderabad, India",
     year: "2023",
     category: "Residential",
     status: "completed",
