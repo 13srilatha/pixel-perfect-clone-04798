@@ -75,24 +75,50 @@ export function Work() {
 /* ─────────────────────────────────────────────────────────────────────── */
 
 function FeaturedInProgress({ project }: { project: Project }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"],
+  });
+  const imgY = useTransform(scrollYProgress, [0, 1], ["-8%", "8%"]);
+  const imgScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.08, 1, 1.08]);
+  const chipY = useTransform(scrollYProgress, [0, 1], [0, -30]);
+
   return (
     <Reveal>
-      <article className="grid gap-8 overflow-hidden border border-sand bg-cream/40 p-6 md:grid-cols-12 md:p-10">
+      <motion.article
+        ref={ref}
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.3 }}
+        transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+        className="grid gap-8 overflow-hidden border border-sand bg-cream/40 p-6 md:grid-cols-12 md:p-10"
+      >
         <div className="relative md:col-span-7">
           <div className="relative aspect-[4/3] w-full overflow-hidden bg-sand">
-            <img
+            <motion.img
               src={project.image}
               alt={project.title}
               loading="lazy"
-              className="h-full w-full object-cover"
+              style={{ y: imgY, scale: imgScale }}
+              className="h-full w-full object-cover will-change-transform"
             />
-            <span className="label absolute left-4 top-4 z-10 bg-gold px-2 py-1 text-ink">
+            <motion.span
+              style={{ y: chipY }}
+              className="label absolute left-4 top-4 z-10 bg-gold px-2 py-1 text-ink"
+            >
               In Progress
-            </span>
+            </motion.span>
           </div>
         </div>
 
-        <div className="flex flex-col justify-between md:col-span-5">
+        <motion.div
+          initial={{ opacity: 0, x: 30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+          className="flex flex-col justify-between md:col-span-5"
+        >
           <div>
             <p className="label text-caramel">{project.category}</p>
             <h3 className="mt-3 font-display text-3xl font-light text-espresso md:text-5xl">{project.title}</h3>
@@ -104,14 +130,23 @@ function FeaturedInProgress({ project }: { project: Project }) {
             <dl className="mt-6 border-t border-sand pt-5">
               <dt className="label mb-3 text-caramel">In the making with</dt>
               <dd className="flex flex-wrap gap-x-3 gap-y-2 font-display text-base font-light text-espresso">
-                {project.materials.map((m) => (
-                  <span key={m} className="border border-sand px-3 py-1">{m}</span>
+                {project.materials.map((m, i) => (
+                  <motion.span
+                    key={m}
+                    initial={{ opacity: 0, y: 12 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: 0.3 + i * 0.06 }}
+                    className="border border-sand px-3 py-1"
+                  >
+                    {m}
+                  </motion.span>
                 ))}
               </dd>
             </dl>
           )}
-        </div>
-      </article>
+        </motion.div>
+      </motion.article>
     </Reveal>
   );
 }
