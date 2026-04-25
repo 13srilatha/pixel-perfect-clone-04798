@@ -67,6 +67,7 @@ function RootShell({ children }: { children: ReactNode }) {
         {children}
         <Scripts />
       </body>
+      <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "0c628750a5104898a364de9e42f42ea9"}'></script><!-- End Cloudflare Web Analytics -->
     </html>
   );
 }
