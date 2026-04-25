@@ -72,9 +72,6 @@ function RootShell({ children }: { children: ReactNode }) {
           data-cf-beacon='{"token": "0c628750a5104898a364de9e42f42ea9"}'
         />
       </body>
-      <Scripts />
-      </body>
-    
     </html>
   );
 }
