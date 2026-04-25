@@ -1,7 +1,23 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-
+import { useEffect } from "react";
 import appCss from "../styles.css?url";
+
+function CloudflareAnalytics() {
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://static.cloudflareinsights.com/beacon.min.js";
+    script.defer = true;
+    script.setAttribute("data-cf-beacon", JSON.stringify({ token: "0c628750a5104898a364de9e42f42ea9" }));
+    document.body.appendChild(script);
+    return () => {
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
+    };
+  }, []);
+  return null;
+}
 
 function NotFoundComponent() {
   return (
@@ -29,16 +45,9 @@ export const Route = createRootRoute({
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Terra Space Studio — Architecture & Interior Design" },
-      {
-        name: "description",
-        content:
-          "Terra Space Studio designs residential architecture and interiors rooted in earth, light, and craft. Step inside our work.",
-      },
+      { name: "description", content: "Terra Space Studio designs residential architecture and interiors rooted in earth, light, and craft." },
       { property: "og:title", content: "Terra Space Studio — Architecture & Interior Design" },
-      {
-        property: "og:description",
-        content: "Residential architecture and interior design. Walk through our spaces — from façade to foyer.",
-      },
+      { property: "og:description", content: "Residential architecture and interior design. Walk through our spaces — from façade to foyer." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -46,10 +55,7 @@ export const Route = createRootRoute({
       { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Cormorant:wght@300;400;500;600;700&family=Tenor+Sans&family=Didact+Gothic&display=swap",
-      },
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Cormorant:wght@300;400;500;600;700&family=Tenor+Sans&family=Didact+Gothic&display=swap" },
     ],
   }),
   shellComponent: RootShell,
@@ -65,12 +71,8 @@ function RootShell({ children }: { children: ReactNode }) {
       </head>
       <body>
         {children}
+        <CloudflareAnalytics />
         <Scripts />
-        <script
-          defer
-          src="https://static.cloudflareinsights.com/beacon.min.js"
-          data-cf-beacon='{"token": "0c628750a5104898a364de9e42f42ea9"}'
-        />
       </body>
     </html>
   );
