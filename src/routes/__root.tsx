@@ -57,6 +57,24 @@ export const Route = createRootRoute({
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Cormorant:wght@300;400;500;600;700&family=Tenor+Sans&family=Didact+Gothic&display=swap" },
     ],
+    scripts: [
+      // Microsoft Clarity
+      {
+        children: `(function(c,l,a,r,i,t,y){
+          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "whr984219g");`
+      },
+      // Google Analytics 4
+      { src: "https://www.googletagmanager.com/gtag/js?id=G-LHE11QCH96", async: true },
+      {
+        children: `window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-LHE11QCH96');`
+      }
+    ]
   }),
   shellComponent: RootShell,
   component: RootComponent,
