@@ -13,6 +13,10 @@ const CATEGORY_BLURB: Record<ProjectCategory, string> = {
 };
 
 import { interiors } from "@/data/interiors";
+import frame01 from "@/assets/rotation/frame-01.jpg";
+import frame03 from "@/assets/rotation/frame-03.jpg";
+import frame05 from "@/assets/rotation/frame-05.jpg";
+import frame07 from "@/assets/rotation/frame-07.jpg";
 
 /**
  * Convert interiors data into Project shape so they live inside the
@@ -75,79 +79,138 @@ export function Work() {
 /* ─────────────────────────────────────────────────────────────────────── */
 
 function FeaturedInProgress({ project }: { project: Project }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
-  const imgY = useTransform(scrollYProgress, [0, 1], ["-8%", "8%"]);
-  const imgScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.08, 1, 1.08]);
-  const chipY = useTransform(scrollYProgress, [0, 1], [0, -30]);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end end"] });
+  const phase1 = useTransform(scrollYProgress, [0, 0.4], [0, 1]);
+  const phase2 = useTransform(scrollYProgress, [0.4, 0.75], [0, 1]);
+  const phase3 = useTransform(scrollYProgress, [0.75, 1], [0, 1]);
+  const progressWidth = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
+  const labelOpacity = useTransform(phase2, [0.3, 1], [0, 1]);
+  const lineOpacity = phase2;
+  const pieceOpacity = useTransform(phase1, [0, 0.1], [0, 1]);
+  const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
+  const pieces = [
+    { label: "01 · RENDER", img: project.image, width: 340, height: 255, explodeToX: 0, explodeToY: 0, finalX: -180, finalY: -140, zIndex: 2 },
+    { label: "02 · SKETCHUP", img: frame01, width: 220, height: 165, explodeToX: -300, explodeToY: -200, finalX: 180, finalY: -140, zIndex: 1 },
+    { label: "03 · PLAN", img: frame03, width: 220, height: 165, explodeToX: 320, explodeToY: -180, finalX: -180, finalY: 140, zIndex: 1 },
+    { label: "04 · AUTOCAD", img: frame05, width: 220, height: 165, explodeToX: -280, explodeToY: 220, finalX: 180, finalY: 140, zIndex: 1 },
+    { label: "05 · PALETTE", img: frame07, width: 160, height: 120, explodeToX: 260, explodeToY: 230, finalX: 0, finalY: 270, zIndex: 1 },
+  ] as const;
 
   return (
     <Reveal>
-      <motion.article
-        ref={ref}
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.3 }}
-        transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-        className="grid gap-8 overflow-hidden border border-sand bg-cream/40 p-6 md:grid-cols-12 md:p-10"
-      >
-        <div className="relative md:col-span-7">
-          <div className="relative aspect-[4/3] w-full overflow-hidden bg-sand">
-            <motion.img
-              src={project.image}
-              alt={project.title}
-              loading="lazy"
-              style={{ y: imgY, scale: imgScale }}
-              className="h-full w-full object-cover will-change-transform"
-            />
-            <motion.span
-              style={{ y: chipY }}
-              className="label absolute left-4 top-4 z-10 bg-gold px-2 py-1 text-ink"
+      <div ref={containerRef} style={{ height: "500vh" }}>
+        <div className="sticky top-0 h-screen overflow-hidden bg-cream">
+          <div className="absolute left-8 top-8 z-20">
+            <span className="label text-caramel">IN PROGRESS · BEHIND THE DESIGN</span>
+          </div>
+
+          <div className="relative flex h-full items-center justify-center">
+            <motion.svg
+              className="pointer-events-none absolute inset-0 h-full w-full"
+              viewBox="0 0 100 100"
+              preserveAspectRatio="none"
+              style={{ opacity: lineOpacity }}
             >
-              In Progress
-            </motion.span>
+              <line x1="50" y1="50" x2="30" y2="30" stroke="#c8a97e" strokeWidth="0.5" strokeDasharray="4 4" />
+              <line x1="50" y1="50" x2="70" y2="30" stroke="#c8a97e" strokeWidth="0.5" strokeDasharray="4 4" />
+              <line x1="50" y1="50" x2="30" y2="70" stroke="#c8a97e" strokeWidth="0.5" strokeDasharray="4 4" />
+              <line x1="50" y1="50" x2="70" y2="70" stroke="#c8a97e" strokeWidth="0.5" strokeDasharray="4 4" />
+            </motion.svg>
+
+            {pieces.map((piece, i) => (
+              <ExplodedPiece
+                key={piece.label}
+                piece={piece}
+                phase1={phase1}
+                phase3={phase3}
+                pieceOpacity={pieceOpacity}
+                lerp={lerp}
+                altPrefix={project.title}
+                isHero={i === 0}
+              />
+            ))}
+          </div>
+
+          <motion.div className="absolute bottom-[10%] left-8 z-20 max-w-[480px]" style={{ opacity: labelOpacity }}>
+            <h3 className="font-display text-4xl font-light text-espresso md:text-5xl">{project.title}</h3>
+            <p className="label mt-2 normal-case tracking-normal text-brown">{project.location}</p>
+            <p className="mt-4 text-base leading-relaxed text-brown text-pretty">{project.description}</p>
+            {project.materials && project.materials.length > 0 && (
+              <dl className="mt-5">
+                <dt className="label mb-2 text-caramel">In the making with</dt>
+                <dd className="flex flex-wrap gap-2 font-display text-base font-light text-espresso">
+                  {project.materials.map((material) => (
+                    <span key={material} className="border border-sand px-3 py-1">
+                      {material}
+                    </span>
+                  ))}
+                </dd>
+              </dl>
+            )}
+          </motion.div>
+
+          <div className="absolute inset-x-0 bottom-0 h-[2px] bg-sand">
+            <motion.span className="block h-full bg-espresso" style={{ width: progressWidth }} />
           </div>
         </div>
-
-        <motion.div
-          initial={{ opacity: 0, x: 30 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-          className="flex flex-col justify-between md:col-span-5"
-        >
-          <div>
-            <p className="label text-caramel">{project.category}</p>
-            <h3 className="mt-3 font-display text-3xl font-light text-espresso md:text-5xl">{project.title}</h3>
-            <p className="label mt-2 normal-case tracking-normal text-brown">{project.location}</p>
-            <p className="mt-6 text-base leading-relaxed text-brown text-pretty">{project.description}</p>
-          </div>
-
-          {project.materials && project.materials.length > 0 && (
-            <dl className="mt-6 border-t border-sand pt-5">
-              <dt className="label mb-3 text-caramel">In the making with</dt>
-              <dd className="flex flex-wrap gap-x-3 gap-y-2 font-display text-base font-light text-espresso">
-                {project.materials.map((m, i) => (
-                  <motion.span
-                    key={m}
-                    initial={{ opacity: 0, y: 12 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: 0.3 + i * 0.06 }}
-                    className="border border-sand px-3 py-1"
-                  >
-                    {m}
-                  </motion.span>
-                ))}
-              </dd>
-            </dl>
-          )}
-        </motion.div>
-      </motion.article>
+      </div>
     </Reveal>
+  );
+}
+
+function ExplodedPiece({
+  piece,
+  phase1,
+  phase3,
+  pieceOpacity,
+  lerp,
+  altPrefix,
+  isHero,
+}: {
+  piece: {
+    label: string;
+    img: string;
+    width: number;
+    height: number;
+    explodeToX: number;
+    explodeToY: number;
+    finalX: number;
+    finalY: number;
+    zIndex: number;
+  };
+  phase1: ReturnType<typeof useTransform>;
+  phase3: ReturnType<typeof useTransform>;
+  pieceOpacity: ReturnType<typeof useTransform>;
+  lerp: (a: number, b: number, t: number) => number;
+  altPrefix: string;
+  isHero: boolean;
+}) {
+  const x = useTransform([phase1, phase3], ([p1, p3]) => {
+    if (p3 > 0) return lerp(piece.explodeToX, piece.finalX, p3);
+    return lerp(0, piece.explodeToX, p1);
+  });
+  const y = useTransform([phase1, phase3], ([p1, p3]) => {
+    if (p3 > 0) return lerp(piece.explodeToY, piece.finalY, p3);
+    return lerp(0, piece.explodeToY, p1);
+  });
+  const scale = isHero ? useTransform(phase1, [0, 1], [0.6, 1]) : 1;
+
+  return (
+    <motion.div style={{ x, y, scale, opacity: pieceOpacity, position: "absolute", zIndex: isHero ? 2 : 1 }}>
+      <div style={{ position: "relative", width: piece.width, height: piece.height }}>
+        <img
+          src={piece.img}
+          alt={`${altPrefix} ${piece.label}`}
+          className="h-full w-full object-cover"
+          style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.18)" }}
+        />
+        <span className="label absolute -bottom-6 left-0 text-caramel" style={{ whiteSpace: "nowrap" }}>
+          {piece.label}
+        </span>
+      </div>
+    </motion.div>
   );
 }
 
