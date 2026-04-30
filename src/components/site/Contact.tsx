@@ -67,10 +67,13 @@ export function Contact() {
         </div>
 
         <footer className="mt-24 border-t border-cream/10 pt-8">
-          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-col gap-3 px-4 text-center md:flex-row md:items-center md:justify-between md:px-0 md:text-left">
             <p className="label text-cream/50">© {new Date().getFullYear()} {studio.name}. All rights reserved.</p>
             <p className="label text-cream/50">Crafted with restraint.</p>
           </div>
+          <p className="mt-5 px-4 text-center text-[10px] leading-relaxed text-cream/60 [text-wrap:balance] md:px-0 md:text-[11px]">
+            This portfolio is designed and managed by Srilatha — contact imsrilathaa@gmail.com
+          </p>
         </footer>
       </div>
     </section>

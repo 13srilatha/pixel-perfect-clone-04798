@@ -135,6 +135,27 @@
 @layer utilities {
   .text-balance { text-wrap: balance; }
   .text-pretty { text-wrap: pretty; }
+  .mask-y-fade {
+    mask-image: linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%);
+  }
+}
+
+@keyframes verticalMarquee {
+  from { transform: translateY(0); }
+  to { transform: translateY(-50%); }
+}
+
+.hero-question-marquee {
+  animation: verticalMarquee 18s linear infinite;
+}
+
+.hero-question-marquee:hover {
+  animation-play-state: paused;
+}
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateX(-24px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 .reveal {
