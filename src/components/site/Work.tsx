@@ -13,6 +13,11 @@ const CATEGORY_BLURB: Record<ProjectCategory, string> = {
 };
 
 import { interiors } from "@/data/interiors";
+import stageRender from "@/assets/projects/munny-3d.jpeg";
+import stageSketchup from "@/assets/rotation/frame-02.jpg";
+import stagePlan from "@/assets/rotation/frame-03.jpg";
+import stageAutoCad from "@/assets/rotation/frame-04.jpg";
+import stagePalette from "@/assets/rotation/frame-05.jpg";
 
 /**
  * Convert interiors data into Project shape so they live inside the
@@ -76,39 +81,57 @@ export function Work() {
 
 function FeaturedInProgress({ project }: { project: Project }) {
   const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
-  const imgY = useTransform(scrollYProgress, [0, 1], ["-8%", "8%"]);
-  const imgScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.08, 1, 1.08]);
-  const chipY = useTransform(scrollYProgress, [0, 1], [0, -30]);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
+  const stages = [
+    { label: "BEHIND THE RENDER · 01 RENDER", image: stageRender },
+    { label: "BEHIND THE RENDER · 02 SKETCHUP", image: stageSketchup },
+    { label: "BEHIND THE RENDER · 03 PLAN", image: stagePlan },
+    { label: "BEHIND THE RENDER · 04 AUTOCAD", image: stageAutoCad },
+    { label: "BEHIND THE RENDER · 05 PALETTE", image: stagePalette },
+  ] as const;
+  const stageProgress = useTransform(scrollYProgress, [0, 1], [0, stages.length - 1]);
+  const [activeStage, setActiveStage] = useState(0);
+
+  useEffect(() => {
+    const unsub = stageProgress.on("change", (v) => {
+      setActiveStage(Math.min(stages.length - 1, Math.max(0, Math.round(v))));
+    });
+    return () => unsub();
+  }, [stageProgress, stages.length]);
 
   return (
-    <Reveal>
+    <Reveal className="relative" >
+      <div ref={ref} style={{ height: "500vh" }}>
       <motion.article
-        ref={ref}
+        className="sticky top-0 grid h-screen gap-8 overflow-hidden border border-sand bg-cream/40 p-6 md:grid-cols-12 md:p-10"
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.3 }}
         transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-        className="grid gap-8 overflow-hidden border border-sand bg-cream/40 p-6 md:grid-cols-12 md:p-10"
       >
         <div className="relative md:col-span-7">
           <div className="relative aspect-[4/3] w-full overflow-hidden bg-sand">
-            <motion.img
-              src={project.image}
-              alt={project.title}
-              loading="lazy"
-              style={{ y: imgY, scale: imgScale }}
-              className="h-full w-full object-cover will-change-transform"
+            {stages.map((stage, i) => (
+              <motion.img
+                key={stage.label}
+                src={stage.image}
+                alt={`${project.title} ${stage.label}`}
+                loading="lazy"
+                animate={{ opacity: activeStage === i ? 1 : 0 }}
+                transition={{ duration: 0.45, ease: "easeInOut" }}
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            ))}
+          </div>
+          <div className="mt-3 flex items-center justify-between gap-4">
+            <span className="label bg-gold px-2 py-1 text-ink">{stages[activeStage].label}</span>
+            <span className="label text-caramel">{activeStage + 1} / {stages.length}</span>
+          </div>
+          <div className="mt-2 h-px w-full bg-sand">
+            <motion.div
+              className="h-full bg-espresso"
+              style={{ width: useTransform(scrollYProgress, [0, 1], ["0%", "100%"]) }}
             />
-            <motion.span
-              style={{ y: chipY }}
-              className="label absolute left-4 top-4 z-10 bg-gold px-2 py-1 text-ink"
-            >
-              In Progress
-            </motion.span>
           </div>
         </div>
 
@@ -147,6 +170,7 @@ function FeaturedInProgress({ project }: { project: Project }) {
           )}
         </motion.div>
       </motion.article>
+      </div>
     </Reveal>
   );
 }
