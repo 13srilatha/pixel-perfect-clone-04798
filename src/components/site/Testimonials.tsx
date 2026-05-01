@@ -5,13 +5,11 @@ import { Reveal } from "./Nav";
 import poster from "@/assets/projects/munny-3d.jpeg";
 
 /**
- * "Happiness Speaks" — testimonials section with a 3-column parallax-tilt
- * grid. Each column moves at a different scroll speed, and each card tilts
- * forward as it enters and back as it exits the viewport. Cards have a
- * frosted-glass background.
- *
- * Followed by the inline Launch Reel (kept from the previous Best Project
- * section) so the reel still has a home on the page.
+ * "Happiness Speaks" — testimonials laid out as two horizontal marquee rows
+ * that scroll in opposite directions (continuously, smoothly), inspired by
+ * the Webflow "testimonials scrolling animation". The motion never stops,
+ * pauses on hover, and the same content is duplicated to create a seamless
+ * infinite loop.
  */
 
 interface Testimonial {
@@ -20,58 +18,58 @@ interface Testimonial {
   quote: string;
 }
 
-const TESTIMONIALS: Testimonial[][] = [
-  // Column 1
-  [
-    {
-      name: "Charry",
-      city: "Hyderabad",
-      quote:
-        "We were clear about the budget from day one and the team respected it. The drawings were detailed and we knew what to expect at every stage.",
-    },
-    {
-      name: "Pranay & Divya",
-      city: "Hyderabad",
-      quote:
-        "Good communication throughout the project. They listened to small things — like where we wanted plug points — and remembered them in the final layout.",
-    },
-  ],
-  // Column 2 (centre)
-  [
-    {
-      name: "Muthyam",
-      city: "Hyderabad",
-      quote:
-        "They visited our site multiple times before finalising the plan. The orientation of the rooms turned out exactly as discussed.",
-    },
-    {
-      name: "Lakshmi",
-      city: "Hyderabad",
-      quote:
-        "The pooja room and kitchen layout came out well. Storage was planned thoughtfully — we didn't have to add anything later.",
-    },
-    {
-      name: "Ravi Tej",
-      city: "Hyderabad",
-      quote:
-        "Timelines were realistic, not exaggerated. When small delays happened on site, they kept us informed instead of going quiet.",
-    },
-  ],
-  // Column 3
-  [
-    {
-      name: "Ananya",
-      city: "Hyderabad",
-      quote:
-        "We renovated our 2BHK with them. The before-after difference is genuine, and the work was clean — no surprises in the final bill.",
-    },
-    {
-      name: "Krishna",
-      city: "Hyderabad",
-      quote:
-        "Liked that they explained material choices instead of just picking for us. We understood why each thing was used in our home.",
-    },
-  ],
+const ROW_A: Testimonial[] = [
+  {
+    name: "Charry",
+    city: "Hyderabad",
+    quote:
+      "We were clear about the budget from day one and the team respected it. The drawings were detailed and we knew what to expect at every stage.",
+  },
+  {
+    name: "Muthyam",
+    city: "Hyderabad",
+    quote:
+      "They visited our site multiple times before finalising the plan. The orientation of the rooms turned out exactly as discussed.",
+  },
+  {
+    name: "Lakshmi",
+    city: "Hyderabad",
+    quote:
+      "The pooja room and kitchen layout came out well. Storage was planned thoughtfully — we didn't have to add anything later.",
+  },
+  {
+    name: "Pranay & Divya",
+    city: "Hyderabad",
+    quote:
+      "Good communication throughout the project. They listened to small things — like where we wanted plug points — and remembered them.",
+  },
+];
+
+const ROW_B: Testimonial[] = [
+  {
+    name: "Ravi Tej",
+    city: "Hyderabad",
+    quote:
+      "Timelines were realistic, not exaggerated. When small delays happened on site, they kept us informed instead of going quiet.",
+  },
+  {
+    name: "Ananya",
+    city: "Hyderabad",
+    quote:
+      "We renovated our 2BHK with them. The before-after difference is genuine, and the work was clean — no surprises in the final bill.",
+  },
+  {
+    name: "Krishna",
+    city: "Hyderabad",
+    quote:
+      "Liked that they explained material choices instead of just picking for us. We understood why each thing was used in our home.",
+  },
+  {
+    name: "Sandeep",
+    city: "Hyderabad",
+    quote:
+      "Site visits were on schedule and the team answered every doubt patiently. It felt like our home was their home too.",
+  },
 ];
 
 export function Testimonials() {
@@ -90,8 +88,12 @@ export function Testimonials() {
             Honest feedback from the families and owners we have worked with.
           </p>
         </Reveal>
+      </div>
 
-        <ParallaxTiltGrid />
+      {/* Horizontal scrolling marquee rows — full-bleed */}
+      <div className="space-y-6 pb-24 md:space-y-8 md:pb-36">
+        <MarqueeRow items={ROW_A} duration={45} direction="left" />
+        <MarqueeRow items={ROW_B} duration={55} direction="right" />
       </div>
 
       {/* Inline Launch Reel kept on this section */}
@@ -102,67 +104,47 @@ export function Testimonials() {
 
 /* ─────────────────────────────────────────────────────────────────────── */
 
-function ParallaxTiltGrid() {
-  const speeds = [1.2, 1.0, 1.4]; // left, centre, right column scroll speeds
+function MarqueeRow({
+  items,
+  duration,
+  direction,
+}: {
+  items: Testimonial[];
+  duration: number;
+  direction: "left" | "right";
+}) {
+  // Duplicate the list so the translation can loop seamlessly from 0 → -50%.
+  const loop = [...items, ...items];
+  const from = direction === "left" ? "0%" : "-50%";
+  const to = direction === "left" ? "-50%" : "0%";
 
   return (
-    <div className="grid gap-6 md:grid-cols-3 md:gap-8">
-      {TESTIMONIALS.map((col, ci) => (
-        <ParallaxColumn key={ci} speed={speeds[ci]}>
-          {col.map((t, i) => (
-            <TestimonialCard key={`${ci}-${i}`} t={t} />
-          ))}
-        </ParallaxColumn>
-      ))}
+    <div
+      className="group relative w-full overflow-hidden"
+      style={{
+        WebkitMaskImage:
+          "linear-gradient(to right, transparent, #000 6%, #000 94%, transparent)",
+        maskImage:
+          "linear-gradient(to right, transparent, #000 6%, #000 94%, transparent)",
+      }}
+    >
+      <motion.div
+        className="flex w-max gap-6 px-6 group-hover:[animation-play-state:paused] md:gap-8"
+        animate={{ x: [from, to] }}
+        transition={{ duration, ease: "linear", repeat: Infinity }}
+      >
+        {loop.map((t, i) => (
+          <TestimonialCard key={`${direction}-${i}`} t={t} />
+        ))}
+      </motion.div>
     </div>
   );
 }
 
-function ParallaxColumn({
-  children,
-  speed,
-}: {
-  children: React.ReactNode;
-  speed: number;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
-  // Different vertical offset based on speed
-  const range = (speed - 1) * 80; // px range
-  const y = useTransform(scrollYProgress, [0, 1], [range, -range]);
-
-  return (
-    <motion.div ref={ref} style={{ y }} className="flex flex-col gap-6 md:gap-8">
-      {children}
-    </motion.div>
-  );
-}
-
 function TestimonialCard({ t }: { t: Testimonial }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
-  // Tilt forward when entering (bottom), back when exiting (top)
-  const rotateX = useTransform(scrollYProgress, [0, 0.5, 1], [12, 0, -12]);
-  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0.4, 1, 1, 0.4]);
-
   return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 40, scale: 0.96 }}
-      whileInView={{ opacity: 1, y: 0, scale: 1 }}
-      viewport={{ once: true, amount: 0.25 }}
-      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      style={{ rotateX, opacity, transformPerspective: 1000 }}
-      whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
-      className="relative overflow-hidden rounded-2xl border border-cream/15 bg-cream/[0.06] p-6 backdrop-blur-md md:p-8"
-    >
-      {/* Bubble-glass highlight */}
+    <article className="relative w-[82vw] shrink-0 overflow-hidden rounded-2xl border border-cream/15 bg-cream/[0.06] p-6 backdrop-blur-md sm:w-[420px] md:w-[460px] md:p-8">
+      {/* Bubble-glass highlights */}
       <span className="pointer-events-none absolute -left-10 -top-10 h-32 w-32 rounded-full bg-gold/15 blur-2xl" />
       <span className="pointer-events-none absolute -right-12 -bottom-12 h-40 w-40 rounded-full bg-cream/10 blur-3xl" />
 
@@ -178,7 +160,7 @@ function TestimonialCard({ t }: { t: Testimonial }) {
           <p className="label text-cream/60">{t.city}</p>
         </div>
       </div>
-    </motion.div>
+    </article>
   );
 }
 
