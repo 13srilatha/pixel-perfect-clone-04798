@@ -78,25 +78,45 @@ export function Testimonials() {
   return (
     <section id="testimonials" className="relative bg-espresso text-cream">
       <div className="mx-auto max-w-[1600px] px-6 pb-24 pt-24 md:px-10 md:pb-36 md:pt-36">
-        <Reveal className="mb-16 max-w-3xl">
-          <p className="label mb-4 inline-flex items-center gap-3">
-            <span className="h-px w-10 bg-gold/60" />
-            <span className="text-gold">Happiness Speaks</span>
-          </p>
-          <h2 className="display text-[clamp(2.5rem,6vw,5rem)] text-cream">
-            What our clients <em className="italic text-gold-lt">say</em>.
-          </h2>
-          <p className="mt-6 text-base leading-relaxed text-cream/75 md:text-lg">
-            Honest feedback from the families and owners we have worked with.
-          </p>
-        </Reveal>
-
-        <ParallaxTiltGrid />
+        <div className="flex flex-col items-center">
+          <h2 className="display mb-10 text-center text-[clamp(2.5rem,6vw,5rem)] text-cream">Client Words</h2>
+          <ClientWordsAnimation />
+        </div>
       </div>
 
       {/* Inline Launch Reel kept on this section */}
       <ReelInline />
     </section>
+  );
+}
+
+function ClientWordsAnimation() {
+  const cards = [
+    TESTIMONIALS[0][0],
+    TESTIMONIALS[1][0],
+    TESTIMONIALS[1][1],
+    TESTIMONIALS[2][0],
+    TESTIMONIALS[1][2],
+  ];
+  return (
+    <div className="w-full max-w-6xl">
+      <div className="grid gap-4 md:grid-cols-6">
+        {cards.map((t, i) => (
+          <motion.div
+            key={`${t.name}-${i}`}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            animate={{ y: [0, i % 2 === 0 ? -6 : 6, 0] }}
+            transition={{ duration: 4 + i, repeat: Infinity, ease: "easeInOut" }}
+            className={`${i === 2 ? "md:col-span-2" : "md:col-span-1"} border border-cream/20 bg-cream/5 p-5`}
+          >
+            <p className="font-display text-base italic">“{t.quote}”</p>
+            <p className="mt-4 font-display text-lg">{t.name}</p>
+            <p className="label text-cream/70">{t.city}</p>
+          </motion.div>
+        ))}
+      </div>
+    </div>
   );
 }
 
