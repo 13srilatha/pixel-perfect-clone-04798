@@ -22,7 +22,9 @@ export function BackToTop() {
 
     const observer = new IntersectionObserver(
       ([entry]) => setShowCredit(entry.isIntersecting),
-      { threshold: 0.45 },
+      // Lower threshold so the credit shows on small screens too — on mobile
+      // the contact section is tall and never reaches a high ratio.
+      { threshold: 0.05 },
     );
 
     observer.observe(target);
@@ -41,23 +43,25 @@ export function BackToTop() {
           type="button"
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           aria-label="Back to top"
-          className="flex h-14 w-14 items-center justify-center border border-espresso bg-cream text-espresso shadow-lg transition-colors hover:bg-espresso hover:text-cream md:h-16 md:w-16"
+          className="flex h-12 w-12 items-center justify-center border border-espresso bg-cream text-espresso shadow-lg transition-colors hover:bg-espresso hover:text-cream md:h-16 md:w-16"
         >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 19V5" />
             <path d="m5 12 7-7 7 7" />
           </svg>
         </button>
       </div>
 
-      {/* Credit — appears when contact section is in view, readable on every device.
-          Sits at bottom-left of the viewport, well clear of the back-to-top button. */}
+      {/* Credit — appears in the contact (final) section. On mobile it sits
+          above the back-to-top button as a full-width slim bar so it never
+          gets clipped or hidden by anything. On larger screens it goes back
+          to a small pill in the bottom-left corner. */}
       <div
-        className={`fixed bottom-2 left-2 z-50 max-w-[calc(100vw-90px)] transition-opacity duration-500 sm:bottom-3 sm:left-3 sm:max-w-[280px] md:bottom-4 md:left-5 md:max-w-[340px] ${
+        className={`fixed z-50 transition-opacity duration-500 ${
           showCredit ? "opacity-100" : "pointer-events-none opacity-0"
-        }`}
+        } inset-x-2 bottom-20 sm:inset-x-auto sm:bottom-3 sm:left-3 sm:max-w-[300px] md:bottom-4 md:left-5 md:max-w-[360px]`}
       >
-        <p className="rounded-md bg-ink/55 px-2.5 py-1.5 font-display text-[10px] italic leading-snug text-cream/90 backdrop-blur-sm sm:text-[11px] md:text-xs">
+        <p className="rounded-md bg-ink/70 px-3 py-2 text-center font-display text-[11px] italic leading-snug text-cream/95 backdrop-blur-sm sm:text-left sm:text-[11px] md:text-xs">
           Designed &amp; managed by{" "}
           <span className="not-italic text-gold-lt">Srilatha</span>
           {" — "}
