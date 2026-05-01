@@ -126,44 +126,57 @@ function FeaturedInProgress({ project }: { project: Project }) {
         transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
         className="grid gap-8 overflow-hidden border border-sand bg-cream/40 p-6 md:grid-cols-12 md:p-10"
       >
-        <div className="relative md:col-span-7">
+        <div className="relative md:col-span-7" style={{ perspective: 1400 }}>
           <div className="relative aspect-[4/3] w-full overflow-hidden bg-sand">
-            {/* Final render */}
+            {/* Final render — tilts back + scales down on scroll */}
             <motion.img
               src={project.image}
               alt={project.title}
               loading="lazy"
-              style={{ y: imgY, scale: imgScale, opacity: renderOpacity }}
+              style={{
+                y: renderTranslateY,
+                scale: renderScale,
+                rotateX: renderRotateX,
+                rotateZ: renderRotateZ,
+                opacity: renderOpacity,
+                transformPerspective: 1400,
+                transformOrigin: "50% 30%",
+              }}
               className="absolute inset-0 h-full w-full object-cover will-change-transform"
             />
-            {/* Paint wash — desaturated + warm overlay */}
+
+            {/* Floor-plan / sketch — rises from below as render tilts back */}
             <motion.div
-              style={{ opacity: paintOpacity }}
-              className="absolute inset-0"
+              style={{
+                y: planTranslateY,
+                opacity: planOpacity,
+                rotateX: planRotateX,
+                transformPerspective: 1400,
+                transformOrigin: "50% 100%",
+              }}
+              className="absolute inset-x-6 bottom-6 top-[40%] overflow-hidden rounded-md border border-espresso/30 bg-cream shadow-2xl"
               aria-hidden
             >
-              <motion.img
-                src={project.image}
-                alt=""
-                loading="lazy"
-                style={{ y: imgY, scale: imgScale }}
-                className="h-full w-full object-cover [filter:saturate(0.4)_contrast(0.9)_sepia(0.35)]"
-              />
-              <div className="absolute inset-0 bg-cream/30 mix-blend-overlay" />
+              <SketchPlan />
             </motion.div>
-            {/* Line drawing — high contrast + invert effect */}
+
+            {/* Material palette — slides in from the right */}
             <motion.div
-              style={{ opacity: drawingOpacity }}
-              className="absolute inset-0 bg-cream"
+              style={{ x: paletteX, opacity: paletteOpacity }}
+              className="absolute right-4 top-4 z-10 flex flex-col gap-2 rounded-md border border-espresso/20 bg-cream/95 p-3 shadow-xl backdrop-blur-sm"
               aria-hidden
             >
-              <motion.img
-                src={project.image}
-                alt=""
-                loading="lazy"
-                style={{ y: imgY, scale: imgScale }}
-                className="h-full w-full object-cover opacity-90 [filter:grayscale(1)_contrast(2.6)_brightness(1.05)] mix-blend-multiply"
-              />
+              <p className="label text-[10px] text-caramel">Palette</p>
+              <div className="flex gap-2">
+                {palette.map((p) => (
+                  <span
+                    key={p.name}
+                    title={p.name}
+                    className="block h-8 w-8 rounded-sm border border-espresso/20"
+                    style={{ background: p.hex }}
+                  />
+                ))}
+              </div>
             </motion.div>
 
             <motion.span
