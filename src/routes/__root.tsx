@@ -1,6 +1,6 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import appCss from "../styles.css?url";
 
 function CloudflareAnalytics() {
@@ -82,12 +82,23 @@ export const Route = createRootRoute({
 });
 
 function RootShell({ children }: { children: ReactNode }) {
+  const [showIntro, setShowIntro] = useState(true);
+  useEffect(() => {
+    const timer = window.setTimeout(() => setShowIntro(false), 2300);
+    return () => window.clearTimeout(timer);
+  }, []);
   return (
     <html lang="en">
       <head>
         <HeadContent />
       </head>
       <body>
+        {showIntro && (
+          <div className="terra-intro fixed inset-0 z-[100] flex items-center justify-center bg-cream">
+            <div className="terra-clouds" />
+            <div className="terra-n-logo font-display text-[clamp(4rem,16vw,11rem)] text-espresso">T</div>
+          </div>
+        )}
         {children}
         <CloudflareAnalytics />
         <Scripts />

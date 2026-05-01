@@ -13,6 +13,7 @@ const CATEGORY_BLURB: Record<ProjectCategory, string> = {
 };
 
 import { interiors } from "@/data/interiors";
+import munny3d from "@/assets/projects/munny-3d.jpeg";
 
 /**
  * Convert interiors data into Project shape so they live inside the
@@ -43,14 +44,19 @@ export function Work() {
       <section id="work" className="relative bg-cream">
         {/* Header + featured in-progress card */}
         <div className="mx-auto max-w-[1600px] px-6 pt-24 pb-16 md:px-10 md:pt-36">
-          <Reveal className="mb-12">
+          <Reveal className="mb-12 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <div>
             <p className="label mb-4 inline-flex items-center gap-3">
               <span className="h-px w-10 bg-caramel" />
-              Work
+              Selected Work
             </p>
             <h2 className="display max-w-2xl text-[clamp(2.5rem,6vw,5rem)] text-espresso">
               Houses that hold <em className="italic text-caramel">memory</em>.
             </h2>
+            </div>
+            <p className="max-w-md text-base leading-relaxed text-brown text-pretty">
+              Scroll horizontally through every category. Tap a panel to open the gallery — hover any image to read the materials and the why.
+            </p>
           </Reveal>
 
           {inProgress && <FeaturedInProgress project={inProgress} />}
@@ -75,78 +81,101 @@ export function Work() {
 /* ─────────────────────────────────────────────────────────────────────── */
 
 function FeaturedInProgress({ project }: { project: Project }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
-  const imgY = useTransform(scrollYProgress, [0, 1], ["-8%", "8%"]);
-  const imgScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.08, 1, 1.08]);
-  const chipY = useTransform(scrollYProgress, [0, 1], [0, -30]);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end end"] });
+  const progressWidth = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
+  const fadePhoto = useTransform(scrollYProgress, [0, 0.5, 1], [1, 0.55, 0.4]);
+  const photoScale = useTransform(scrollYProgress, [0, 1], [1.03, 0.96]);
+  const paperOverlay = useTransform(scrollYProgress, [0.1, 0.5, 1], [0, 0.3, 0.45]);
+  const explode = useTransform(scrollYProgress, [0, 0.45, 1], [0, 1, 0.85]);
+  const panelScale = useTransform(scrollYProgress, [0, 1], [0.94, 0.88]);
+  const [stage, setStage] = useState(0);
+  const stageMotionValue = useTransform(scrollYProgress, [0, 0.2, 0.4, 0.6, 0.8, 1], [0, 1, 2, 3, 4, 4]);
+  useEffect(() => stageMotionValue.on("change", (v) => setStage(Math.round(v))), [stageMotionValue]);
 
   return (
     <Reveal>
-      <motion.article
-        ref={ref}
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.3 }}
-        transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-        className="grid gap-8 overflow-hidden border border-sand bg-cream/40 p-6 md:grid-cols-12 md:p-10"
-      >
-        <div className="relative md:col-span-7">
-          <div className="relative aspect-[4/3] w-full overflow-hidden bg-sand">
-            <motion.img
-              src={project.image}
-              alt={project.title}
-              loading="lazy"
-              style={{ y: imgY, scale: imgScale }}
-              className="h-full w-full object-cover will-change-transform"
-            />
-            <motion.span
-              style={{ y: chipY }}
-              className="label absolute left-4 top-4 z-10 bg-gold px-2 py-1 text-ink"
-            >
-              In Progress
-            </motion.span>
+      <section ref={containerRef} className="relative" style={{ height: "320vh" }} aria-label="In progress — scroll to see the drawings behind the render">
+        <div className="sticky top-0 flex h-screen w-full items-center">
+          <article className="relative grid h-full w-full gap-8 overflow-hidden border border-sand bg-cream/40 p-6 md:grid-cols-12 md:p-10">
+          <div className="grid h-full gap-0 md:grid-cols-12">
+            <div className="relative md:col-span-7">
+              <div className="relative h-full min-h-[60vh] w-full overflow-hidden bg-sand">
+                <motion.img src={munny3d} alt={project.title} loading="lazy" className="absolute inset-0 h-full w-full object-cover" style={{ opacity: fadePhoto, scale: photoScale }} />
+                <motion.div className="absolute inset-0 bg-cream" style={{ opacity: paperOverlay }} />
+                <motion.div className="absolute inset-0 flex items-center justify-center" style={{ x: useTransform(explode, [0, 1], ["0%", "-10%"]), y: useTransform(explode, [0, 1], ["0%", "-9%"]), scale: panelScale, rotate: useTransform(explode, [0, 1], [0, -1.6]) }}>
+                  <div className={`relative w-[42%] max-w-[320px] border bg-cream/95 p-2 shadow-xl ${stage === 1 ? "border-espresso/60" : "border-espresso/20"}`}>
+                    <div className="aspect-[4/3] w-full overflow-hidden bg-cream"><svg viewBox="0 0 160 120" className="h-full w-full" stroke="currentColor" fill="none" strokeWidth="0.6" style={{ color: "var(--espresso)" }}><rect x="10" y="10" width="140" height="100" /><line x1="10" y1="55" x2="150" y2="55" /><line x1="80" y1="10" x2="80" y2="110" /><rect x="14" y="14" width="62" height="37" fill="var(--sand)" fillOpacity="0.4" /><rect x="84" y="14" width="62" height="37" fill="var(--sand)" fillOpacity="0.25" /><rect x="14" y="59" width="62" height="47" fill="var(--sand)" fillOpacity="0.2" /><rect x="84" y="59" width="62" height="47" fill="var(--sand)" fillOpacity="0.35" /><path d="M40 55 a8 8 0 0 1 8 -8" /><path d="M110 55 a8 8 0 0 0 -8 -8" /><rect x="20" y="20" width="20" height="10" /><circle cx="115" cy="80" r="6" /></svg></div>
+                    <div className="mt-1.5 flex items-center justify-between px-1"><p className="label text-[9px] text-caramel">01</p><p className="label text-[9px] text-espresso">Plan</p></div>
+                  </div>
+                </motion.div>
+                <motion.div className="absolute inset-0 flex items-center justify-center" style={{ x: useTransform(explode, [0, 1], ["0%", "10%"]), y: useTransform(explode, [0, 1], ["0%", "-8.4%"]), scale: panelScale, rotate: useTransform(explode, [0, 1], [0, 1.62]) }}>
+                  <div className={`relative w-[42%] max-w-[320px] border bg-cream/95 p-2 shadow-xl ${stage === 2 ? "border-espresso/60" : "border-espresso/20"}`}>
+                    <div className="aspect-[4/3] w-full overflow-hidden bg-cream"><svg viewBox="0 0 160 120" className="h-full w-full" stroke="currentColor" fill="none" strokeWidth="0.7" style={{ color: "var(--espresso)" }}><polygon points="40,80 100,80 120,68 60,68" fill="var(--sand)" fillOpacity="0.3" /><polygon points="40,80 40,40 60,28 60,68" fill="var(--sand)" fillOpacity="0.45" /><polygon points="100,80 100,40 120,28 120,68" fill="var(--sand)" fillOpacity="0.35" /><line x1="40" y1="40" x2="100" y2="40" /><line x1="60" y1="28" x2="120" y2="28" /><polygon points="40,40 100,40 120,28 60,28" fill="var(--caramel)" fillOpacity="0.35" /><rect x="48" y="50" width="10" height="14" /><rect x="78" y="50" width="10" height="14" /></svg></div>
+                    <div className="mt-1.5 flex items-center justify-between px-1"><p className="label text-[9px] text-caramel">02</p><p className="label text-[9px] text-espresso">SketchUp</p></div>
+                  </div>
+                </motion.div>
+                <motion.div className="absolute inset-0 flex items-center justify-center" style={{ x: useTransform(explode, [0, 1], ["0%", "-9.7%"]), y: useTransform(explode, [0, 1], ["0%", "9%"]), scale: panelScale, rotate: useTransform(explode, [0, 1], [0, -1.3]) }}>
+                  <div className={`relative w-[42%] max-w-[320px] border bg-cream/95 p-2 shadow-xl ${stage === 3 ? "border-espresso/60" : "border-espresso/20"}`}>
+                    <div className="aspect-[4/3] w-full overflow-hidden bg-cream"><svg viewBox="0 0 160 120" className="h-full w-full" stroke="currentColor" fill="none" strokeWidth="0.4" style={{ color: "var(--espresso)" }}><rect x="20" y="20" width="120" height="80" strokeWidth="0.7" /><line x1="20" y1="14" x2="140" y2="14" /><line x1="20" y1="12" x2="20" y2="16" /><line x1="140" y1="12" x2="140" y2="16" /><line x1="60" y1="20" x2="60" y2="100" strokeDasharray="2 1.5" /><line x1="100" y1="20" x2="100" y2="100" strokeDasharray="2 1.5" /><line x1="20" y1="60" x2="140" y2="60" strokeDasharray="2 1.5" /><pattern id="hatchInline" width="2" height="2" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="2" stroke="var(--caramel)" strokeWidth="0.3" /></pattern><rect x="20" y="20" width="40" height="40" fill="url(#hatchInline)" stroke="none" /></svg></div>
+                    <div className="mt-1.5 flex items-center justify-between px-1"><p className="label text-[9px] text-caramel">03</p><p className="label text-[9px] text-espresso">AutoCAD</p></div>
+                  </div>
+                </motion.div>
+                <motion.div className="absolute inset-0 flex items-center justify-center" style={{ x: useTransform(explode, [0, 1], ["0%", "10%"]), y: useTransform(explode, [0, 1], ["0%", "9%"]), scale: panelScale, rotate: useTransform(explode, [0, 1], [0, 1.94]) }}>
+                  <div className={`relative w-[42%] max-w-[320px] border bg-cream/95 p-2 shadow-xl ${stage === 4 ? "border-espresso/60" : "border-espresso/20"}`}>
+                    <div className="aspect-[4/3] w-full overflow-hidden bg-cream"><svg viewBox="0 0 160 120" className="h-full w-full"><rect x="10" y="12" width="42" height="40" fill="var(--cream)" stroke="var(--espresso)" strokeWidth="0.3" /><rect x="58" y="12" width="42" height="40" fill="var(--sand)" stroke="var(--espresso)" strokeWidth="0.3" /><rect x="106" y="12" width="42" height="40" fill="var(--caramel)" stroke="var(--espresso)" strokeWidth="0.3" /><rect x="10" y="62" width="42" height="40" fill="var(--brown)" stroke="var(--espresso)" strokeWidth="0.3" /><rect x="58" y="62" width="42" height="40" fill="var(--espresso)" stroke="var(--espresso)" strokeWidth="0.3" /><rect x="106" y="62" width="42" height="40" fill="var(--gold)" stroke="var(--espresso)" strokeWidth="0.3" /></svg></div>
+                    <div className="mt-1.5 flex items-center justify-between px-1"><p className="label text-[9px] text-caramel">04</p><p className="label text-[9px] text-espresso">Palette</p></div>
+                  </div>
+                </motion.div>
+                <span className="label absolute left-4 top-4 z-10 bg-gold px-2 py-1 text-ink">In Progress</span>
+                <span className="label absolute right-4 top-4 z-10 border border-espresso/30 bg-cream/90 px-3 py-1 text-espresso backdrop-blur-sm">Material palette</span>
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-end justify-between gap-4 bg-gradient-to-t from-ink/70 via-ink/10 to-transparent p-5 md:p-6"><div><p className="label text-gold-lt">Behind the render</p><p className="mt-1 font-display text-base font-light text-cream md:text-lg">Scroll to see plan, SketchUp, AutoCAD &amp; palette</p></div><span className="label inline-flex items-center gap-2 border border-cream/60 bg-ink/40 px-3 py-2 text-cream backdrop-blur-sm">Scroll <span aria-hidden="true">↓</span></span></div>
+              </div>
+              <div className="absolute inset-x-0 bottom-5 z-20 px-6 md:px-8">
+                <div className="mb-2 flex items-center justify-center gap-2">
+                  {["RENDER", "PLAN", "SKETCHUP", "AUTOCAD", "PALETTE"].map((label, index) => (
+                    <div key={label} className="flex items-center gap-1">
+                      <span className={`h-1.5 w-1.5 rounded-full ${index <= stage ? "bg-espresso" : "bg-sand"}`} />
+                      <span className="label text-[8px] text-cream/85">{label}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="h-[2px] w-full bg-sand/50">
+                  <motion.span className="block h-full bg-espresso" style={{ width: progressWidth }} />
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col justify-between md:col-span-5">
+              <div>
+              <p className="label text-caramel">{project.category} · {project.year}</p>
+              <h3 className="mt-3 font-display text-3xl font-light text-espresso md:text-5xl">{project.title}</h3>
+              <p className="label mt-2 normal-case tracking-normal text-brown">{project.location}</p>
+              <p className="mt-6 text-base leading-relaxed text-brown text-pretty">{project.description}</p>
+              </div>
+              {project.materials && project.materials.length > 0 && (
+                <dl className="mt-6 border-t border-sand pt-5">
+                  <dt className="label mb-3 text-caramel">In the making with</dt>
+                  <dd className="flex flex-wrap gap-x-3 gap-y-2 font-display text-base font-light text-espresso">
+                    {project.materials.map((material) => (
+                      <span key={material} className="border border-sand px-3 py-1">
+                        {material}
+                      </span>
+                    ))}
+                  </dd>
+                </dl>
+              )}
+              <div className="mt-8 flex items-center gap-4">
+                <span className="label text-caramel">Render</span>
+                <div className="relative h-px flex-1 bg-sand">
+                  <motion.span className="absolute left-0 top-0 block h-full bg-espresso" style={{ width: progressWidth }} />
+                </div>
+                <span className="label text-caramel">Built</span>
+              </div>
+            </div>
           </div>
+          </article>
         </div>
-
-        <motion.div
-          initial={{ opacity: 0, x: 30 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-          className="flex flex-col justify-between md:col-span-5"
-        >
-          <div>
-            <p className="label text-caramel">{project.category}</p>
-            <h3 className="mt-3 font-display text-3xl font-light text-espresso md:text-5xl">{project.title}</h3>
-            <p className="label mt-2 normal-case tracking-normal text-brown">{project.location}</p>
-            <p className="mt-6 text-base leading-relaxed text-brown text-pretty">{project.description}</p>
-          </div>
-
-          {project.materials && project.materials.length > 0 && (
-            <dl className="mt-6 border-t border-sand pt-5">
-              <dt className="label mb-3 text-caramel">In the making with</dt>
-              <dd className="flex flex-wrap gap-x-3 gap-y-2 font-display text-base font-light text-espresso">
-                {project.materials.map((m, i) => (
-                  <motion.span
-                    key={m}
-                    initial={{ opacity: 0, y: 12 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: 0.3 + i * 0.06 }}
-                    className="border border-sand px-3 py-1"
-                  >
-                    {m}
-                  </motion.span>
-                ))}
-              </dd>
-            </dl>
-          )}
-        </motion.div>
-      </motion.article>
+      </section>
     </Reveal>
   );
 }
