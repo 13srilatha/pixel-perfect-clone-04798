@@ -3,13 +3,13 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { studio } from "@/data/projects";
 import { Reveal } from "./Nav";
 import poster from "@/assets/projects/munny-3d.jpeg";
+import founder from "@/assets/architect-portrait.jpeg";
 
 /**
- * "Happiness Speaks" — testimonials laid out as two horizontal marquee rows
- * that scroll in opposite directions (continuously, smoothly), inspired by
- * the Webflow "testimonials scrolling animation". The motion never stops,
- * pauses on hover, and the same content is duplicated to create a seamless
- * infinite loop.
+ * "Client Words" — scroll-driven spread.
+ * As the user scrolls into the section, four testimonial cards (two on each
+ * side) start stacked behind a center founder portrait and gently spread
+ * outward, fading in. Inspired by the reference video.
  */
 
 interface Testimonial {
@@ -18,149 +18,155 @@ interface Testimonial {
   quote: string;
 }
 
-const ROW_A: Testimonial[] = [
+const CARDS: Testimonial[] = [
   {
     name: "Charry",
     city: "Hyderabad",
     quote:
-      "We were clear about the budget from day one and the team respected it. The drawings were detailed and we knew what to expect at every stage.",
+      "Clear about the budget from day one. Drawings were detailed; we always knew what to expect.",
   },
   {
     name: "Muthyam",
     city: "Hyderabad",
     quote:
-      "They visited our site multiple times before finalising the plan. The orientation of the rooms turned out exactly as discussed.",
+      "They visited the site many times before finalising the plan. Room orientation came out exactly as discussed.",
   },
   {
     name: "Lakshmi",
     city: "Hyderabad",
     quote:
-      "The pooja room and kitchen layout came out well. Storage was planned thoughtfully — we didn't have to add anything later.",
+      "The pooja room and kitchen layout came out well. Storage was thought through — nothing felt missing later.",
   },
-  {
-    name: "Pranay & Divya",
-    city: "Hyderabad",
-    quote:
-      "Good communication throughout the project. They listened to small things — like where we wanted plug points — and remembered them.",
-  },
-];
-
-const ROW_B: Testimonial[] = [
   {
     name: "Ravi Tej",
     city: "Hyderabad",
     quote:
-      "Timelines were realistic, not exaggerated. When small delays happened on site, they kept us informed instead of going quiet.",
-  },
-  {
-    name: "Ananya",
-    city: "Hyderabad",
-    quote:
-      "We renovated our 2BHK with them. The before-after difference is genuine, and the work was clean — no surprises in the final bill.",
-  },
-  {
-    name: "Krishna",
-    city: "Hyderabad",
-    quote:
-      "Liked that they explained material choices instead of just picking for us. We understood why each thing was used in our home.",
-  },
-  {
-    name: "Sandeep",
-    city: "Hyderabad",
-    quote:
-      "Site visits were on schedule and the team answered every doubt patiently. It felt like our home was their home too.",
+      "Realistic timelines. When small delays happened on site, they kept us informed instead of going quiet.",
   },
 ];
 
 export function Testimonials() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+
+  // Drive spread between scroll progress 0.15 → 0.55
+  const spread = useTransform(scrollYProgress, [0.15, 0.55], [0, 1]);
+
   return (
-    <section id="testimonials" className="relative bg-espresso text-cream">
-      <div className="mx-auto max-w-[1600px] px-6 pb-24 pt-24 md:px-10 md:pb-36 md:pt-36">
-        <Reveal className="mb-16 max-w-3xl">
+    <section
+      id="testimonials"
+      ref={sectionRef}
+      className="relative bg-espresso text-cream"
+    >
+      <div className="mx-auto max-w-[1600px] px-6 pb-16 pt-24 md:px-10 md:pb-24 md:pt-36">
+        <Reveal className="mb-16 max-w-3xl text-center md:mx-auto md:text-center">
           <p className="label mb-4 inline-flex items-center gap-3">
             <span className="h-px w-10 bg-gold/60" />
-            <span className="text-gold">Happiness Speaks</span>
+            <span className="text-gold">Client Words</span>
+            <span className="h-px w-10 bg-gold/60" />
           </p>
-          <h2 className="display text-[clamp(2.5rem,6vw,5rem)] text-cream">
-            What our clients <em className="italic text-gold-lt">say</em>.
+          <h2 className="display text-[clamp(2.25rem,6vw,5rem)] text-cream">
+            What people <em className="italic text-gold-lt">say</em>.
           </h2>
           <p className="mt-6 text-base leading-relaxed text-cream/75 md:text-lg">
-            Honest feedback from the families and owners we have worked with.
+            Scroll down — honest words from the families and owners we have built for.
           </p>
         </Reveal>
+
+        {/* Spread layout — desktop / tablet */}
+        <div className="relative hidden min-h-[520px] items-center justify-center md:flex">
+          {/* Center founder card */}
+          <div className="relative z-10 h-[420px] w-[300px] overflow-hidden rounded-2xl border border-cream/15 shadow-2xl">
+            <img
+              src={founder}
+              alt="Founder, Terra Space Studio"
+              loading="lazy"
+              className="h-full w-full object-cover"
+            />
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/85 via-ink/30 to-transparent p-5">
+              <p className="font-display text-lg font-light text-cream">The studio</p>
+              <p className="label text-gold-lt">Hyderabad · since 2019</p>
+            </div>
+          </div>
+
+          {/* 4 spreading cards: 2 left, 2 right */}
+          <SpreadCard t={CARDS[0]} side="left" depth={1} progress={spread} />
+          <SpreadCard t={CARDS[1]} side="left" depth={2} progress={spread} />
+          <SpreadCard t={CARDS[2]} side="right" depth={1} progress={spread} />
+          <SpreadCard t={CARDS[3]} side="right" depth={2} progress={spread} />
+        </div>
+
+        {/* Mobile fallback — vertical stack with reveal */}
+        <div className="space-y-4 md:hidden">
+          <div className="mx-auto h-72 w-56 overflow-hidden rounded-2xl border border-cream/15 shadow-xl">
+            <img src={founder} alt="Founder" className="h-full w-full object-cover" loading="lazy" />
+          </div>
+          {CARDS.map((t, i) => (
+            <motion.article
+              key={t.name}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.5, delay: i * 0.08 }}
+              className="rounded-2xl border border-cream/15 bg-cream/[0.06] p-5 backdrop-blur-md"
+            >
+              <p className="font-display text-base italic leading-relaxed text-cream">
+                "{t.quote}"
+              </p>
+              <p className="mt-4 font-display text-base font-light text-cream">
+                {t.name} <span className="label text-cream/60">· {t.city}</span>
+              </p>
+            </motion.article>
+          ))}
+        </div>
       </div>
 
-      {/* Horizontal scrolling marquee rows — full-bleed */}
-      <div className="space-y-6 pb-24 md:space-y-8 md:pb-36">
-        <MarqueeRow items={ROW_A} duration={45} direction="left" />
-        <MarqueeRow items={ROW_B} duration={55} direction="right" />
-      </div>
-
-      {/* Inline Launch Reel kept on this section */}
       <ReelInline />
     </section>
   );
 }
 
-/* ─────────────────────────────────────────────────────────────────────── */
-
-function MarqueeRow({
-  items,
-  duration,
-  direction,
+function SpreadCard({
+  t,
+  side,
+  depth,
+  progress,
 }: {
-  items: Testimonial[];
-  duration: number;
-  direction: "left" | "right";
+  t: Testimonial;
+  side: "left" | "right";
+  depth: 1 | 2;
+  progress: ReturnType<typeof useTransform<number, number>>;
 }) {
-  // Duplicate the list so the translation can loop seamlessly from 0 → -50%.
-  const loop = [...items, ...items];
-  const from = direction === "left" ? "0%" : "-50%";
-  const to = direction === "left" ? "-50%" : "0%";
+  // Distance from center grows with depth — 220px (near) and 460px (far)
+  const dir = side === "left" ? -1 : 1;
+  const target = (depth === 1 ? 220 : 460) * dir;
+  const x = useTransform(progress, [0, 1], [0, target]);
+  const opacity = useTransform(progress, [0, 0.3, 1], [0, 0.6, 1]);
+  const rotate = useTransform(progress, [0, 1], [0, dir * (depth === 1 ? -3 : -6)]);
+  const scale = useTransform(progress, [0, 1], [0.85, 1]);
 
   return (
-    <div
-      className="group relative w-full overflow-hidden"
-      style={{
-        WebkitMaskImage:
-          "linear-gradient(to right, transparent, #000 6%, #000 94%, transparent)",
-        maskImage:
-          "linear-gradient(to right, transparent, #000 6%, #000 94%, transparent)",
-      }}
+    <motion.article
+      style={{ x, opacity, rotate, scale }}
+      className="absolute z-0 w-[280px] overflow-hidden rounded-2xl border border-cream/15 bg-cream/[0.07] p-6 backdrop-blur-md"
     >
-      <motion.div
-        className="flex w-max gap-6 px-6 group-hover:[animation-play-state:paused] md:gap-8"
-        animate={{ x: [from, to] }}
-        transition={{ duration, ease: "linear", repeat: Infinity }}
-      >
-        {loop.map((t, i) => (
-          <TestimonialCard key={`${direction}-${i}`} t={t} />
-        ))}
-      </motion.div>
-    </div>
-  );
-}
-
-function TestimonialCard({ t }: { t: Testimonial }) {
-  return (
-    <article className="relative w-[82vw] shrink-0 overflow-hidden rounded-2xl border border-cream/15 bg-cream/[0.06] p-6 backdrop-blur-md sm:w-[420px] md:w-[460px] md:p-8">
-      {/* Bubble-glass highlights */}
-      <span className="pointer-events-none absolute -left-10 -top-10 h-32 w-32 rounded-full bg-gold/15 blur-2xl" />
-      <span className="pointer-events-none absolute -right-12 -bottom-12 h-40 w-40 rounded-full bg-cream/10 blur-3xl" />
-
-      <p className="font-display text-base italic leading-relaxed text-cream md:text-lg">
+      <span className="pointer-events-none absolute -left-8 -top-8 h-24 w-24 rounded-full bg-gold/15 blur-2xl" />
+      <p className="font-display text-sm italic leading-relaxed text-cream md:text-base">
         "{t.quote}"
       </p>
-      <div className="mt-5 flex items-center gap-3 border-t border-cream/15 pt-4">
-        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gold/30 font-display text-base font-light text-cream">
+      <div className="mt-4 flex items-center gap-3 border-t border-cream/15 pt-3">
+        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gold/30 font-display text-sm font-light text-cream">
           {t.name.charAt(0)}
         </span>
         <div>
-          <p className="font-display text-base font-light text-cream">{t.name}</p>
-          <p className="label text-cream/60">{t.city}</p>
+          <p className="font-display text-sm font-light text-cream">{t.name}</p>
+          <p className="label text-[10px] text-cream/60">{t.city}</p>
         </div>
       </div>
-    </article>
+    </motion.article>
   );
 }
 
