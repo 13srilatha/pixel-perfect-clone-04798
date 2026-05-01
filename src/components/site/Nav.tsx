@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { studio } from "@/data/projects";
 import { Logo } from "./Logo";
-import heroFeature from "@/assets/hero-feature.jpg";
+import heroFeature from "@/assets/projects/project-5.jpeg";
 
 export function Nav() {
   const [scrolled, setScrolled] = useState(false);
@@ -124,10 +124,9 @@ function MobileMenu({ links }: { links: { href: string; label: string }[] }) {
 }
 
 const HERO_QUESTIONS = [
-  { q: "Are you looking for a space to transform?", tag: "Spaces · Environments" },
-  { q: "Are you designing interiors that go beyond the ordinary?", tag: "Interiors · Concepts" },
-  { q: "Are you building something new from the ground up?", tag: "Ideas · Development" },
-  { q: "Are you shaping a vision into reality?", tag: "Creative · Execution" },
+  "Are you designing interiors that go beyond the ordinary?",
+  "Do you want a home that tells your story?",
+  "Looking for architecture that breathes with its surroundings?",
 ];
 
 export function Hero() {
@@ -149,41 +148,15 @@ export function Hero() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Phase 1 (0 → 0.5): three side-words slide together onto one line in the centre.
-  // Phase 2 (0.5 → 1): image shifts right + blurs, questions fade in on the left.
-  const phase1 = Math.min(1, p / 0.5);          // 0 → 1 over first half
-  const phase2 = Math.max(0, (p - 0.5) / 0.5);  // 0 → 1 over second half
-
-  // Word positions: ARCHITECTURE starts vertical-left, ends horizontal centre-left.
-  // PLANNING starts vertical-right, ends horizontal centre-right.
-  // INTERIOR stays in centre but moves down to the line.
-  const archRotate = -90 + phase1 * 90;  // -90 → 0
-  const planRotate = 90 - phase1 * 90;   // 90 → 0
-  // Translate from sides to centre (computed in % of viewport via CSS calc)
-  const archX = phase1 * 38;             // 0 → 38vw shift right
-  const planX = -phase1 * 38;            // 0 → -38vw shift left
-  const interiorY = phase1 * 40;         // moves down to align (vh)
-
-  // Questions cycle based on phase2
-  const questionIdx = Math.min(
-    HERO_QUESTIONS.length - 1,
-    Math.floor(phase2 * HERO_QUESTIONS.length),
-  );
-  const currentQ = HERO_QUESTIONS[questionIdx];
-
-  // Image shift right + blur in phase 2
-  const imgX = phase2 * 25;       // shifts right up to 25vw
-  const imgBlur = phase2 * 6;     // 0 → 6px blur
-  const imgScale = 1 - phase2 * 0.05;
+  const phase = Math.min(1, p);
+  const imgX = phase * 14;
+  const imgScale = 1 - phase * 0.04;
+  const imgFilter = `contrast(${1 + phase * 0.15}) grayscale(${phase * 0.5})`;
 
   return (
-    <section
-      id="top"
-      ref={ref}
-      className="relative bg-cream"
-      style={{ height: "250vh" }}
-    >
-      <div className="sticky top-0 flex h-screen w-full items-center justify-center overflow-hidden">
+    <>
+      <section id="top" ref={ref} className="relative bg-cream" style={{ height: "210vh" }}>
+        <div className="sticky top-0 flex h-screen w-full items-center overflow-hidden">
         {/* Subtle architectural grid */}
         <div className="pointer-events-none absolute inset-0 opacity-[0.05]">
           <div
@@ -196,85 +169,58 @@ export function Hero() {
           />
         </div>
 
-        {/* Feature image — centered, shifts right + blurs in phase 2 */}
-        <div
-          className="relative overflow-hidden shadow-2xl"
-          style={{
-            width: "min(70vw, 900px)",
-            height: "min(60vh, 560px)",
-            transform: `translateX(${imgX}vw) scale(${imgScale})`,
-            filter: `blur(${imgBlur}px)`,
-            transition: "transform 120ms linear, filter 120ms linear",
-            borderRadius: "4px",
-          }}
-        >
-          <img
-            src={heroFeature}
-            alt="Terra Space Studio — a residence at golden hour"
-            className="h-full w-full object-cover"
-          />
-        </div>
+        <div className="mx-auto grid w-full max-w-[1600px] items-center gap-8 px-6 md:grid-cols-12 md:px-10">
+          <div className="relative z-10 md:col-span-5">
+            <div className="mask-y-fade h-[230px] overflow-hidden md:h-[300px]">
+              <div className="hero-question-marquee">
+                {[...HERO_QUESTIONS, ...HERO_QUESTIONS].map((q, idx) => (
+                  <p key={`${q}-${idx}`} className="mb-6 font-display text-3xl leading-tight text-espresso md:text-5xl">
+                    {q}
+                  </p>
+                ))}
+              </div>
+            </div>
+            <p className="mt-6 max-w-md text-sm leading-relaxed text-brown md:text-base">
+              We are <strong className="font-normal text-espresso">{studio.name}</strong> — a
+              residential architecture and interior design practice based in {studio.city}.
+            </p>
+          </div>
 
-        {/* Three side words — converge to the same horizontal line on scroll */}
-        <span
-          className="pointer-events-none absolute left-4 top-1/2 origin-center font-display text-base font-light tracking-[0.45em] text-espresso md:left-8 md:text-2xl lg:text-3xl"
-          style={{
-            transform: `translate(${archX}vw, -50%) rotate(${archRotate}deg)`,
-            opacity: 1 - phase2 * 0.85,
-            transition: "transform 120ms linear, opacity 120ms linear",
-          }}
-        >
-          ARCHITECTURE
-        </span>
-        <span
-          className="pointer-events-none absolute left-1/2 top-20 -translate-x-1/2 font-display text-base font-light tracking-[0.45em] text-espresso md:top-24 md:text-2xl lg:text-3xl"
-          style={{
-            transform: `translate(-50%, ${interiorY}vh)`,
-            opacity: 1 - phase2 * 0.85,
-            transition: "transform 120ms linear, opacity 120ms linear",
-          }}
-        >
-          INTERIOR
-        </span>
-        <span
-          className="pointer-events-none absolute right-4 top-1/2 origin-center font-display text-base font-light tracking-[0.45em] text-espresso md:right-8 md:text-2xl lg:text-3xl"
-          style={{
-            transform: `translate(${planX}vw, -50%) rotate(${planRotate}deg)`,
-            opacity: 1 - phase2 * 0.85,
-            transition: "transform 120ms linear, opacity 120ms linear",
-          }}
-        >
-          PLANNING
-        </span>
-
-        {/* Rotating questions — fade in on the LEFT as image moves right (phase 2) */}
-        <div
-          className="pointer-events-none absolute inset-y-0 left-0 z-10 flex w-full max-w-[640px] flex-col justify-center px-6 md:px-12"
-          style={{ opacity: phase2 }}
-        >
-          <p className="label mb-4 inline-flex items-center gap-3 text-caramel">
-            <span className="h-px w-10 bg-caramel/70" />
-            {currentQ.tag}
-          </p>
-          <h1 className="display text-[clamp(1.75rem,4.5vw,3.75rem)] text-espresso text-balance">
-            {currentQ.q}
-          </h1>
-          <p className="mt-6 max-w-md text-sm leading-relaxed text-brown md:text-base">
-            We are <strong className="font-normal text-espresso">{studio.name}</strong> — a
-            residential architecture and interior design practice based in {studio.city}.
-          </p>
-          {/* progress dots */}
-          <div className="mt-6 flex items-center gap-2">
-            {HERO_QUESTIONS.map((_, i) => (
-              <span
-                key={i}
-                className={`h-[3px] w-8 transition-colors ${i <= questionIdx ? "bg-espresso" : "bg-sand"}`}
+          <div className="relative md:col-span-7">
+            <div
+              className="relative ml-auto aspect-[4/3] w-full max-w-[760px] overflow-hidden shadow-2xl"
+              style={{
+                transform: `translateX(${imgX}vw) scale(${imgScale})`,
+                filter: imgFilter,
+                transition: "transform 120ms linear, filter 120ms linear",
+              }}
+            >
+              <img
+                src={heroFeature}
+                alt="Terra Space Studio hero render"
+                className="h-full w-full object-cover"
               />
+            </div>
+          </div>
+        </div>
+        </div>
+      </section>
+      <section className="bg-cream pb-16 md:pb-24">
+        <div className="mx-auto max-w-[1600px] px-6 md:px-10">
+          <div className="space-y-4 font-display text-3xl font-light tracking-[0.2em] text-espresso md:text-5xl">
+            {["ARCHITECTURE", "INTERIOR", "PLANNING"].map((word, i) => (
+              <span
+                key={word}
+                className="block animate-[fadeSlideIn_700ms_ease_forwards] opacity-0"
+                style={{ animationDelay: `${i * 150}ms` }}
+              >
+                {word}
+              </span>
             ))}
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }
 
