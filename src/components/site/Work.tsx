@@ -80,24 +80,41 @@ function FeaturedInProgress({ project }: { project: Project }) {
     target: ref,
     offset: ["start end", "end start"],
   });
-  const imgY = useTransform(scrollYProgress, [0, 1], ["-8%", "8%"]);
-  const imgScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.08, 1, 1.08]);
+  const imgY = useTransform(scrollYProgress, [0, 1], ["-6%", "6%"]);
   const chipY = useTransform(scrollYProgress, [0, 1], [0, -30]);
 
-  // "Behind the render" — as the user scrolls past the card, the final render
-  // fades out and the underlying drawing/sketch fades in. Three stages:
-  // 0   → final render
-  // 0.45→ paint / wash stage
-  // 0.85→ line drawing
-  const renderOpacity = useTransform(scrollYProgress, [0.25, 0.45], [1, 0]);
-  const paintOpacity = useTransform(scrollYProgress, [0.35, 0.5, 0.7, 0.85], [0, 1, 1, 0]);
-  const drawingOpacity = useTransform(scrollYProgress, [0.7, 0.9], [0, 1]);
+  // Three stages (matches the reference video):
+  //  0.0–0.4  → Final Render (full)
+  //  0.4–0.7  → Tilt + reveal: render scales down & tilts back, sketch/plan
+  //             rises from below to sit alongside it.
+  //  0.7–1.0  → Plans + materials palette dominate.
+  const renderScale = useTransform(scrollYProgress, [0, 0.4, 0.75], [1.08, 1, 0.78]);
+  const renderRotateX = useTransform(scrollYProgress, [0.35, 0.85], [0, -18]);
+  const renderRotateZ = useTransform(scrollYProgress, [0.35, 0.85], [0, -4]);
+  const renderTranslateY = useTransform(scrollYProgress, [0.35, 0.85], ["0%", "-18%"]);
+  const renderOpacity = useTransform(scrollYProgress, [0.85, 0.98], [1, 0.35]);
+
+  const planTranslateY = useTransform(scrollYProgress, [0.35, 0.75], ["80%", "0%"]);
+  const planOpacity = useTransform(scrollYProgress, [0.35, 0.6], [0, 1]);
+  const planRotateX = useTransform(scrollYProgress, [0.35, 0.85], [22, 8]);
+
+  const paletteX = useTransform(scrollYProgress, [0.55, 0.85], ["110%", "0%"]);
+  const paletteOpacity = useTransform(scrollYProgress, [0.55, 0.75], [0, 1]);
+
   const stageLabelIdx = useTransform(scrollYProgress, (v) =>
-    v < 0.45 ? 0 : v < 0.8 ? 1 : 2,
+    v < 0.45 ? 0 : v < 0.75 ? 1 : 2,
   );
   const [stageIdx, setStageIdx] = useState(0);
   useEffect(() => stageLabelIdx.on("change", (v) => setStageIdx(v as number)), [stageLabelIdx]);
-  const STAGE_LABELS = ["Final Render", "Paint Wash", "Line Drawing"];
+  const STAGE_LABELS = ["Final Render", "Behind the Render", "Plans & Materials"];
+
+  // Material palette colours for the Munny project (mapped to its materials)
+  const palette = [
+    { name: "Dholpur sandstone", hex: "#c9a07a" },
+    { name: "Walnut veneer", hex: "#5a3a25" },
+    { name: "Low-iron glass", hex: "#cfd9d6" },
+    { name: "Patinated brass", hex: "#9a7b3f" },
+  ];
 
   return (
     <Reveal>
