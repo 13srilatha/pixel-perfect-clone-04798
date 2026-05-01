@@ -519,6 +519,38 @@ function useScrollObserver(
 
 /* ─────────────────────────────────────────────────────────────────────── */
 
+/** Tiny SVG schematic floor plan — used behind the InProgress render */
+function SketchPlan() {
+  return (
+    <svg viewBox="0 0 400 220" className="h-full w-full" preserveAspectRatio="xMidYMid meet">
+      <rect x="10" y="10" width="380" height="200" fill="none" stroke="#2b2117" strokeWidth="2" />
+      {/* rooms */}
+      <line x1="160" y1="10" x2="160" y2="210" stroke="#2b2117" strokeWidth="1.5" />
+      <line x1="280" y1="10" x2="280" y2="210" stroke="#2b2117" strokeWidth="1.5" />
+      <line x1="160" y1="110" x2="280" y2="110" stroke="#2b2117" strokeWidth="1.5" />
+      <line x1="280" y1="80" x2="390" y2="80" stroke="#2b2117" strokeWidth="1.5" />
+      <line x1="280" y1="150" x2="390" y2="150" stroke="#2b2117" strokeWidth="1.5" />
+      {/* door swings */}
+      <path d="M160 60 A 30 30 0 0 1 190 90" fill="none" stroke="#a8763b" strokeWidth="1" />
+      <path d="M220 110 A 25 25 0 0 1 245 135" fill="none" stroke="#a8763b" strokeWidth="1" />
+      {/* furniture hints */}
+      <rect x="30" y="40" width="80" height="40" fill="none" stroke="#7a5b3a" strokeWidth="1" />
+      <rect x="30" y="140" width="60" height="50" fill="none" stroke="#7a5b3a" strokeWidth="1" />
+      <circle cx="220" cy="50" r="14" fill="none" stroke="#7a5b3a" strokeWidth="1" />
+      <rect x="300" y="30" width="70" height="30" fill="none" stroke="#7a5b3a" strokeWidth="1" />
+      <rect x="300" y="170" width="70" height="25" fill="none" stroke="#7a5b3a" strokeWidth="1" />
+      {/* labels */}
+      <text x="60" y="30" fontSize="9" fill="#5a3a25" fontFamily="serif">LIVING</text>
+      <text x="190" y="30" fontSize="9" fill="#5a3a25" fontFamily="serif">DINING</text>
+      <text x="190" y="130" fontSize="9" fill="#5a3a25" fontFamily="serif">KITCHEN</text>
+      <text x="305" y="22" fontSize="9" fill="#5a3a25" fontFamily="serif">BED 1</text>
+      <text x="305" y="165" fontSize="9" fill="#5a3a25" fontFamily="serif">BED 2</text>
+    </svg>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────────── */
+
 function FlipCard({ project }: { project: Project }) {
   return (
     <article className="relative w-full">
