@@ -84,6 +84,21 @@ function FeaturedInProgress({ project }: { project: Project }) {
   const imgScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.08, 1, 1.08]);
   const chipY = useTransform(scrollYProgress, [0, 1], [0, -30]);
 
+  // "Behind the render" — as the user scrolls past the card, the final render
+  // fades out and the underlying drawing/sketch fades in. Three stages:
+  // 0   → final render
+  // 0.45→ paint / wash stage
+  // 0.85→ line drawing
+  const renderOpacity = useTransform(scrollYProgress, [0.25, 0.45], [1, 0]);
+  const paintOpacity = useTransform(scrollYProgress, [0.35, 0.5, 0.7, 0.85], [0, 1, 1, 0]);
+  const drawingOpacity = useTransform(scrollYProgress, [0.7, 0.9], [0, 1]);
+  const stageLabelIdx = useTransform(scrollYProgress, (v) =>
+    v < 0.45 ? 0 : v < 0.8 ? 1 : 2,
+  );
+  const [stageIdx, setStageIdx] = useState(0);
+  useEffect(() => stageLabelIdx.on("change", (v) => setStageIdx(v as number)), [stageLabelIdx]);
+  const STAGE_LABELS = ["Final Render", "Paint Wash", "Line Drawing"];
+
   return (
     <Reveal>
       <motion.article
@@ -96,19 +111,53 @@ function FeaturedInProgress({ project }: { project: Project }) {
       >
         <div className="relative md:col-span-7">
           <div className="relative aspect-[4/3] w-full overflow-hidden bg-sand">
+            {/* Final render */}
             <motion.img
               src={project.image}
               alt={project.title}
               loading="lazy"
-              style={{ y: imgY, scale: imgScale }}
-              className="h-full w-full object-cover will-change-transform"
+              style={{ y: imgY, scale: imgScale, opacity: renderOpacity }}
+              className="absolute inset-0 h-full w-full object-cover will-change-transform"
             />
+            {/* Paint wash — desaturated + warm overlay */}
+            <motion.div
+              style={{ opacity: paintOpacity }}
+              className="absolute inset-0"
+              aria-hidden
+            >
+              <motion.img
+                src={project.image}
+                alt=""
+                loading="lazy"
+                style={{ y: imgY, scale: imgScale }}
+                className="h-full w-full object-cover [filter:saturate(0.4)_contrast(0.9)_sepia(0.35)]"
+              />
+              <div className="absolute inset-0 bg-cream/30 mix-blend-overlay" />
+            </motion.div>
+            {/* Line drawing — high contrast + invert effect */}
+            <motion.div
+              style={{ opacity: drawingOpacity }}
+              className="absolute inset-0 bg-cream"
+              aria-hidden
+            >
+              <motion.img
+                src={project.image}
+                alt=""
+                loading="lazy"
+                style={{ y: imgY, scale: imgScale }}
+                className="h-full w-full object-cover opacity-90 [filter:grayscale(1)_contrast(2.6)_brightness(1.05)] mix-blend-multiply"
+              />
+            </motion.div>
+
             <motion.span
               style={{ y: chipY }}
               className="label absolute left-4 top-4 z-10 bg-gold px-2 py-1 text-ink"
             >
               In Progress
             </motion.span>
+            <span className="label absolute bottom-4 right-4 z-10 bg-ink/70 px-2 py-1 text-cream backdrop-blur-sm">
+              Scroll · {STAGE_LABELS[stageIdx]}
+            </span>
           </div>
         </div>
 
