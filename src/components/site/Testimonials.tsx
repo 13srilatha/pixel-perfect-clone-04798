@@ -76,27 +76,51 @@ export function Testimonials() {
           </p>
         </Reveal>
 
-        {/* Spread layout — works on mobile and desktop with tuned offsets */}
-        <div className="relative flex min-h-[440px] items-center justify-center md:min-h-[520px]">
+        {/* Spread layout — desktop / tablet */}
+        <div className="relative hidden min-h-[520px] items-center justify-center md:flex">
           {/* Center founder card */}
-          <div className="relative z-10 h-[300px] w-[200px] overflow-hidden rounded-2xl border border-cream/15 shadow-2xl md:h-[420px] md:w-[300px]">
+          <div className="relative z-10 h-[420px] w-[300px] overflow-hidden rounded-2xl border border-cream/15 shadow-2xl">
             <img
               src={founder}
               alt="Founder, Terra Space Studio"
               loading="lazy"
               className="h-full w-full object-cover"
             />
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/85 via-ink/30 to-transparent p-3 md:p-5">
-              <p className="font-display text-sm font-light text-cream md:text-lg">The studio</p>
-              <p className="label text-[10px] text-gold-lt md:text-xs">Hyderabad · since 2019</p>
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/85 via-ink/30 to-transparent p-5">
+              <p className="font-display text-lg font-light text-cream">The studio</p>
+              <p className="label text-gold-lt">Hyderabad · since 2019</p>
             </div>
           </div>
 
-          {/* 4 spreading cards — 2 left, 2 right */}
+          {/* 4 spreading cards: 2 left, 2 right */}
           <SpreadCard t={CARDS[0]} side="left" depth={1} progress={spread} />
           <SpreadCard t={CARDS[1]} side="left" depth={2} progress={spread} />
           <SpreadCard t={CARDS[2]} side="right" depth={1} progress={spread} />
           <SpreadCard t={CARDS[3]} side="right" depth={2} progress={spread} />
+        </div>
+
+        {/* Mobile fallback — vertical stack with reveal */}
+        <div className="space-y-4 md:hidden">
+          <div className="mx-auto h-72 w-56 overflow-hidden rounded-2xl border border-cream/15 shadow-xl">
+            <img src={founder} alt="Founder" className="h-full w-full object-cover" loading="lazy" />
+          </div>
+          {CARDS.map((t, i) => (
+            <motion.article
+              key={t.name}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.5, delay: i * 0.08 }}
+              className="rounded-2xl border border-cream/15 bg-cream/[0.06] p-5 backdrop-blur-md"
+            >
+              <p className="font-display text-base italic leading-relaxed text-cream">
+                "{t.quote}"
+              </p>
+              <p className="mt-4 font-display text-base font-light text-cream">
+                {t.name} <span className="label text-cream/60">· {t.city}</span>
+              </p>
+            </motion.article>
+          ))}
         </div>
       </div>
 
@@ -116,21 +140,9 @@ function SpreadCard({
   depth: 1 | 2;
   progress: ReturnType<typeof useTransform<number, number>>;
 }) {
-  // Detect mobile to use tighter offsets so cards stay on-screen on phones
-  const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 767px)");
-    const update = () => setIsMobile(mq.matches);
-    update();
-    mq.addEventListener("change", update);
-    return () => mq.removeEventListener("change", update);
-  }, []);
-
+  // Distance from center grows with depth — 220px (near) and 460px (far)
   const dir = side === "left" ? -1 : 1;
-  // Mobile: 110 / 200, Desktop: 220 / 460
-  const near = isMobile ? 110 : 220;
-  const far = isMobile ? 205 : 460;
-  const target = (depth === 1 ? near : far) * dir;
+  const target = (depth === 1 ? 220 : 460) * dir;
   const x = useTransform(progress, [0, 1], [0, target]);
   const opacity = useTransform(progress, [0, 0.3, 1], [0, 0.6, 1]);
   const rotate = useTransform(progress, [0, 1], [0, dir * (depth === 1 ? -3 : -6)]);
@@ -139,19 +151,19 @@ function SpreadCard({
   return (
     <motion.article
       style={{ x, opacity, rotate, scale }}
-      className="absolute z-0 w-[160px] overflow-hidden rounded-2xl border border-cream/15 bg-cream/[0.07] p-3 backdrop-blur-md md:w-[280px] md:p-6"
+      className="absolute z-0 w-[280px] overflow-hidden rounded-2xl border border-cream/15 bg-cream/[0.07] p-6 backdrop-blur-md"
     >
       <span className="pointer-events-none absolute -left-8 -top-8 h-24 w-24 rounded-full bg-gold/15 blur-2xl" />
-      <p className="font-display text-[11px] italic leading-relaxed text-cream md:text-base">
+      <p className="font-display text-sm italic leading-relaxed text-cream md:text-base">
         "{t.quote}"
       </p>
-      <div className="mt-3 flex items-center gap-2 border-t border-cream/15 pt-2 md:mt-4 md:gap-3 md:pt-3">
-        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gold/30 font-display text-xs font-light text-cream md:h-8 md:w-8 md:text-sm">
+      <div className="mt-4 flex items-center gap-3 border-t border-cream/15 pt-3">
+        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gold/30 font-display text-sm font-light text-cream">
           {t.name.charAt(0)}
         </span>
         <div>
-          <p className="font-display text-xs font-light text-cream md:text-sm">{t.name}</p>
-          <p className="label text-[9px] text-cream/60 md:text-[10px]">{t.city}</p>
+          <p className="font-display text-sm font-light text-cream">{t.name}</p>
+          <p className="label text-[10px] text-cream/60">{t.city}</p>
         </div>
       </div>
     </motion.article>
