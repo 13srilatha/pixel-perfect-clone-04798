@@ -116,9 +116,21 @@ function SpreadCard({
   depth: 1 | 2;
   progress: ReturnType<typeof useTransform<number, number>>;
 }) {
-  // Distance from center grows with depth — 220px (near) and 460px (far)
+  // Detect mobile to use tighter offsets so cards stay on-screen on phones
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
   const dir = side === "left" ? -1 : 1;
-  const target = (depth === 1 ? 220 : 460) * dir;
+  // Mobile: 110 / 200, Desktop: 220 / 460
+  const near = isMobile ? 110 : 220;
+  const far = isMobile ? 205 : 460;
+  const target = (depth === 1 ? near : far) * dir;
   const x = useTransform(progress, [0, 1], [0, target]);
   const opacity = useTransform(progress, [0, 0.3, 1], [0, 0.6, 1]);
   const rotate = useTransform(progress, [0, 1], [0, dir * (depth === 1 ? -3 : -6)]);
@@ -127,19 +139,19 @@ function SpreadCard({
   return (
     <motion.article
       style={{ x, opacity, rotate, scale }}
-      className="absolute z-0 w-[280px] overflow-hidden rounded-2xl border border-cream/15 bg-cream/[0.07] p-6 backdrop-blur-md"
+      className="absolute z-0 w-[160px] overflow-hidden rounded-2xl border border-cream/15 bg-cream/[0.07] p-3 backdrop-blur-md md:w-[280px] md:p-6"
     >
       <span className="pointer-events-none absolute -left-8 -top-8 h-24 w-24 rounded-full bg-gold/15 blur-2xl" />
-      <p className="font-display text-sm italic leading-relaxed text-cream md:text-base">
+      <p className="font-display text-[11px] italic leading-relaxed text-cream md:text-base">
         "{t.quote}"
       </p>
-      <div className="mt-4 flex items-center gap-3 border-t border-cream/15 pt-3">
-        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gold/30 font-display text-sm font-light text-cream">
+      <div className="mt-3 flex items-center gap-2 border-t border-cream/15 pt-2 md:mt-4 md:gap-3 md:pt-3">
+        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gold/30 font-display text-xs font-light text-cream md:h-8 md:w-8 md:text-sm">
           {t.name.charAt(0)}
         </span>
         <div>
-          <p className="font-display text-sm font-light text-cream">{t.name}</p>
-          <p className="label text-[10px] text-cream/60">{t.city}</p>
+          <p className="font-display text-xs font-light text-cream md:text-sm">{t.name}</p>
+          <p className="label text-[9px] text-cream/60 md:text-[10px]">{t.city}</p>
         </div>
       </div>
     </motion.article>
