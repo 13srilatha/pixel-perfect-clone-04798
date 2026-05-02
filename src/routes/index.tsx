@@ -7,6 +7,7 @@ import { Process } from "@/components/site/Process";
 import { Architect } from "@/components/site/Architect";
 import { Contact } from "@/components/site/Contact";
 import { BackToTop } from "@/components/site/BackToTop";
+import { Intro } from "@/components/site/Intro";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -25,6 +26,7 @@ export const Route = createFileRoute("/")({
 function Index() {
   return (
     <main className="bg-cream text-espresso">
+      <Intro />
       <Nav />
       <Hero />
       <Walkthrough />

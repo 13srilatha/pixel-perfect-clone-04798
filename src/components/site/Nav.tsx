@@ -19,7 +19,7 @@ export function Nav() {
   const links = [
     { href: "#work", label: "Work" },
     { href: "#process", label: "Before to After" },
-    { href: "#testimonials", label: "Happiness Speaks" },
+    { href: "#testimonials", label: "Client Words" },
     { href: "#architect", label: "Architect" },
     { href: "#contact", label: "Contact" },
   ];
