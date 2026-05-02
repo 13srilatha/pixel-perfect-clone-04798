@@ -76,51 +76,27 @@ export function Testimonials() {
           </p>
         </Reveal>
 
-        {/* Spread layout — desktop / tablet */}
-        <div className="relative hidden min-h-[520px] items-center justify-center md:flex">
+        {/* Spread layout — works on mobile and desktop with tuned offsets */}
+        <div className="relative flex min-h-[440px] items-center justify-center md:min-h-[520px]">
           {/* Center founder card */}
-          <div className="relative z-10 h-[420px] w-[300px] overflow-hidden rounded-2xl border border-cream/15 shadow-2xl">
+          <div className="relative z-10 h-[300px] w-[200px] overflow-hidden rounded-2xl border border-cream/15 shadow-2xl md:h-[420px] md:w-[300px]">
             <img
               src={founder}
               alt="Founder, Terra Space Studio"
               loading="lazy"
               className="h-full w-full object-cover"
             />
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/85 via-ink/30 to-transparent p-5">
-              <p className="font-display text-lg font-light text-cream">The studio</p>
-              <p className="label text-gold-lt">Hyderabad · since 2019</p>
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/85 via-ink/30 to-transparent p-3 md:p-5">
+              <p className="font-display text-sm font-light text-cream md:text-lg">The studio</p>
+              <p className="label text-[10px] text-gold-lt md:text-xs">Hyderabad · since 2019</p>
             </div>
           </div>
 
-          {/* 4 spreading cards: 2 left, 2 right */}
+          {/* 4 spreading cards — 2 left, 2 right */}
           <SpreadCard t={CARDS[0]} side="left" depth={1} progress={spread} />
           <SpreadCard t={CARDS[1]} side="left" depth={2} progress={spread} />
           <SpreadCard t={CARDS[2]} side="right" depth={1} progress={spread} />
           <SpreadCard t={CARDS[3]} side="right" depth={2} progress={spread} />
-        </div>
-
-        {/* Mobile fallback — vertical stack with reveal */}
-        <div className="space-y-4 md:hidden">
-          <div className="mx-auto h-72 w-56 overflow-hidden rounded-2xl border border-cream/15 shadow-xl">
-            <img src={founder} alt="Founder" className="h-full w-full object-cover" loading="lazy" />
-          </div>
-          {CARDS.map((t, i) => (
-            <motion.article
-              key={t.name}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.3 }}
-              transition={{ duration: 0.5, delay: i * 0.08 }}
-              className="rounded-2xl border border-cream/15 bg-cream/[0.06] p-5 backdrop-blur-md"
-            >
-              <p className="font-display text-base italic leading-relaxed text-cream">
-                "{t.quote}"
-              </p>
-              <p className="mt-4 font-display text-base font-light text-cream">
-                {t.name} <span className="label text-cream/60">· {t.city}</span>
-              </p>
-            </motion.article>
-          ))}
         </div>
       </div>
 
