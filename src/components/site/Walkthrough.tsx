@@ -110,7 +110,10 @@ export function Walkthrough() {
         />
 
         <div className="relative z-10 mx-auto flex h-full max-w-[1600px] flex-col justify-between px-6 py-10 md:px-10 md:py-16">
-          <div className="flex items-center justify-end">
+          <div className="flex items-center justify-between">
+            <p className="label text-gold-lt">
+              {walkthrough[activeIdx].side === "exterior" ? "Outside · The Approach" : "Inside · The Stillness"}
+            </p>
             <p className="label text-cream/70">
               {String(activeIdx + 1).padStart(2, "0")} / {String(walkthrough.length).padStart(2, "0")}
             </p>
@@ -118,18 +121,21 @@ export function Walkthrough() {
 
           <CaptionBlock idx={activeIdx} progress={progress} />
 
-          <div className="flex items-center gap-1">
-            {walkthrough.map((_, i) => (
-              <span key={i} className="h-[2px] flex-1 overflow-hidden bg-cream/15">
-                <span
-                  className="block h-full bg-gold transition-all duration-150"
-                  style={{
-                    width:
-                      i < activeIdx ? "100%" : i === activeIdx ? `${progress * 100}%` : "0%",
-                  }}
-                />
-              </span>
-            ))}
+          <div className="space-y-4">
+            <div className="flex items-center gap-1">
+              {walkthrough.map((_, i) => (
+                <span key={i} className="h-[2px] flex-1 overflow-hidden bg-cream/15">
+                  <span
+                    className="block h-full bg-gold transition-all duration-150"
+                    style={{
+                      width:
+                        i < activeIdx ? "100%" : i === activeIdx ? `${progress * 100}%` : "0%",
+                    }}
+                  />
+                </span>
+              ))}
+            </div>
+            <p className="label text-cream/60">Continue scrolling to walk in</p>
           </div>
         </div>
       </div>
