@@ -43,31 +43,8 @@ export function Contact() {
               <div>
                 <dt className="label mb-2 text-gold">Studio</dt>
                 <dd className="font-display text-2xl font-light text-cream">{studio.city}</dd>
-                <dd className="mt-1 text-sm text-cream/70">{studio.address}</dd>
               </div>
             </dl>
-
-            {/* Map */}
-            <div className="mt-10 overflow-hidden border border-cream/15">
-              <iframe
-                title="Terra Space Studio — location"
-                src="https://www.google.com/maps?q=Terra+Space+Studio,+Hyderabad&output=embed"
-                width="100%"
-                height="240"
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                className="block w-full grayscale-[0.2]"
-              />
-              <a
-                href="https://www.google.com/maps/dir/?api=1&destination=Terra+Space+Studio,+Hyderabad&destination_place_id=ChIJyY9-HACfyzsRHCieG93iuuo"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="label flex items-center justify-between gap-3 border-t border-cream/15 bg-cream/[0.04] px-4 py-3 text-cream transition-colors hover:bg-cream/[0.08]"
-              >
-                <span>Get directions to the studio</span>
-                <span aria-hidden>→</span>
-              </a>
-            </div>
 
             <div className="mt-12 border-t border-cream/15 pt-8">
               <p className="label mb-3 text-gold">Follow the studio</p>
