@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 
 /**
  * Back-to-top arrow + a small but always-visible portfolio credit pinned
- * to the bottom of the contact section. On mobile the credit sits along the
- * bottom edge to the LEFT of the back-to-top button so neither is hidden.
+ * to the bottom-left corner. The credit stays subtle (cream/brown, tiny
+ * italic) so it does not distract — but is readable, not hidden.
  */
 export function BackToTop() {
   const [visible, setVisible] = useState(false);
@@ -22,6 +22,8 @@ export function BackToTop() {
 
     const observer = new IntersectionObserver(
       ([entry]) => setShowCredit(entry.isIntersecting),
+      // Lower threshold so the credit shows on small screens too — on mobile
+      // the contact section is tall and never reaches a high ratio.
       { threshold: 0.05 },
     );
 
@@ -33,10 +35,9 @@ export function BackToTop() {
     <>
       {/* Back-to-top arrow (bottom-right) */}
       <div
-        className={`fixed bottom-3 right-3 z-50 transition-all duration-500 md:bottom-10 md:right-10 ${
+        className={`fixed bottom-6 right-6 z-50 transition-all duration-500 md:bottom-10 md:right-10 ${
           visible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-4 opacity-0"
         }`}
-        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
         <button
           type="button"
@@ -51,16 +52,16 @@ export function BackToTop() {
         </button>
       </div>
 
-      {/* Credit — visible only when contact section is in view. On mobile it
-          stretches along the bottom-left, leaving room for the back-to-top
-          button on the right. */}
+      {/* Credit — appears in the contact (final) section. On mobile it sits
+          above the back-to-top button as a full-width slim bar so it never
+          gets clipped or hidden by anything. On larger screens it goes back
+          to a small pill in the bottom-left corner. */}
       <div
         className={`fixed z-50 transition-opacity duration-500 ${
           showCredit ? "opacity-100" : "pointer-events-none opacity-0"
-        } left-2 right-20 bottom-3 sm:right-auto sm:left-3 sm:bottom-3 sm:max-w-[300px] md:bottom-4 md:left-5 md:max-w-[360px]`}
-        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+        } inset-x-2 bottom-20 sm:inset-x-auto sm:bottom-3 sm:left-3 sm:max-w-[300px] md:bottom-4 md:left-5 md:max-w-[360px]`}
       >
-        <p className="rounded-md bg-ink/85 px-3 py-2 font-display text-[11px] italic leading-snug text-cream/95 backdrop-blur-sm md:text-xs">
+        <p className="rounded-md bg-ink/70 px-3 py-2 text-center font-display text-[11px] italic leading-snug text-cream/95 backdrop-blur-sm sm:text-left sm:text-[11px] md:text-xs">
           Designed &amp; managed by{" "}
           <span className="not-italic text-gold-lt">Srilatha</span>
           {" — "}

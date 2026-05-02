@@ -80,41 +80,24 @@ function FeaturedInProgress({ project }: { project: Project }) {
     target: ref,
     offset: ["start end", "end start"],
   });
-  const imgY = useTransform(scrollYProgress, [0, 1], ["-6%", "6%"]);
+  const imgY = useTransform(scrollYProgress, [0, 1], ["-8%", "8%"]);
+  const imgScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.08, 1, 1.08]);
   const chipY = useTransform(scrollYProgress, [0, 1], [0, -30]);
 
-  // Three stages (matches the reference video):
-  //  0.0–0.4  → Final Render (full)
-  //  0.4–0.7  → Tilt + reveal: render scales down & tilts back, sketch/plan
-  //             rises from below to sit alongside it.
-  //  0.7–1.0  → Plans + materials palette dominate.
-  const renderScale = useTransform(scrollYProgress, [0, 0.4, 0.75], [1.08, 1, 0.78]);
-  const renderRotateX = useTransform(scrollYProgress, [0.35, 0.85], [0, -18]);
-  const renderRotateZ = useTransform(scrollYProgress, [0.35, 0.85], [0, -4]);
-  const renderTranslateY = useTransform(scrollYProgress, [0.35, 0.85], ["0%", "-18%"]);
-  const renderOpacity = useTransform(scrollYProgress, [0.85, 0.98], [1, 0.35]);
-
-  const planTranslateY = useTransform(scrollYProgress, [0.35, 0.75], ["80%", "0%"]);
-  const planOpacity = useTransform(scrollYProgress, [0.35, 0.6], [0, 1]);
-  const planRotateX = useTransform(scrollYProgress, [0.35, 0.85], [22, 8]);
-
-  const paletteX = useTransform(scrollYProgress, [0.55, 0.85], ["110%", "0%"]);
-  const paletteOpacity = useTransform(scrollYProgress, [0.55, 0.75], [0, 1]);
-
+  // "Behind the render" — as the user scrolls past the card, the final render
+  // fades out and the underlying drawing/sketch fades in. Three stages:
+  // 0   → final render
+  // 0.45→ paint / wash stage
+  // 0.85→ line drawing
+  const renderOpacity = useTransform(scrollYProgress, [0.25, 0.45], [1, 0]);
+  const paintOpacity = useTransform(scrollYProgress, [0.35, 0.5, 0.7, 0.85], [0, 1, 1, 0]);
+  const drawingOpacity = useTransform(scrollYProgress, [0.7, 0.9], [0, 1]);
   const stageLabelIdx = useTransform(scrollYProgress, (v) =>
-    v < 0.45 ? 0 : v < 0.75 ? 1 : 2,
+    v < 0.45 ? 0 : v < 0.8 ? 1 : 2,
   );
   const [stageIdx, setStageIdx] = useState(0);
   useEffect(() => stageLabelIdx.on("change", (v) => setStageIdx(v as number)), [stageLabelIdx]);
-  const STAGE_LABELS = ["Final Render", "Behind the Render", "Plans & Materials"];
-
-  // Material palette colours for the Munny project (mapped to its materials)
-  const palette = [
-    { name: "Dholpur sandstone", hex: "#c9a07a" },
-    { name: "Walnut veneer", hex: "#5a3a25" },
-    { name: "Low-iron glass", hex: "#cfd9d6" },
-    { name: "Patinated brass", hex: "#9a7b3f" },
-  ];
+  const STAGE_LABELS = ["Final Render", "Paint Wash", "Line Drawing"];
 
   return (
     <Reveal>
@@ -126,57 +109,44 @@ function FeaturedInProgress({ project }: { project: Project }) {
         transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
         className="grid gap-8 overflow-hidden border border-sand bg-cream/40 p-6 md:grid-cols-12 md:p-10"
       >
-        <div className="relative md:col-span-7" style={{ perspective: 1400 }}>
+        <div className="relative md:col-span-7">
           <div className="relative aspect-[4/3] w-full overflow-hidden bg-sand">
-            {/* Final render — tilts back + scales down on scroll */}
+            {/* Final render */}
             <motion.img
               src={project.image}
               alt={project.title}
               loading="lazy"
-              style={{
-                y: renderTranslateY,
-                scale: renderScale,
-                rotateX: renderRotateX,
-                rotateZ: renderRotateZ,
-                opacity: renderOpacity,
-                transformPerspective: 1400,
-                transformOrigin: "50% 30%",
-              }}
+              style={{ y: imgY, scale: imgScale, opacity: renderOpacity }}
               className="absolute inset-0 h-full w-full object-cover will-change-transform"
             />
-
-            {/* Floor-plan / sketch — rises from below as render tilts back */}
+            {/* Paint wash — desaturated + warm overlay */}
             <motion.div
-              style={{
-                y: planTranslateY,
-                opacity: planOpacity,
-                rotateX: planRotateX,
-                transformPerspective: 1400,
-                transformOrigin: "50% 100%",
-              }}
-              className="absolute inset-x-6 bottom-6 top-[40%] overflow-hidden rounded-md border border-espresso/30 bg-cream shadow-2xl"
+              style={{ opacity: paintOpacity }}
+              className="absolute inset-0"
               aria-hidden
             >
-              <SketchPlan />
+              <motion.img
+                src={project.image}
+                alt=""
+                loading="lazy"
+                style={{ y: imgY, scale: imgScale }}
+                className="h-full w-full object-cover [filter:saturate(0.4)_contrast(0.9)_sepia(0.35)]"
+              />
+              <div className="absolute inset-0 bg-cream/30 mix-blend-overlay" />
             </motion.div>
-
-            {/* Material palette — slides in from the right */}
+            {/* Line drawing — high contrast + invert effect */}
             <motion.div
-              style={{ x: paletteX, opacity: paletteOpacity }}
-              className="absolute right-4 top-4 z-10 flex flex-col gap-2 rounded-md border border-espresso/20 bg-cream/95 p-3 shadow-xl backdrop-blur-sm"
+              style={{ opacity: drawingOpacity }}
+              className="absolute inset-0 bg-cream"
               aria-hidden
             >
-              <p className="label text-[10px] text-caramel">Palette</p>
-              <div className="flex gap-2">
-                {palette.map((p) => (
-                  <span
-                    key={p.name}
-                    title={p.name}
-                    className="block h-8 w-8 rounded-sm border border-espresso/20"
-                    style={{ background: p.hex }}
-                  />
-                ))}
-              </div>
+              <motion.img
+                src={project.image}
+                alt=""
+                loading="lazy"
+                style={{ y: imgY, scale: imgScale }}
+                className="h-full w-full object-cover opacity-90 [filter:grayscale(1)_contrast(2.6)_brightness(1.05)] mix-blend-multiply"
+              />
             </motion.div>
 
             <motion.span
@@ -515,38 +485,6 @@ function useScrollObserver(
     refs.current.forEach((el) => el && obs.observe(el));
     return () => obs.disconnect();
   }, [refs, onActive]);
-}
-
-/* ─────────────────────────────────────────────────────────────────────── */
-
-/** Tiny SVG schematic floor plan — used behind the InProgress render */
-function SketchPlan() {
-  return (
-    <svg viewBox="0 0 400 220" className="h-full w-full" preserveAspectRatio="xMidYMid meet">
-      <rect x="10" y="10" width="380" height="200" fill="none" stroke="#2b2117" strokeWidth="2" />
-      {/* rooms */}
-      <line x1="160" y1="10" x2="160" y2="210" stroke="#2b2117" strokeWidth="1.5" />
-      <line x1="280" y1="10" x2="280" y2="210" stroke="#2b2117" strokeWidth="1.5" />
-      <line x1="160" y1="110" x2="280" y2="110" stroke="#2b2117" strokeWidth="1.5" />
-      <line x1="280" y1="80" x2="390" y2="80" stroke="#2b2117" strokeWidth="1.5" />
-      <line x1="280" y1="150" x2="390" y2="150" stroke="#2b2117" strokeWidth="1.5" />
-      {/* door swings */}
-      <path d="M160 60 A 30 30 0 0 1 190 90" fill="none" stroke="#a8763b" strokeWidth="1" />
-      <path d="M220 110 A 25 25 0 0 1 245 135" fill="none" stroke="#a8763b" strokeWidth="1" />
-      {/* furniture hints */}
-      <rect x="30" y="40" width="80" height="40" fill="none" stroke="#7a5b3a" strokeWidth="1" />
-      <rect x="30" y="140" width="60" height="50" fill="none" stroke="#7a5b3a" strokeWidth="1" />
-      <circle cx="220" cy="50" r="14" fill="none" stroke="#7a5b3a" strokeWidth="1" />
-      <rect x="300" y="30" width="70" height="30" fill="none" stroke="#7a5b3a" strokeWidth="1" />
-      <rect x="300" y="170" width="70" height="25" fill="none" stroke="#7a5b3a" strokeWidth="1" />
-      {/* labels */}
-      <text x="60" y="30" fontSize="9" fill="#5a3a25" fontFamily="serif">LIVING</text>
-      <text x="190" y="30" fontSize="9" fill="#5a3a25" fontFamily="serif">DINING</text>
-      <text x="190" y="130" fontSize="9" fill="#5a3a25" fontFamily="serif">KITCHEN</text>
-      <text x="305" y="22" fontSize="9" fill="#5a3a25" fontFamily="serif">BED 1</text>
-      <text x="305" y="165" fontSize="9" fill="#5a3a25" fontFamily="serif">BED 2</text>
-    </svg>
-  );
 }
 
 /* ─────────────────────────────────────────────────────────────────────── */

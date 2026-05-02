@@ -51,15 +51,15 @@ export function Contact() {
             <div className="mt-10 overflow-hidden border border-cream/15">
               <iframe
                 title="Terra Space Studio — location"
-                src="https://maps.google.com/maps?q=17.4081419,78.6026807&z=16&output=embed"
+                src="https://www.google.com/maps?q=Terra+Space+Studio,+Hyderabad&output=embed"
+                width="100%"
+                height="240"
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                className="block h-[260px] w-full grayscale-[0.2] md:h-[280px]"
-                style={{ border: 0 }}
-                allowFullScreen
+                className="block w-full grayscale-[0.2]"
               />
               <a
-                href="https://www.google.com/maps/dir/?api=1&destination=17.4081419,78.6026807&destination_place_id=ChIJyY9-HACfyzsRHCieG93iuuo"
+                href="https://www.google.com/maps/dir/?api=1&destination=Terra+Space+Studio,+Hyderabad&destination_place_id=ChIJyY9-HACfyzsRHCieG93iuuo"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="label flex items-center justify-between gap-3 border-t border-cream/15 bg-cream/[0.04] px-4 py-3 text-cream transition-colors hover:bg-cream/[0.08]"
