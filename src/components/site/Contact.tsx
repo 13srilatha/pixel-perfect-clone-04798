@@ -63,11 +63,31 @@ export function Contact() {
                 </span>
               </a>
             </div>
+
+            <div className="mt-8">
+              <a
+                href="https://maps.google.com/?q=Hyderabad,India"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mb-3 inline-block text-[11px] tracking-[0.3em] uppercase text-gold"
+              >
+                Get directions to our studio
+              </a>
+              <a href="https://maps.google.com/?q=Hyderabad,India" target="_blank" rel="noopener noreferrer">
+                <iframe
+                  title="Terra Space Studio map"
+                  src="https://www.google.com/maps?q=Hyderabad,India&z=13&output=embed"
+                  className="h-[220px] w-full rounded-sm border border-cream/25"
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                />
+              </a>
+            </div>
           </Reveal>
         </div>
 
         <footer className="mt-24 border-t border-cream/10 pt-8">
-          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-col gap-3 px-4 text-center md:flex-row md:items-center md:justify-between md:px-0 md:text-left">
             <p className="label text-cream/50">© {new Date().getFullYear()} {studio.name}. All rights reserved.</p>
             <p className="label text-cream/50">Crafted with restraint.</p>
           </div>
