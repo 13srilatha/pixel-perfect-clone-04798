@@ -130,7 +130,7 @@ export function Testimonials() {
           })}
         </div>
 
-        <p className="label mt-6 text-caramel">Scroll to hear them</p>
+      
       </div>
     </section>
   );
