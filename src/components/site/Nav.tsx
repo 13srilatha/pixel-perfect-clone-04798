@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { studio } from "@/data/projects";
 import { Logo } from "./Logo";
+import heroBg from "@/assets/projects/project-1.jpeg";
 
 export function Nav() {
   const [scrolled, setScrolled] = useState(false);
