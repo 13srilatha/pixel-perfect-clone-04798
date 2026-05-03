@@ -149,16 +149,16 @@ function FeaturedInProgress({ project }: { project: Project }) {
 
                 {/* Drawing layers (drift out from centre) */}
                 <DrawingLayer explode={explode} dx="-32%" dy="-28%" rot={-5} tag="01" label="Plan">
-                  <PlanSvg />
+                  <img src={planImg} alt="Sketch plan" className="h-full w-full object-cover" />
                 </DrawingLayer>
                 <DrawingLayer explode={explode} dx="32%" dy="-26%" rot={5} tag="02" label="SketchUp">
-                  <SketchUpSvg />
+                  <img src={sketchImg} alt="SketchUp model" className="h-full w-full object-cover" />
                 </DrawingLayer>
                 <DrawingLayer explode={explode} dx="-30%" dy="28%" rot={-4} tag="03" label="AutoCAD">
-                  <CadSvg />
+                  <img src={cadImg} alt="AutoCAD elevation" className="h-full w-full object-cover" />
                 </DrawingLayer>
                 <DrawingLayer explode={explode} dx="32%" dy="28%" rot={6} tag="04" label="Palette">
-                  <PaletteSvg />
+                  <img src={paletteImg} alt="Material palette" className="h-full w-full object-cover" />
                 </DrawingLayer>
 
                 {/* In-progress chip + active stage chip */}
@@ -187,9 +187,8 @@ function FeaturedInProgress({ project }: { project: Project }) {
             {/* RIGHT — project copy + progress rail */}
             <div className="flex flex-col justify-between md:col-span-5">
               <div>
-                <p className="label text-caramel">{project.category} · {project.year}</p>
                 <h3 className="mt-3 font-display text-3xl font-light text-espresso md:text-5xl">{project.title}</h3>
-                <p className="label mt-2 normal-case tracking-normal text-brown">{project.location}</p>
+                <p className="label mt-2 normal-case tracking-normal text-brown">Hyderabad, India</p>
                 <p className="mt-6 text-base leading-relaxed text-brown text-pretty">{project.description}</p>
               </div>
 
