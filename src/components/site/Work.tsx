@@ -57,9 +57,7 @@ export function Work() {
                 Houses that hold <em className="italic text-caramel">memory</em>.
               </h2>
             </div>
-            <p className="max-w-md text-base leading-relaxed text-brown text-pretty">
-              Scroll horizontally through every category. Tap a panel to open the gallery.
-            </p>
+            
           </Reveal>
 
           {inProgress && <FeaturedInProgress project={inProgress} />}
@@ -171,15 +169,8 @@ function FeaturedInProgress({ project }: { project: Project }) {
 
                 {/* Scroll cue */}
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-end justify-between gap-4 bg-gradient-to-t from-ink/70 via-ink/10 to-transparent p-5 md:p-6">
-                  <div>
-                    <p className="label text-gold-lt">Behind the render</p>
-                    <p className="mt-1 font-display text-base font-light text-cream md:text-lg">
-                      Scroll to see plan, SketchUp, AutoCAD & palette
-                    </p>
-                  </div>
-                  <span className="label inline-flex items-center gap-2 border border-cream/60 bg-ink/40 px-3 py-2 text-cream backdrop-blur-sm">
-                    Scroll <span aria-hidden>↓</span>
-                  </span>
+                 
+                  
                 </div>
               </div>
             </div>
