@@ -2,6 +2,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { projects, type Project, type ProjectCategory } from "@/data/projects";
 import { Reveal } from "./Nav";
+import planImg from "@/assets/inprogress/plan.png";
+import sketchImg from "@/assets/inprogress/sketchup.png";
+import cadImg from "@/assets/inprogress/autocad.png";
+import paletteImg from "@/assets/inprogress/palette.png";
 
 const CATEGORY_ORDER: ProjectCategory[] = ["Residential", "Interior", "Commercial", "Renovation"];
 
@@ -47,14 +51,14 @@ export function Work() {
             <div>
               <p className="label mb-4 inline-flex items-center gap-3">
                 <span className="h-px w-10 bg-caramel" />
-                Selected Work
+                Work
               </p>
               <h2 className="display max-w-2xl text-[clamp(2.5rem,6vw,5rem)] text-espresso">
                 Houses that hold <em className="italic text-caramel">memory</em>.
               </h2>
             </div>
             <p className="max-w-md text-base leading-relaxed text-brown text-pretty">
-              Scroll horizontally through every category. Tap a panel to open the gallery — hover any image to read the materials and the why.
+              Scroll horizontally through every category. Tap a panel to open the gallery.
             </p>
           </Reveal>
 
@@ -63,8 +67,6 @@ export function Work() {
 
         {/* Horizontal sticky-scroll category panels */}
         <HorizontalCategories onOpen={setOpenCategory} />
-
-        <Studio />
       </section>
 
       <AnimatePresence>
