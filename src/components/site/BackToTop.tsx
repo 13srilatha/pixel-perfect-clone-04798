@@ -51,11 +51,12 @@ export function BackToTop() {
       </div>
 
       {showCredit && (
-        <div className="fixed bottom-3 left-3 z-50 max-w-[260px] md:bottom-4 md:left-5 md:max-w-[320px]">
-          <p className="font-display text-[10px] italic leading-snug text-cream/65 md:text-[11px]">
-            Portfolio designed & managed by{" "}
+        <div className="fixed bottom-2 left-2 z-50 max-w-[60vw] md:bottom-4 md:left-5 md:max-w-[320px]">
+          <p className="font-display text-[10px] italic leading-snug text-cream/80 md:text-[11px]">
+            Designed & managed by{" "}
             <span className="not-italic text-gold-lt">Srilatha</span>
-            {" — "}
+            <br className="md:hidden" />
+            <span className="hidden md:inline"> — </span>
             <a
               href="mailto:imsrilathaa@gmail.com"
               className="underline-offset-2 hover:underline"
