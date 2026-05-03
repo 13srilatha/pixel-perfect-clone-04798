@@ -9,14 +9,11 @@ export function Process() {
         <Reveal className="mb-14 max-w-3xl">
           <p className="label mb-4 inline-flex items-center gap-3">
             <span className="h-px w-10 bg-caramel" />
-            Same Room — Before to After
+            Before to After
           </p>
           <h2 className="display text-[clamp(2.5rem,6vw,5rem)] text-espresso">
             Drawings become <em className="italic text-caramel">rooms</em>.
           </h2>
-          <p className="mt-6 text-lg leading-relaxed text-brown text-pretty">
-            Drag the slider to reveal the same space at the start of construction and on the day it was handed over.
-          </p>
         </Reveal>
 
         <div className="grid gap-12 md:gap-20">
