@@ -1,18 +1,31 @@
 # How to update Terra Space Studio
 
-This is your one-page cheat-sheet. Everything here is something you can do
-yourself, no developer needed. All paths are relative to the project root.
+This is your one-page cheat-sheet. All paths are relative to the project root.
+You can edit any of these files directly on GitHub — the site rebuilds on push.
+
+---
+
+## Folder map (where every image lives)
+
+| What | Folder | Notes |
+|---|---|---|
+| Project images (Residential / Interior / Commercial / Renovation) | `src/assets/projects/` | One image per project. Use `.jpeg`. |
+| In-Progress drawings (Plan, SketchUp, AutoCAD, Palette) | `src/assets/inprogress/` | 4 files: `plan.png`, `sketchup.png`, `autocad.png`, `palette.png` |
+| Architect / founder portrait | `src/assets/architect-portrait.jpeg` | One file, overwrite to swap. |
+| Walkthrough scenes (the cinematic story) | `src/assets/walkthrough/` | 6 ordered images: `01-approach.jpg` … `06-terrace.jpg` |
+| Before / After slider pairs | `src/assets/process/` | Pair files referenced from `src/data/interiors.ts` |
+| Logo (transparent) | `src/assets/terra-logo-transparent.png` | Keep transparent background. |
+| Hero background image | `src/assets/projects/project-1.jpeg` | The big soft image behind the hero text. Change the file (or the import in `src/components/site/Nav.tsx` line 5) to swap. |
+| Launch reel video | `public/reel.mp4` | Drop the `.mp4` here; auto-detected. |
+
+> Tip: keep file names lowercase, use dashes, keep extensions consistent.
 
 ---
 
 ## 1. Add a new project (Residential / Interior / Commercial / Renovation)
 
-1. Drop the image into the right folder:
-   - `src/assets/projects/` for any project image
-   - File name in lowercase with dashes, e.g. `lake-villa.jpeg`
-
-2. Open `src/data/projects.ts`, copy any existing entry inside `projects = [...]`,
-   paste it at the bottom, change the fields:
+1. Drop the image into `src/assets/projects/` (e.g. `lake-villa.jpeg`).
+2. Open **`src/data/projects.ts`**, copy any entry inside the `projects = [...]` array, paste at the bottom, change the fields:
 
    ```ts
    {
@@ -20,9 +33,9 @@ yourself, no developer needed. All paths are relative to the project root.
      title: "Lake Villa",
      location: "Hyderabad, India",
      year: "2026",
-     category: "Residential", // or "Interior" | "Commercial" | "Renovation"
-     status: "in-progress",   // or "completed" | "concept"
-     image: lakeVilla,         // same name as your import below
+     category: "Residential", // "Residential" | "Interior" | "Commercial" | "Renovation"
+     status: "in-progress",   // "completed" | "in-progress" | "concept"
+     image: lakeVilla,
      description: "One short paragraph about the project.",
      materials: ["Walnut", "Travertine", "Brass"],
      intent: "The why — what made this house feel right.",
@@ -30,90 +43,116 @@ yourself, no developer needed. All paths are relative to the project root.
    },
    ```
 
-3. At the very top of the same file, add the import:
+3. At the **top of the same file**, add the import (lines 1–13 are the existing imports — add yours below them):
    ```ts
    import lakeVilla from "@/assets/projects/lake-villa.jpeg";
    ```
 
-That's it. The new card will show in the Work section under its category,
-and on hover it will flip to reveal materials + intent.
+That's it. The new card will appear in the Work section under its category.
+
+### To remove a project
+
+Delete its `{ ... }` block in `src/data/projects.ts` and (optionally) the matching image file.
 
 ---
 
-## 2. Replace the architect's portrait
+## 2. Replace the In-Progress drawings (Plan / SketchUp / AutoCAD / Palette)
 
-Just overwrite this exact file with the new photo (same filename):
+These are the 4 floating images that drift out around the Munny Residence render. Just **overwrite the files** with the same names — no code change needed:
+
+```
+src/assets/inprogress/plan.png       ← hand sketch / plan
+src/assets/inprogress/sketchup.png   ← 3D model
+src/assets/inprogress/autocad.png    ← elevation / CAD
+src/assets/inprogress/palette.png    ← material palette
+```
+
+Recommended: 4:3 aspect ratio, around 1200×900px, PNG.
+
+To swap which **render** sits in the centre, change `image: munny3d` on the
+`munny-residence` entry in `src/data/projects.ts` (line ~43).
+
+---
+
+## 3. Replace the founder portrait
+
+Overwrite this exact file with the new photo (same filename):
 
 ```
 src/assets/architect-portrait.jpeg
 ```
 
 Recommended: portrait orientation, 4:5 ratio, 1024×1280 or larger.
+Used in two places — the Architect section AND the centre of the Client Words testimonials.
 
 ---
 
-## 3. Add the launch reel video
+## 4. Add the launch reel video
 
-1. Drop your `.mp4` file into the `public/` folder at the project root, named
-   exactly:
-
-   ```
-   public/reel.mp4
-   ```
-
-2. That's it. The site will auto-detect it and play it muted on scroll.
-   Click still opens the Instagram reel.
-
-3. Tips for the file:
-   - Keep it under ~15 MB if possible (use [Handbrake](https://handbrake.fr/)
-     or any online compressor — H.264, 720p, 2 Mbps bitrate works great).
-   - 16:9 looks best in the slot.
+1. Drop your `.mp4` into the `public/` folder named exactly `reel.mp4`.
+2. Currently the reel is not displayed on the homepage. To bring it back, ask Lovable to "re-add the reel section".
+3. Tips: keep it under ~15 MB (use [Handbrake](https://handbrake.fr/), H.264, 720p).
 
 ---
 
-## 4. Add a 3D building model (when your client sends the file)
+## 5. Edit testimonials (Client Words)
 
-When she gives you the model, ask for **`.glb`** format specifically. From
-SketchUp she can export it via the *glTF Exporter* plugin (free); from Revit
-or Blender it's a built-in export.
+Open **`src/components/site/Testimonials.tsx`**, find the `testimonials` array near the top (line ~10). Edit/add/remove entries:
 
-Then:
+```ts
+{
+  quote: "They listened more than they spoke...",
+  name: "Charry Reddy",
+  title: "Homeowner · Jubilee Hills",
+},
+```
 
-1. Drop the file into `public/models/` (create the folder if needed):
-   ```
-   public/models/munny-residence.glb
-   ```
-
-2. Tell me ("Add the 3D viewer using `/models/munny-residence.glb`") and I'll
-   wire it into the Best Project section — it's a 5-minute change once the
-   file exists.
+Keep around **4 testimonials** — the fan-out animation is tuned for 4 cards.
 
 ---
 
-## 5. Update studio details (phone, email, Instagram, address)
+## 6. Update studio details (phone, email, Instagram, address)
 
-All in one place: `src/data/projects.ts` → bottom of the file → `export const studio = {...}`.
-
----
-
-## 6. Add before / after construction pairs
-
-1. Drop the two images into `src/assets/process/`
-2. Open `src/data/interiors.ts`, scroll to `processPairs = [...]` and add a
-   new entry (copy any existing one as template).
+All in one place: bottom of `src/data/projects.ts` → `export const studio = {...}` (around line 225).
 
 ---
 
-## 7. Add walkthrough scenes
+## 7. Add Before / After construction pairs
 
-The home walkthrough is 6 steps. To swap or add:
+1. Drop the two images into `src/assets/process/`.
+2. Open `src/data/interiors.ts`, scroll to `processPairs = [...]` and add a new entry (copy any existing one as template).
 
-1. Drop new images into `src/assets/walkthrough/`
-2. Edit `src/data/walkthrough.ts` — order matters (top = first scene seen).
+---
+
+## 8. Update walkthrough scenes (the cinematic story)
+
+The walkthrough is 6 ordered scenes.
+
+1. Drop new images into `src/assets/walkthrough/` (keep the `01-`, `02-` … prefixes so the order stays correct).
+2. Edit `src/data/walkthrough.ts` — only change the `title:` field if you want different headings (the long descriptions are intentionally blank now).
+
+---
+
+## 9. Edit the chatbot questions
+
+Open **`src/components/site/ChatBot.tsx`**, find the `FAQ` array near the top (line ~15). Each entry is one preset question + answer:
+
+```ts
+{
+  id: "services",
+  question: "What services do you offer?",
+  answer: "Residential architecture, interior design...",
+},
+```
+
+---
+
+## 10. Edit the Google Map location
+
+Open `src/components/site/Contact.tsx`, find the `<iframe ... src="..." />` (around line 73). Replace the `q=` parameter in the URL with your address.
 
 ---
 
 ## Anything else?
 
-Tell me in chat what you want to change and I'll either do it or write it
-into this guide.
+Tell Lovable in chat what you want to change and it will either do it or extend this guide.
