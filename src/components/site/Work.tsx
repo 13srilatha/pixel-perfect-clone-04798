@@ -568,11 +568,6 @@ function CategoryGallery({
                   <p className="mt-6 max-w-lg text-base leading-relaxed text-brown text-pretty">
                     {active?.description}
                   </p>
-                  {active?.intent && (
-                    <p className="mt-6 border-l-2 border-caramel pl-4 font-display text-lg italic text-espresso">
-                      "{active.intent}"
-                    </p>
-                  )}
                   {active?.materials && active.materials.length > 0 && (
                     <dl className="mt-6 border-t border-sand pt-5">
                       <dt className="label mb-2 text-caramel">Materials</dt>
