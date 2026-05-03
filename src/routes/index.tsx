@@ -3,6 +3,7 @@ import { Hero, Nav } from "@/components/site/Nav";
 import { Walkthrough } from "@/components/site/Walkthrough";
 import { Work } from "@/components/site/Work";
 import { Process } from "@/components/site/Process";
+import { RotatingHouse } from "@/components/site/RotatingHouse";
 import { Testimonials } from "@/components/site/Testimonials";
 import { Architect } from "@/components/site/Architect";
 import { Contact } from "@/components/site/Contact";
@@ -34,6 +35,7 @@ function Index() {
       <Work />
       <Process />
       <Testimonials />
+      <RotatingHouse />
       <Architect />
       <Contact />
       <BackToTop />

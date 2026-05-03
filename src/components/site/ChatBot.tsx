@@ -48,6 +48,7 @@ export function ChatBot() {
   const [active, setActive] = useState<Step | null>(null);
   const [custom, setCustom] = useState("");
   const [showCustom, setShowCustom] = useState(false);
+  const [sent, setSent] = useState(false);
 
   const goContact = () => {
     setOpen(false);
@@ -110,12 +111,21 @@ export function ChatBot() {
                   placeholder="Type your question…"
                   className="w-full resize-none border-b border-sand bg-transparent py-1 text-espresso focus:border-espresso focus:outline-none"
                 />
-                <a
-                  href={`mailto:terraspacestudios07@gmail.com?subject=${encodeURIComponent("Question from website chat")}&body=${encodeURIComponent(custom)}`}
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const r = await fetch("https://formspree.io/f/mnqewlln", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json", Accept: "application/json" },
+                      body: JSON.stringify({ source: "chatbot", message: custom }),
+                    });
+                    if (r.ok) { setCustom(""); setSent(true); }
+                  }}
                   className="label inline-flex items-center gap-2 bg-espresso px-3 py-2 text-cream"
                 >
                   Send to studio →
-                </a>
+                </button>
+                {sent && <p className="label text-green-700">Message sent.</p>}
               </div>
             )}
           </div>

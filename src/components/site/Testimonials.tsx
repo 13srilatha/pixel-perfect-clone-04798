@@ -1,136 +1,34 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 import portrait from "@/assets/architect-portrait.jpeg";
 
-interface Testimonial {
-  quote: string;
-  name: string;
-  title: string;
-}
-
-const testimonials: Testimonial[] = [
-  {
-    quote:
-      "They listened more than they spoke. Our home feels like the version of us we couldn't put into words.",
-    name: "Charry Reddy",
-    title: "Homeowner · Jubilee Hills",
-  },
-  {
-    quote:
-      "Every drawing came back with care. The site team treated our half-built house like their own.",
-    name: "Muthyam Rao",
-    title: "Client · Kompally Residence",
-  },
-  {
-    quote:
-      "We changed our mind a hundred times. Vaasanthi never lost patience — and the result is honestly perfect.",
-    name: "Aparna Iyer",
-    title: "Client · Kondapur Villa",
-  },
-  {
-    quote:
-      "A studio that builds slowly, in the best way. Stone, wood, light — exactly the home we asked for.",
-    name: "Rohan Kapoor",
-    title: "Client · Banjara Hills",
-  },
+const cards = [
+  { quote: "They listened more than they spoke.", name: "Charry Reddy", title: "Jubilee Hills", w: 300, h: 400, x: "-42vw", y: "-25vh", r: -9 },
+  { quote: "The site team treated our house like their own.", name: "Muthyam Rao", title: "Kompally", w: 350, h: 300, x: "38vw", y: "-18vh", r: 8 },
+  { quote: "Patient, precise, and deeply personal.", name: "Aparna Iyer", title: "Kondapur", w: 320, h: 360, x: "-30vw", y: "24vh", r: -6 },
+  { quote: "Slow craft, beautiful result.", name: "Rohan Kapoor", title: "Banjara Hills", w: 290, h: 330, x: "35vw", y: "22vh", r: 10 },
+  { quote: "We felt heard in every decision.", name: "Sushmita Rao", title: "Gachibowli", w: 340, h: 290, x: "6vw", y: "-30vh", r: -4 },
 ];
 
-/**
- * Client Words — sticky center portrait with cards that "fan out" from
- * behind it as the user scrolls. Works on mobile, tablet and desktop:
- * card distances are computed in vw so they scale with the viewport.
- */
 export function Testimonials() {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    let raf = 0;
-    const onScroll = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        const el = sectionRef.current;
-        if (!el) return;
-        const rect = el.getBoundingClientRect();
-        const vh = window.innerHeight;
-        const total = el.offsetHeight - vh;
-        const scrolled = Math.min(Math.max(-rect.top, 0), total);
-        const p = total > 0 ? scrolled / total : 0;
-        setProgress(p);
-      });
-    };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("scroll", onScroll);
-    };
-  }, []);
-
-  // 0 → stacked behind portrait; 1 → fully fanned out
-  const fan = Math.min(1, Math.max(0, (progress - 0.15) / 0.55));
-
-  // Outer cards travel further than inner cards
-  const offsets = [-1, -0.5, 0.5, 1]; // multipliers
-  const rotations = [-9, -4, 4, 9];
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
+  const spread = useTransform(scrollYProgress, [0.1, 0.75], [0, 1]);
 
   return (
-    <section
-      id="testimonials"
-      ref={sectionRef}
-      className="relative bg-cream"
-      style={{ height: "260vh" }}
-      aria-label="Client testimonials"
-    >
-      <div className="sticky top-0 flex h-screen w-full flex-col items-center justify-center overflow-hidden px-4 py-10 md:px-10">
-        <h2 className="display mb-6 text-center text-[clamp(2rem,5vw,4rem)] font-bold text-espresso md:mb-10">
-          Client <em className="italic text-caramel">Words</em>
-        </h2>
-
-        <div className="relative flex h-[68vh] w-full max-w-[1400px] items-center justify-center">
-          {/* Center portrait (4:5) — pinned */}
-          <div className="relative z-10 h-full w-[clamp(180px,28vw,360px)] overflow-hidden bg-sand shadow-xl">
-            <img
-              src={portrait}
-              alt="Founder"
-              className="h-full w-full object-cover"
-              style={{ aspectRatio: "4 / 5" }}
-            />
+    <section id="testimonials" ref={ref} className="relative h-[270vh] bg-cream">
+      <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden px-4 md:px-10">
+        <div className="origin-center scale-[0.75] md:scale-100">
+          <h2 className="display mb-8 text-center text-[clamp(2rem,5vw,4rem)] text-espresso">Client <em className="italic text-caramel">Words</em></h2>
+          <div className="relative flex h-[68vh] w-[92vw] max-w-[1200px] items-center justify-center">
+            {cards.map((c) => (
+              <motion.article key={c.name} className="absolute left-1/2 top-1/2 rounded-lg border border-sand bg-cream p-5 shadow-xl" style={{ width: c.w, height: c.h, x: useTransform(spread, [0, 1], ["-50%", `calc(-50% + ${c.x})`]), y: useTransform(spread, [0, 1], ["-50%", `calc(-50% + ${c.y})`]), rotate: useTransform(spread, [0, 1], [0, c.r]) }}>
+                <p className="font-display text-lg italic text-espresso">"{c.quote}"</p><p className="mt-4 text-sm font-semibold uppercase tracking-widest text-espresso">{c.name}</p><p className="label text-brown">{c.title}</p>
+              </motion.article>
+            ))}
+            <div className="relative z-20 h-[72vh] w-[clamp(210px,26vw,360px)] overflow-hidden border border-sand bg-sand shadow-2xl"><img src={portrait} alt="Architect portrait" className="h-full w-full object-cover" /></div>
           </div>
-
-          {/* Fanned-out cards */}
-          {testimonials.map((t, i) => {
-            const dir = offsets[i];
-            // Distance scales with viewport. Outer card travels 36vw, inner 18vw.
-            const distVw = dir * fan * 38;
-            const rotate = fan * rotations[i];
-            const opacity = Math.min(1, fan * 1.4);
-            const z = i === 0 || i === 3 ? 5 : 6;
-            return (
-              <article
-                key={t.name}
-                className="absolute left-1/2 top-1/2 w-[78vw] max-w-[280px] -translate-x-1/2 -translate-y-1/2 rounded-lg border border-sand bg-cream p-5 shadow-lg md:w-[260px] md:p-6"
-                style={{
-                  transform: `translate(-50%, -50%) translateX(${distVw}vw) rotate(${rotate}deg)`,
-                  opacity,
-                  zIndex: z,
-                  transition: "opacity 200ms ease",
-                }}
-              >
-                <p className="font-display text-base italic leading-snug text-espresso md:text-lg">
-                  "{t.quote}"
-                </p>
-                <div className="mt-4 border-t border-sand pt-3">
-                  <p className="font-sans text-sm font-bold uppercase tracking-wide text-espresso">
-                    {t.name}
-                  </p>
-                  <p className="label mt-1 normal-case tracking-normal text-brown">{t.title}</p>
-                </div>
-              </article>
-            );
-          })}
         </div>
-
-      
       </div>
     </section>
   );

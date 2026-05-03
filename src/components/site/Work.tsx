@@ -287,7 +287,7 @@ function HorizontalCategories({ onOpen }: { onOpen: (c: ProjectCategory) => void
         </div>
 
         {/* progress rail */}
-        <div className="pointer-events-none absolute inset-x-10 bottom-6 z-20 flex items-center gap-4">
+        <div className="pointer-events-none absolute inset-x-10 top-6 z-20 flex items-center gap-4">
           <span className="label text-caramel">Services</span>
           <span className="relative h-px flex-1 bg-sand">
             <motion.span
@@ -332,14 +332,25 @@ function CategoryPanel({
         <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-1 opacity-90">
           {items.slice(0, 4).map((p, i) => (
             <div key={p.id} className="relative overflow-hidden bg-ink">
-              <img
-                src={p.image}
-                alt=""
-                aria-hidden
-                loading="lazy"
-                className="h-full w-full object-cover transition-transform duration-[1800ms] ease-out group-hover:scale-110"
-                style={{ animationDelay: `${i * 80}ms` }}
-              />
+              {category === "Interior" && i === 0 ? (
+                <video
+                  src="/interior-cover.mp4"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  className="h-full w-full object-contain transition-transform duration-[1800ms] ease-out group-hover:scale-100"
+                />
+              ) : (
+                <img
+                  src={p.image}
+                  alt=""
+                  aria-hidden
+                  loading="lazy"
+                  className="h-full w-full object-cover transition-transform duration-[1800ms] ease-out group-hover:scale-110"
+                  style={{ animationDelay: `${i * 80}ms` }}
+                />
+              )}
             </div>
           ))}
           {items.length === 0 && <div className="col-span-2 row-span-2 bg-espresso" />}
