@@ -1,13 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Hero, Nav } from "@/components/site/Nav";
 import { Walkthrough } from "@/components/site/Walkthrough";
-import { RotatingHouse } from "@/components/site/RotatingHouse";
 import { Work } from "@/components/site/Work";
 import { Process } from "@/components/site/Process";
-
+import { Testimonials } from "@/components/site/Testimonials";
 import { Architect } from "@/components/site/Architect";
 import { Contact } from "@/components/site/Contact";
 import { BackToTop } from "@/components/site/BackToTop";
+import { IntroLogo } from "@/components/site/IntroLogo";
+import { ChatBot } from "@/components/site/ChatBot";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -26,15 +27,17 @@ export const Route = createFileRoute("/")({
 function Index() {
   return (
     <main className="bg-cream text-espresso">
+      <IntroLogo />
       <Nav />
       <Hero />
       <Walkthrough />
       <Work />
       <Process />
-      <RotatingHouse />
+      <Testimonials />
       <Architect />
       <Contact />
       <BackToTop />
+      <ChatBot />
     </main>
   );
 }

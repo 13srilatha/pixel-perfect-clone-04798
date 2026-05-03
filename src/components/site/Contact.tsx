@@ -66,6 +66,31 @@ export function Contact() {
           </Reveal>
         </div>
 
+        {/* Studio location map */}
+        <Reveal className="mt-16">
+          <p className="label mb-4 text-gold">Find the studio</p>
+          <div className="overflow-hidden border border-cream/15">
+            <iframe
+              title="Terra Space Studio location"
+              src="https://www.google.com/maps?q=Terra+Space+Studio,+Hyderabad&output=embed"
+              width="100%"
+              height="320"
+              style={{ border: 0, filter: "grayscale(0.4) contrast(1.05)" }}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              allowFullScreen
+            />
+          </div>
+          <a
+            href="https://www.google.com/maps/place/Terra+Space+Studio/@17.4081419,78.6026807,17z"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="label mt-3 inline-flex items-center gap-2 text-gold-lt hover:text-gold"
+          >
+            Open in Google Maps →
+          </a>
+        </Reveal>
+
         <footer className="mt-24 border-t border-cream/10 pt-8">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <p className="label text-cream/50">© {new Date().getFullYear()} {studio.name}. All rights reserved.</p>
@@ -145,7 +170,7 @@ function ContactForm() {
           Send Enquiry
           <span className="transition-transform group-hover:translate-x-1">→</span>
         </button>
-        <p className="label mt-3 text-cream/40">Opens your email app · we reply within 48 hours</p>
+        <p className="label mt-3 text-cream/40">We reply within 48 hours</p>
       </div>
     </form>
   );

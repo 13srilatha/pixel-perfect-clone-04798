@@ -2,6 +2,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { projects, type Project, type ProjectCategory } from "@/data/projects";
 import { Reveal } from "./Nav";
+import planImg from "@/assets/inprogress/plan.png";
+import sketchImg from "@/assets/inprogress/sketchup.png";
+import cadImg from "@/assets/inprogress/autocad.png";
+import paletteImg from "@/assets/inprogress/palette.png";
 
 const CATEGORY_ORDER: ProjectCategory[] = ["Residential", "Interior", "Commercial", "Renovation"];
 
@@ -47,14 +51,14 @@ export function Work() {
             <div>
               <p className="label mb-4 inline-flex items-center gap-3">
                 <span className="h-px w-10 bg-caramel" />
-                Selected Work
+                Work
               </p>
               <h2 className="display max-w-2xl text-[clamp(2.5rem,6vw,5rem)] text-espresso">
                 Houses that hold <em className="italic text-caramel">memory</em>.
               </h2>
             </div>
             <p className="max-w-md text-base leading-relaxed text-brown text-pretty">
-              Scroll horizontally through every category. Tap a panel to open the gallery — hover any image to read the materials and the why.
+              Scroll horizontally through every category. Tap a panel to open the gallery.
             </p>
           </Reveal>
 
@@ -63,8 +67,6 @@ export function Work() {
 
         {/* Horizontal sticky-scroll category panels */}
         <HorizontalCategories onOpen={setOpenCategory} />
-
-        <Studio />
       </section>
 
       <AnimatePresence>
@@ -147,16 +149,16 @@ function FeaturedInProgress({ project }: { project: Project }) {
 
                 {/* Drawing layers (drift out from centre) */}
                 <DrawingLayer explode={explode} dx="-32%" dy="-28%" rot={-5} tag="01" label="Plan">
-                  <PlanSvg />
+                  <img src={planImg} alt="Sketch plan" className="h-full w-full object-cover" />
                 </DrawingLayer>
                 <DrawingLayer explode={explode} dx="32%" dy="-26%" rot={5} tag="02" label="SketchUp">
-                  <SketchUpSvg />
+                  <img src={sketchImg} alt="SketchUp model" className="h-full w-full object-cover" />
                 </DrawingLayer>
                 <DrawingLayer explode={explode} dx="-30%" dy="28%" rot={-4} tag="03" label="AutoCAD">
-                  <CadSvg />
+                  <img src={cadImg} alt="AutoCAD elevation" className="h-full w-full object-cover" />
                 </DrawingLayer>
                 <DrawingLayer explode={explode} dx="32%" dy="28%" rot={6} tag="04" label="Palette">
-                  <PaletteSvg />
+                  <img src={paletteImg} alt="Material palette" className="h-full w-full object-cover" />
                 </DrawingLayer>
 
                 {/* In-progress chip + active stage chip */}
@@ -185,9 +187,8 @@ function FeaturedInProgress({ project }: { project: Project }) {
             {/* RIGHT — project copy + progress rail */}
             <div className="flex flex-col justify-between md:col-span-5">
               <div>
-                <p className="label text-caramel">{project.category} · {project.year}</p>
                 <h3 className="mt-3 font-display text-3xl font-light text-espresso md:text-5xl">{project.title}</h3>
-                <p className="label mt-2 normal-case tracking-normal text-brown">{project.location}</p>
+                <p className="label mt-2 normal-case tracking-normal text-brown">Hyderabad, India</p>
                 <p className="mt-6 text-base leading-relaxed text-brown text-pretty">{project.description}</p>
               </div>
 
@@ -260,86 +261,6 @@ function DrawingLayer({
   );
 }
 
-/* ─── Inline SVG drawings ────────────────────────────────────────────── */
-
-function PlanSvg() {
-  return (
-    <svg viewBox="0 0 160 120" className="h-full w-full" stroke="currentColor" fill="none" strokeWidth="0.6" style={{ color: "var(--espresso)" }}>
-      <rect x="10" y="10" width="140" height="100" />
-      <line x1="10" y1="55" x2="150" y2="55" />
-      <line x1="80" y1="10" x2="80" y2="110" />
-      <rect x="14" y="14" width="62" height="37" fill="var(--sand)" fillOpacity="0.4" />
-      <rect x="84" y="14" width="62" height="37" fill="var(--sand)" fillOpacity="0.25" />
-      <rect x="14" y="59" width="62" height="47" fill="var(--sand)" fillOpacity="0.2" />
-      <rect x="84" y="59" width="62" height="47" fill="var(--sand)" fillOpacity="0.35" />
-      <path d="M40 55 a8 8 0 0 1 8 -8" />
-      <path d="M110 55 a8 8 0 0 0 -8 -8" />
-      <rect x="20" y="20" width="20" height="10" />
-      <circle cx="115" cy="80" r="6" />
-    </svg>
-  );
-}
-
-function SketchUpSvg() {
-  return (
-    <svg viewBox="0 0 160 120" className="h-full w-full" stroke="currentColor" fill="none" strokeWidth="0.7" style={{ color: "var(--espresso)" }}>
-      <polygon points="40,80 100,80 120,68 60,68" fill="var(--sand)" fillOpacity="0.3" />
-      <polygon points="40,80 40,40 60,28 60,68" fill="var(--sand)" fillOpacity="0.45" />
-      <polygon points="100,80 100,40 120,28 120,68" fill="var(--sand)" fillOpacity="0.35" />
-      <line x1="40" y1="40" x2="100" y2="40" />
-      <line x1="60" y1="28" x2="120" y2="28" />
-      <polygon points="40,40 100,40 120,28 60,28" fill="var(--caramel)" fillOpacity="0.35" />
-      <rect x="48" y="50" width="10" height="14" />
-      <rect x="78" y="50" width="10" height="14" />
-    </svg>
-  );
-}
-
-function CadSvg() {
-  return (
-    <svg viewBox="0 0 160 120" className="h-full w-full" stroke="currentColor" fill="none" strokeWidth="0.4" style={{ color: "var(--espresso)" }}>
-      <rect x="20" y="20" width="120" height="80" strokeWidth="0.7" />
-      <line x1="20" y1="14" x2="140" y2="14" />
-      <line x1="20" y1="12" x2="20" y2="16" />
-      <line x1="140" y1="12" x2="140" y2="16" />
-      <line x1="60" y1="20" x2="60" y2="100" strokeDasharray="2 1.5" />
-      <line x1="100" y1="20" x2="100" y2="100" strokeDasharray="2 1.5" />
-      <line x1="20" y1="60" x2="140" y2="60" strokeDasharray="2 1.5" />
-      <pattern id="hatchInline" width="2" height="2" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-        <line x1="0" y1="0" x2="0" y2="2" stroke="var(--caramel)" strokeWidth="0.3" />
-      </pattern>
-      <rect x="20" y="20" width="40" height="40" fill="url(#hatchInline)" stroke="none" />
-    </svg>
-  );
-}
-
-function PaletteSvg() {
-  const swatches = [
-    { c: "var(--cream)" },
-    { c: "var(--sand)" },
-    { c: "var(--caramel)" },
-    { c: "var(--brown)" },
-    { c: "var(--espresso)" },
-    { c: "var(--gold)" },
-  ];
-  return (
-    <svg viewBox="0 0 160 120" className="h-full w-full">
-      {swatches.map((s, i) => (
-        <rect
-          key={i}
-          x={10 + (i % 3) * 48}
-          y={12 + Math.floor(i / 3) * 50}
-          width={42}
-          height={40}
-          fill={s.c}
-          stroke="var(--espresso)"
-          strokeWidth="0.3"
-        />
-      ))}
-    </svg>
-  );
-}
-
 /* ─────────────────────────────────────────────────────────────────────── */
 
 function HorizontalCategories({ onOpen }: { onOpen: (c: ProjectCategory) => void }) {
@@ -376,7 +297,7 @@ function HorizontalCategories({ onOpen }: { onOpen: (c: ProjectCategory) => void
 
         {/* progress rail */}
         <div className="pointer-events-none absolute inset-x-10 bottom-6 z-20 flex items-center gap-4">
-          <span className="label text-caramel">Categories</span>
+          <span className="label text-caramel">Services</span>
           <span className="relative h-px flex-1 bg-sand">
             <motion.span
               className="absolute left-0 top-0 block h-full bg-espresso"
@@ -567,11 +488,6 @@ function CategoryGallery({
                   <p className="mt-6 max-w-lg text-base leading-relaxed text-brown text-pretty">
                     {active?.description}
                   </p>
-                  {active?.intent && (
-                    <p className="mt-6 border-l-2 border-caramel pl-4 font-display text-lg italic text-espresso">
-                      "{active.intent}"
-                    </p>
-                  )}
                   {active?.materials && active.materials.length > 0 && (
                     <dl className="mt-6 border-t border-sand pt-5">
                       <dt className="label mb-2 text-caramel">Materials</dt>
@@ -635,109 +551,21 @@ function useScrollObserver(
 /* ─────────────────────────────────────────────────────────────────────── */
 
 function FlipCard({ project }: { project: Project }) {
-  const [hovered, setHovered] = useState(false);
-
+  // Plain image card — no flip, no overlays, no hover quote (per client request).
   return (
-    <article
-      className="group relative w-full"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      onFocus={() => setHovered(true)}
-      onBlur={() => setHovered(false)}
-      tabIndex={0}
-      style={{ perspective: "1600px" }}
-    >
-      <motion.div
-        className="relative aspect-[4/3] w-full"
-        style={{ transformStyle: "preserve-3d" }}
-        animate={{ rotateY: hovered ? 180 : 0 }}
-        transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
-      >
-        {/* Front */}
-        <div
-          className="absolute inset-0 overflow-hidden bg-sand"
-          style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}
-        >
-          <img
-            src={project.image}
-            alt={project.title}
-            loading="lazy"
-            className="h-full w-full object-cover"
-          />
-          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/85 to-transparent p-6">
-            <p className="label text-gold-lt">{project.category} · {project.year}</p>
-            <h4 className="font-display text-2xl font-light text-cream md:text-3xl">{project.title}</h4>
-            <p className="label mt-2 text-cream/70">Hover to read the why →</p>
-          </div>
-        </div>
-
-        {/* Back */}
-        <div
-          className="absolute inset-0 flex flex-col justify-between bg-espresso p-8 text-cream md:p-10"
-          style={{
-            backfaceVisibility: "hidden",
-            WebkitBackfaceVisibility: "hidden",
-            transform: "rotateY(180deg)",
-          }}
-        >
-          <div>
-            <p className="label text-gold">Design Intent</p>
-            <p className="mt-3 font-display text-xl italic leading-snug text-cream md:text-2xl">
-              "{project.intent ?? project.description}"
-            </p>
-          </div>
-
-          {project.materials && project.materials.length > 0 && (
-            <div>
-              <p className="label mt-6 text-gold">Materials Used</p>
-              <ul className="mt-2 flex flex-wrap gap-2">
-                {project.materials.map((m) => (
-                  <li key={m} className="label border border-cream/30 px-3 py-1 normal-case tracking-wider text-cream">
-                    {m}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {project.approach && (
-            <div className="mt-6 border-t border-cream/15 pt-4">
-              <p className="label text-gold">Working Style</p>
-              <p className="mt-2 text-sm leading-relaxed text-cream/80">{project.approach}</p>
-            </div>
-          )}
-        </div>
-      </motion.div>
+    <article className="relative w-full">
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-sand">
+        <img
+          src={project.image}
+          alt={project.title}
+          loading="lazy"
+          className="h-full w-full object-cover"
+        />
+      </div>
+      <div className="mt-4 flex flex-col gap-1">
+        <h4 className="font-display text-xl font-light text-espresso md:text-2xl">{project.title}</h4>
+        <p className="label normal-case tracking-normal text-brown">{project.location}</p>
+      </div>
     </article>
-  );
-}
-
-/* ─────────────────────────────────────────────────────────────────────── */
-
-import { studio } from "@/data/projects";
-
-function Studio() {
-  return (
-    <section id="studio" className="mx-auto mt-24 grid max-w-[1600px] gap-10 border-t border-sand px-6 pb-24 pt-20 md:grid-cols-12 md:px-10">
-      <Reveal className="md:col-span-5">
-        <p className="label mb-4">The Studio</p>
-        <h2 className="display text-[clamp(2.25rem,5vw,4rem)] text-espresso">
-          Architecture, slowed
-          <br />
-          to the speed of <em className="italic text-caramel">life</em>.
-        </h2>
-      </Reveal>
-      <Reveal className="md:col-span-6 md:col-start-7" delay={150}>
-        <div className="space-y-5 text-lg leading-relaxed text-brown">
-          <p>
-            {studio.name} is a residential architecture and interior practice rooted in {studio.city}. We design for stillness — homes you can sink into, not just look at.
-          </p>
-          <p>
-            Our buildings are made from earth's vocabulary: stone, plaster, walnut, unglazed terracotta, raw cotton, brushed brass. We compose them around the way your light moves, the way your family gathers, the way a room should feel at six in the morning.
-          </p>
-          <p>Founded {studio.founded}. Currently working across India.</p>
-        </div>
-      </Reveal>
-    </section>
   );
 }

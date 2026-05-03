@@ -135,7 +135,7 @@ export function Walkthrough() {
                 </span>
               ))}
             </div>
-            <p className="label text-cream/60">Continue scrolling to walk in</p>
+            
           </div>
         </div>
       </div>
@@ -156,7 +156,6 @@ function CaptionBlock({ idx, progress }: { idx: number; progress: number }) {
     <div className="max-w-2xl transition-opacity duration-100" style={{ opacity }} key={step.image}>
       <p className="label mb-4 text-gold">{step.label}</p>
       <h3 className="display text-[clamp(2.25rem,5.5vw,4.5rem)] text-cream">{step.title}</h3>
-      <p className="mt-5 max-w-lg text-base leading-relaxed text-cream/85 md:text-lg">{step.body}</p>
     </div>
   );
 }

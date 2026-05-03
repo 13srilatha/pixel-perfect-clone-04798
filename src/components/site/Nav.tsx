@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { studio } from "@/data/projects";
 import { Logo } from "./Logo";
+import heroBg from "@/assets/projects/project-1.jpeg";
 
 export function Nav() {
   const [scrolled, setScrolled] = useState(false);
@@ -17,8 +18,8 @@ export function Nav() {
   // Reel is now inside the rotating-house section, no separate link.
   const links = [
     { href: "#work", label: "Work" },
-    { href: "#process", label: "Before · After" },
-    { href: "#rotate", label: "Best Project" },
+    { href: "#process", label: "Before & After" },
+    { href: "#testimonials", label: "Client Words" },
     { href: "#architect", label: "Architect" },
     { href: "#contact", label: "Contact" },
   ];
@@ -139,23 +140,32 @@ export function Hero() {
         />
       </div>
 
-      {/* Marquee strip with studio words */}
-      <div className="pointer-events-none absolute inset-x-0 top-20 overflow-hidden border-y border-sand/60 py-3 opacity-70">
-        <div className="flex whitespace-nowrap" style={{ animation: "tsmarquee 50s linear infinite" }}>
-          {Array.from({ length: 6 }).map((_, i) => (
-            <span key={i} className="flex items-center gap-6 px-6 font-display text-sm italic text-caramel md:text-base">
-              Stone · Walnut · Lime · Brass · Linen · Terracotta · Earth · Light · Craft
-              <span className="text-caramel/50">✦</span>
-            </span>
-          ))}
-        </div>
+      {/* Soft background image — partitioned right side, low focus, makes the
+          architecture practice obvious at a glance. */}
+      <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[42%] md:block">
+        <img
+          src={heroBg}
+          alt=""
+          aria-hidden
+          className="h-full w-full object-cover opacity-[0.55]"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-cream via-cream/55 to-transparent" />
+      </div>
+      {/* Mobile: same image as a soft band below the text */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[45%] md:hidden">
+        <img src={heroBg} alt="" aria-hidden className="h-full w-full object-cover opacity-30" />
+        <div className="absolute inset-0 bg-gradient-to-t from-cream via-cream/70 to-transparent" />
       </div>
 
       <div className="relative mx-auto grid max-w-[1600px] gap-12 px-6 py-12 md:grid-cols-12 md:px-10 md:py-24">
         <div className="md:col-span-8">
-          <p className="label mb-8 inline-flex items-center gap-3">
+          <p className="label mb-8 inline-flex flex-wrap items-center gap-3 text-base md:text-lg">
             <span className="h-px w-10 bg-caramel" />
-            Architecture · Interiors · Since {studio.founded}
+            <span className="text-espresso">Architecture</span>
+            <span className="text-caramel">·</span>
+            <span className="text-espresso">Interior</span>
+            <span className="text-caramel">·</span>
+            <span className="text-espresso">Planning</span>
           </p>
 
           <h1 className="display text-[clamp(3rem,9vw,9.5rem)] text-espresso text-balance">
@@ -167,46 +177,11 @@ export function Hero() {
           <p className="mt-10 max-w-xl text-lg leading-relaxed text-brown text-pretty">
             We are <strong className="font-normal text-espresso">{studio.name}</strong> — a
             residential architecture and interior design practice based in {studio.city}.
-            We build slowly, with stone, wood, and the kind of light you forget to photograph.
           </p>
-
-          <div className="mt-10 flex flex-wrap items-center gap-6">
-            <a
-              href="#walkthrough"
-              className="label group inline-flex items-center gap-3 bg-espresso px-6 py-4 text-cream"
-            >
-              Walk Through a Home
-              <span className="transition-transform group-hover:translate-x-1">→</span>
-            </a>
-            <a href="#work" className="label inline-flex items-center gap-3 text-espresso underline-offset-4 hover:underline">
-              See the Work
-            </a>
-          </div>
-        </div>
-
-        <div className="hidden md:col-span-4 md:flex md:flex-col md:items-end md:justify-end">
-          <div className="text-right">
-            <p className="label mb-4">Selected Numbers</p>
-            <dl className="space-y-3">
-              {studio.stats.map((s) => (
-                <div key={s.label} className="flex items-baseline justify-end gap-3">
-                  <dd className="font-display text-3xl font-light text-espresso">{s.value}</dd>
-                  <dt className="label">{s.label}</dt>
-                </div>
-              ))}
-            </dl>
-          </div>
         </div>
       </div>
 
       <ScrollHint />
-
-      <style>{`
-        @keyframes tsmarquee {
-          from { transform: translateX(0); }
-          to   { transform: translateX(-50%); }
-        }
-      `}</style>
     </section>
   );
 }
