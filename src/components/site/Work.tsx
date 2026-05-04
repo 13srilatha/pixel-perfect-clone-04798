@@ -314,6 +314,7 @@ function HorizontalCategories({ onOpen }: { onOpen: (c: ProjectCategory) => void
         </div>
       </div>
     </section>
+    </>
   );
 }
 
