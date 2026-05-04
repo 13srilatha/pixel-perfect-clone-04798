@@ -81,7 +81,6 @@
 //     </section>
 //   );
 // }
-
 import { useEffect, useRef, useState } from "react";
 import { Reveal } from "./Nav";
 
