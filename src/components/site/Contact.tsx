@@ -2,6 +2,12 @@ import { useState } from "react";
 import type { ReactNode } from "react";
 import { studio } from "@/data/projects";
 import { Reveal } from "./Nav";
+import { supabase } from "@/integrations/supabase/client";
+
+const STUDIO_MAPS_DIRECTIONS =
+  "https://www.google.com/maps/dir/?api=1&destination=Terra+Space+Studio,+Hyderabad";
+const STUDIO_MAPS_EMBED =
+  "https://www.google.com/maps?q=Terra+Space+Studio,+Hyderabad&output=embed";
 
 export function Contact() {
   return (
@@ -27,7 +33,7 @@ export function Contact() {
               <div>
                 <dt className="label mb-2 text-gold">Email</dt>
                 <dd>
-                  <a href={`mailto:${studio.email}`} className="font-display text-2xl font-light text-cream hover:text-gold-lt">
+                  <a href={`mailto:${studio.email}`} className="font-display text-2xl font-light text-cream hover:text-gold-lt break-all">
                     {studio.email}
                   </a>
                 </dd>
@@ -46,7 +52,7 @@ export function Contact() {
               </div>
             </dl>
 
-            <div className="mt-12 border-t border-cream/15 pt-8">
+            <div className="mt-10 border-t border-cream/15 pt-8">
               <p className="label mb-3 text-gold">Follow the studio</p>
               <a
                 href={studio.instagramUrl}
@@ -63,33 +69,37 @@ export function Contact() {
                 </span>
               </a>
             </div>
+
+            {/* Map sits directly under Instagram. Click the map OR the link
+                opens Google Maps directions to the studio. */}
+            <div className="mt-6">
+              <a
+                href={STUDIO_MAPS_DIRECTIONS}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Get directions to Terra Space Studio"
+                className="group block overflow-hidden border border-cream/20 transition-colors hover:border-gold"
+              >
+                <div className="relative pointer-events-none">
+                  <iframe
+                    title="Terra Space Studio location"
+                    src={STUDIO_MAPS_EMBED}
+                    width="100%"
+                    height="200"
+                    style={{ border: 0, filter: "grayscale(0.4) contrast(1.05)" }}
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                  />
+                  <span className="absolute inset-0" aria-hidden />
+                </div>
+                <span className="flex items-center justify-between gap-4 px-5 py-3">
+                  <span className="label text-cream group-hover:text-gold">Get directions to our studio</span>
+                  <span className="text-cream group-hover:text-gold">→</span>
+                </span>
+              </a>
+            </div>
           </Reveal>
         </div>
-
-        {/* Studio location map */}
-        <Reveal className="mt-16">
-          <p className="label mb-4 text-gold">Find the studio</p>
-          <div className="overflow-hidden border border-cream/15">
-            <iframe
-              title="Terra Space Studio location"
-              src="https://www.google.com/maps?q=Terra+Space+Studio,+Hyderabad&output=embed"
-              width="100%"
-              height="320"
-              style={{ border: 0, filter: "grayscale(0.4) contrast(1.05)" }}
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              allowFullScreen
-            />
-          </div>
-          <a
-            href="https://www.google.com/maps/place/Terra+Space+Studio/@17.4081419,78.6026807,17z"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="label mt-3 inline-flex items-center gap-2 text-gold-lt hover:text-gold"
-          >
-            Open in Google Maps →
-          </a>
-        </Reveal>
 
         <footer className="mt-24 border-t border-cream/10 pt-8">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -107,13 +117,48 @@ function ContactForm() {
   const [email, setEmail] = useState("");
   const [project, setProject] = useState("Residential");
   const [message, setMessage] = useState("");
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const subject = encodeURIComponent(`New project enquiry — ${name || "Website visitor"}`);
-    const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\nProject type: ${project}\n\n${message}`);
-    window.location.href = `mailto:${studio.email}?subject=${subject}&body=${body}`;
+    setError(null);
+    setSending(true);
+    const { error: insertError } = await supabase.from("contact_submissions").insert({
+      source: "contact_form",
+      name: name.trim() || null,
+      email: email.trim(),
+      project_type: project,
+      message: message.trim() || "(no message)",
+      recipient: "terraspacestudios07@gmail.com",
+    });
+    setSending(false);
+    if (insertError) {
+      setError("Could not send right now. Please try again or email us directly.");
+      return;
+    }
+    setSent(true);
+    setName("");
+    setEmail("");
+    setMessage("");
   };
+
+  if (sent) {
+    return (
+      <div className="mt-12 border border-gold bg-gold/10 p-6 text-cream">
+        <p className="font-display text-2xl text-gold-lt">Thank you.</p>
+        <p className="mt-2 text-cream/80">Your enquiry reached the studio. We'll write back within 48 hours.</p>
+        <button
+          type="button"
+          onClick={() => setSent(false)}
+          className="label mt-4 inline-flex items-center gap-2 border border-cream/40 px-4 py-2 text-cream hover:border-gold hover:text-gold"
+        >
+          Send another →
+        </button>
+      </div>
+    );
+  }
 
   return (
     <form
@@ -162,12 +207,16 @@ function ContactForm() {
           placeholder="Plot size, location, what you dream of…"
         />
       </Field>
+      {error && (
+        <p className="text-sm text-red-300 md:col-span-2">{error}</p>
+      )}
       <div className="md:col-span-2">
         <button
           type="submit"
-          className="label group inline-flex items-center gap-3 bg-gold px-6 py-4 text-espresso transition-colors hover:bg-gold-lt"
+          disabled={sending}
+          className="label group inline-flex items-center gap-3 bg-gold px-6 py-4 text-espresso transition-colors hover:bg-gold-lt disabled:opacity-60"
         >
-          Send Enquiry
+          {sending ? "Sending…" : "Send Enquiry"}
           <span className="transition-transform group-hover:translate-x-1">→</span>
         </button>
         <p className="label mt-3 text-cream/40">We reply within 48 hours</p>

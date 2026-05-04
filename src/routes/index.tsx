@@ -4,6 +4,7 @@ import { Walkthrough } from "@/components/site/Walkthrough";
 import { Work } from "@/components/site/Work";
 import { Process } from "@/components/site/Process";
 import { Testimonials } from "@/components/site/Testimonials";
+import { StudioLaunch } from "@/components/site/StudioLaunch";
 import { Architect } from "@/components/site/Architect";
 import { Contact } from "@/components/site/Contact";
 import { BackToTop } from "@/components/site/BackToTop";
@@ -34,6 +35,7 @@ function Index() {
       <Work />
       <Process />
       <Testimonials />
+      <StudioLaunch />
       <Architect />
       <Contact />
       <BackToTop />
