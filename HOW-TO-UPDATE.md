@@ -156,3 +156,23 @@ Open `src/components/site/Contact.tsx`, find the `<iframe ... src="..." />` (aro
 ## Anything else?
 
 Tell Lovable in chat what you want to change and it will either do it or extend this guide.
+
+---
+
+## Studio Launch video (autoplay section between Client Words and Contact)
+
+The "The launch" section autoplays a muted video file when the visitor scrolls into view.
+
+1. Place the video file in: `public/videos/studio-launch.mp4`
+2. (Optional) Place a poster image in: `public/videos/studio-launch-poster.jpg`
+3. Commit + push. The section will auto-play. If the file is missing the section shows a friendly "upload" hint instead of breaking.
+
+Component: `src/components/site/StudioLaunch.tsx` (no edits needed unless you want to rename the section title).
+
+## Form & chatbot submissions
+
+All submissions (contact form + chatbot "Ask something else") are saved to your Lovable Cloud database in the `contact_submissions` table. Open the Lovable Cloud dashboard to view them — no email account or API key required.
+
+- Contact form → `recipient: terraspacestudios07@gmail.com`
+- Chatbot custom message → `recipient: terraspacestudios07@gmail.com`
+- The "Designed by Srilatha — imsrilathaa@gmail.com" credit at the bottom-left of the contact page still uses a normal mail link (so anyone clicking it opens their mail app to write to Srilatha directly).

@@ -1,9 +1,10 @@
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 /**
- * Lightweight, no-API guided chatbot. Visitors choose from a set of preset
- * questions or pick "Ask something else" to type freely — anything they type
- * is offered as a one-click message to the studio (mailto). No AI, no calls.
+ * Lightweight, no-API guided chatbot. Visitors choose a preset question or
+ * pick "Ask something else" to type freely. Custom messages submit DIRECTLY
+ * to the studio inbox (stored in Lovable Cloud) — no mailto, no popup.
  */
 type Step = {
   id: string;
@@ -46,8 +47,35 @@ const FAQ: Step[] = [
 export function ChatBot() {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState<Step | null>(null);
-  const [custom, setCustom] = useState("");
   const [showCustom, setShowCustom] = useState(false);
+  const [custom, setCustom] = useState("");
+  const [email, setEmail] = useState("");
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const sendCustom = async () => {
+    setError(null);
+    if (!email.trim() || !custom.trim()) {
+      setError("Please add your email and a short message.");
+      return;
+    }
+    setSending(true);
+    const { error: insertError } = await supabase.from("contact_submissions").insert({
+      source: "chatbot",
+      email: email.trim(),
+      message: custom.trim(),
+      recipient: "terraspacestudios07@gmail.com",
+    });
+    setSending(false);
+    if (insertError) {
+      setError("Could not send right now. Please try again or use the contact form.");
+      return;
+    }
+    setSent(true);
+    setCustom("");
+    setEmail("");
+  };
 
   const goContact = () => {
     setOpen(false);
@@ -56,19 +84,18 @@ export function ChatBot() {
 
   return (
     <>
-      {/* Floating launcher — sits just above the back-to-top arrow */}
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-label={open ? "Close chat" : "Open chat"}
-        className="fixed bottom-24 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-espresso text-cream shadow-lg transition-transform hover:scale-105 md:bottom-32 md:right-10 md:h-16 md:w-16"
+        className="fixed bottom-20 right-4 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-espresso text-cream shadow-lg transition-transform hover:scale-105 md:bottom-24 md:right-6 md:h-14 md:w-14"
       >
         {open ? (
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
             <path d="M6 6l12 12M18 6L6 18" />
           </svg>
         ) : (
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
           </svg>
         )}
@@ -78,7 +105,7 @@ export function ChatBot() {
         <div
           role="dialog"
           aria-label="Studio chat"
-          className="fixed bottom-44 right-4 z-50 flex w-[calc(100vw-2rem)] max-w-sm flex-col overflow-hidden rounded-lg border border-sand bg-cream shadow-2xl md:bottom-52 md:right-10"
+          className="fixed bottom-36 right-4 z-50 flex w-[calc(100vw-2rem)] max-w-sm flex-col overflow-hidden rounded-lg border border-sand bg-cream shadow-2xl md:bottom-44 md:right-6"
           style={{ maxHeight: "70vh" }}
         >
           <div className="flex items-center justify-between border-b border-sand bg-espresso px-4 py-3 text-cream">
@@ -90,7 +117,7 @@ export function ChatBot() {
 
           <div className="flex-1 space-y-4 overflow-y-auto p-4 text-sm">
             <div className="rounded-md bg-sand/50 p-3 text-espresso">
-              Hi! 👋 Pick a question below — or tap "Ask something else" to write your own.
+              Hi! 👋 Pick a question — or tap "Ask something else" to send a message directly to the studio.
             </div>
 
             {active && (
@@ -100,9 +127,17 @@ export function ChatBot() {
               </div>
             )}
 
-            {showCustom && (
-              <div className="space-y-2 rounded-md border border-sand p-3">
-                <label className="label block text-caramel">Your question</label>
+            {showCustom && !sent && (
+              <div className="space-y-3 rounded-md border border-sand p-3">
+                <label className="label block text-caramel">Your email</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@email.com"
+                  className="w-full border-b border-sand bg-transparent py-1 text-espresso focus:border-espresso focus:outline-none"
+                />
+                <label className="label block text-caramel">Your message</label>
                 <textarea
                   rows={3}
                   value={custom}
@@ -110,12 +145,21 @@ export function ChatBot() {
                   placeholder="Type your question…"
                   className="w-full resize-none border-b border-sand bg-transparent py-1 text-espresso focus:border-espresso focus:outline-none"
                 />
-                <a
-                  href={`mailto:terraspacestudios07@gmail.com?subject=${encodeURIComponent("Question from website chat")}&body=${encodeURIComponent(custom)}`}
-                  className="label inline-flex items-center gap-2 bg-espresso px-3 py-2 text-cream"
+                {error && <p className="text-xs text-red-700">{error}</p>}
+                <button
+                  type="button"
+                  disabled={sending}
+                  onClick={sendCustom}
+                  className="label inline-flex items-center gap-2 bg-espresso px-3 py-2 text-cream disabled:opacity-60"
                 >
-                  Send to studio →
-                </a>
+                  {sending ? "Sending…" : "Send to studio →"}
+                </button>
+              </div>
+            )}
+
+            {sent && (
+              <div className="rounded-md border border-gold bg-gold/15 p-3 text-espresso">
+                Thank you — your message reached the studio. We'll write back within 48 hours.
               </div>
             )}
           </div>
@@ -140,6 +184,7 @@ export function ChatBot() {
                 onClick={() => {
                   setShowCustom(true);
                   setActive(null);
+                  setSent(false);
                 }}
                 className="label rounded-full border border-caramel bg-caramel/10 px-3 py-1.5 text-espresso"
               >

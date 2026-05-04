@@ -265,6 +265,21 @@ function HorizontalCategories({ onOpen }: { onOpen: (c: ProjectCategory) => void
   const x = useTransform(scrollYProgress, [0, 1], ["0%", "-75%"]);
 
   return (
+    <>
+      {/* Services heading — sits between the In-Progress block and the slider */}
+      <Reveal className="mx-auto max-w-[1600px] px-6 pt-20 pb-10 md:px-10 md:pt-28 md:pb-14">
+        <p className="label mb-4 inline-flex items-center gap-3">
+          <span className="h-px w-10 bg-caramel" />
+          Services
+        </p>
+        <h2 className="display max-w-3xl text-[clamp(2.25rem,5.5vw,4.5rem)] text-espresso">
+          What we <em className="italic text-caramel">design</em>.
+        </h2>
+        <p className="mt-4 max-w-xl text-base leading-relaxed text-brown">
+          Scroll through our four practices — each opens a full gallery of work.
+        </p>
+      </Reveal>
+
     <section
       ref={trackRef}
       className="relative bg-cream"
@@ -299,6 +314,7 @@ function HorizontalCategories({ onOpen }: { onOpen: (c: ProjectCategory) => void
         </div>
       </div>
     </section>
+    </>
   );
 }
 
