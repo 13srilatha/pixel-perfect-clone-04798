@@ -10,11 +10,17 @@ import paletteImg from "@/assets/inprogress/palette.png";
 const CATEGORY_ORDER: ProjectCategory[] = ["Residential", "Interior", "Commercial", "Renovation"];
 
 const CATEGORY_BLURB: Record<ProjectCategory, string> = {
-  Residential: "Homes designed to age slowly with the families inside them.",
-  Interior: "Joinery, partitions, lighting and built-ins — drawn for each home, crafted on site.",
-  Commercial: "Workplaces, cafés and showrooms with the warmth of a private home.",
-  Renovation: "Old buildings, listened to. Restored where possible, updated only where needed.",
+  Residential: "Your home is built once. We design it to last a lifetime — architecture from first sketch to final handover, with stone, wood and light chosen for your family, not a trend cycle.",
+  Interior: "Built-in joinery, bespoke partitions, layered lighting, material palettes drawn room by room. We don't style spaces — we build them from the inside out.",
+  Commercial: "Workplaces, cafés and showrooms where people actually want to spend time. The warmth of a private home, the performance of a professional space.",
+  Renovation: "Old buildings carry history. We listen to what's there, restore wherever possible, and update only where it genuinely serves the people living in it today.",
 };
+// const CATEGORY_BLURB: Record<ProjectCategory, string> = {
+//   Residential: "Homes designed to age slowly with the families inside them.",
+//   Interior: "Joinery, partitions, lighting and built-ins — drawn for each home, crafted on site.",
+//   Commercial: "Workplaces, cafés and showrooms with the warmth of a private home.",
+//   Renovation: "Old buildings, listened to. Restored where possible, updated only where needed.",
+// };
 
 import { interiors } from "@/data/interiors";
 
