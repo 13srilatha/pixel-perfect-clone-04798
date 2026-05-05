@@ -272,7 +272,7 @@ function HorizontalCategories({ onOpen }: { onOpen: (c: ProjectCategory) => void
 
   return (
     <>
-      {/* Services heading — sits between the In-Progress block and the slider */}
+      {/* Services overview — what we do, with descriptions of offerings */}
       <Reveal className="mx-auto max-w-[1600px] px-6 pt-20 pb-10 md:px-10 md:pt-28 md:pb-14">
         <p className="label mb-4 inline-flex items-center gap-3">
           <span className="h-px w-10 bg-caramel" />
@@ -281,10 +281,76 @@ function HorizontalCategories({ onOpen }: { onOpen: (c: ProjectCategory) => void
         <h2 className="display max-w-3xl text-[clamp(2.25rem,5.5vw,4.5rem)] text-espresso">
           What we <em className="italic text-caramel">design</em>.
         </h2>
-        <p className="mt-4 max-w-xl text-base leading-relaxed text-brown">
-          Scroll through our four practices — each opens a full gallery of work.
+        <p className="mt-5 max-w-2xl text-base leading-relaxed text-brown md:text-lg">
+          A single studio for the full arc — architecture, interiors, planning and
+          renovation. Below is what each practice covers; scroll down for the full
+          gallery of completed work in every category.
+        </p>
+
+        <ul className="mt-12 grid grid-cols-1 gap-px bg-sand md:grid-cols-2 lg:grid-cols-4">
+          {[
+            {
+              num: "01",
+              title: "Architecture",
+              tag: "Residential",
+              copy: "Site studies, massing, façades and full architectural drawings — built around how your family actually lives.",
+              offers: ["Concept design", "Working drawings", "Site supervision"],
+            },
+            {
+              num: "02",
+              title: "Interior Design",
+              tag: "Interior",
+              copy: "Built-in joinery, partitions, layered lighting and material palettes drawn room by room.",
+              offers: ["Joinery & built-ins", "Lighting design", "Material palettes"],
+            },
+            {
+              num: "03",
+              title: "Commercial",
+              tag: "Commercial",
+              copy: "Cafés, showrooms and workplaces with the warmth of a private home and the performance of a professional space.",
+              offers: ["Workplaces", "Showrooms", "Hospitality"],
+            },
+            {
+              num: "04",
+              title: "Renovation",
+              tag: "Renovation",
+              copy: "Old buildings, listened to. Restored where possible, updated only where it genuinely serves the people inside.",
+              offers: ["Restoration", "Adaptive reuse", "Vastu re-planning"],
+            },
+          ].map((s) => (
+            <li
+              key={s.num}
+              className="group relative flex flex-col gap-4 bg-cream p-6 transition-colors hover:bg-sand/40 md:p-8"
+            >
+              <div className="flex items-baseline justify-between">
+                <span className="label text-caramel">{s.num}</span>
+                <span className="label text-brown">{s.tag}</span>
+              </div>
+              <h3 className="font-display text-2xl font-light text-espresso md:text-3xl">
+                {s.title}
+              </h3>
+              <p className="text-sm leading-relaxed text-brown md:text-base">
+                {s.copy}
+              </p>
+              <ul className="mt-auto flex flex-wrap gap-2 pt-2">
+                {s.offers.map((o) => (
+                  <li
+                    key={o}
+                    className="border border-sand px-2.5 py-1 text-[11px] uppercase tracking-wider text-espresso"
+                  >
+                    {o}
+                  </li>
+                ))}
+              </ul>
+            </li>
+          ))}
+        </ul>
+
+        <p className="mt-10 max-w-xl text-sm leading-relaxed text-brown">
+          ↓ Scroll through the four practices below — each opens a full project gallery.
         </p>
       </Reveal>
+
 
     <section
       ref={trackRef}
