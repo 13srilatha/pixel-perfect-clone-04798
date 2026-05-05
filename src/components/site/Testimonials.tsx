@@ -111,12 +111,12 @@ export function Testimonials() {
             {testimonials.map((t, i) => (
               <div
                 key={t.name}
-                ref={(el) => (cardsRef.current[i] = el)}
+                ref={(el) => { cardsRef.current[i] = el; }}
                 className="relative h-1/3 w-full md:h-full md:w-1/3"
                 style={{ perspective: "1600px" }}
               >
                 <div
-                  ref={(el) => (innerRef.current[i] = el)}
+                  ref={(el) => { innerRef.current[i] = el; }}
                   className="relative h-full w-full"
                   style={{ transformStyle: "preserve-3d" }}
                 >
