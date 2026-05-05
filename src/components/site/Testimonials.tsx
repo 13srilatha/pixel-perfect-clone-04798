@@ -1,257 +1,173 @@
-// import { useEffect, useRef, useState } from "react";
-// import portrait from "@/assets/architect-portrait.jpeg";
+import { useEffect, useLayoutEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import heroImg from "@/assets/testimonials-hero.jpg";
 
-// interface Testimonial {
-//   quote: string;
-//   name: string;
-//   title: string;
-// }
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
-// const testimonials: Testimonial[] = [
-//   {
-//     quote:
-//       "They listened more than they spoke. Our home feels like the version of us we couldn't put into words.",
-//     name: "Charry Reddy",
-//     title: "Homeowner · Jubilee Hills",
-//   },
-//   {
-//     quote:
-//       "Every drawing came back with care. The site team treated our half-built house like their own.",
-//     name: "Muthyam Rao",
-//     title: "Client · Kompally Residence",
-//   },
-//   {
-//     quote:
-//       "We changed our mind a hundred times. Vaasanthi never lost patience — and the result is honestly perfect.",
-//     name: "Aparna Iyer",
-//     title: "Client · Kondapur Villa",
-//   },
-//   {
-//     quote:
-//       "A studio that builds slowly, in the best way. Stone, wood, light — exactly the home we asked for.",
-//     name: "Rohan Kapoor",
-//     title: "Client · Banjara Hills",
-//   },
-// ];
-
-// /**
-//  * Client Words — sticky center portrait with cards that "fan out" from
-//  * behind it as the user scrolls. Works on mobile, tablet and desktop:
-//  * card distances are computed in vw so they scale with the viewport.
-//  */
-// export function Testimonials() {
-//   const sectionRef = useRef<HTMLDivElement>(null);
-//   const [progress, setProgress] = useState(0);
-
-//   useEffect(() => {
-//     let raf = 0;
-//     const onScroll = () => {
-//       cancelAnimationFrame(raf);
-//       raf = requestAnimationFrame(() => {
-//         const el = sectionRef.current;
-//         if (!el) return;
-//         const rect = el.getBoundingClientRect();
-//         const vh = window.innerHeight;
-//         const total = el.offsetHeight - vh;
-//         const scrolled = Math.min(Math.max(-rect.top, 0), total);
-//         const p = total > 0 ? scrolled / total : 0;
-//         setProgress(p);
-//       });
-//     };
-//     onScroll();
-//     window.addEventListener("scroll", onScroll, { passive: true });
-//     return () => {
-//       cancelAnimationFrame(raf);
-//       window.removeEventListener("scroll", onScroll);
-//     };
-//   }, []);
-
-//   // 0 → stacked behind portrait; 1 → fully fanned out
-//   const fan = Math.min(1, Math.max(0, (progress - 0.15) / 0.55));
-
-//   // Outer cards travel further than inner cards
-//   const offsets = [-1, -0.5, 0.5, 1]; // multipliers
-//   const rotations = [-9, -4, 4, 9];
-
-//   return (
-//     <section
-//       id="testimonials"
-//       ref={sectionRef}
-//       className="relative bg-cream"
-//       style={{ height: "260vh" }}
-//       aria-label="Client testimonials"
-//     >
-//       <div className="sticky top-0 flex h-screen w-full flex-col items-center justify-center overflow-hidden px-4 py-10 md:px-10">
-//         <h2 className="display mb-6 text-center text-[clamp(2rem,5vw,4rem)] font-bold text-espresso md:mb-10">
-//           Client <em className="italic text-caramel">Words</em>
-//         </h2>
-
-//         <div className="relative flex h-[68vh] w-full max-w-[1400px] items-center justify-center">
-//           {/* Center portrait (4:5) — pinned */}
-//           <div className="relative z-10 h-full w-[clamp(180px,28vw,360px)] overflow-hidden bg-sand shadow-xl">
-//             <img
-//               src={portrait}
-//               alt="Founder"
-//               className="h-full w-full object-cover"
-//               style={{ aspectRatio: "4 / 5" }}
-//             />
-//           </div>
-
-//           {/* Fanned-out cards */}
-//           {testimonials.map((t, i) => {
-//             const dir = offsets[i];
-//             // Distance scales with viewport. Outer card travels 36vw, inner 18vw.
-//             const distVw = dir * fan * 38;
-//             const rotate = fan * rotations[i];
-//             const opacity = Math.min(1, fan * 1.4);
-//             const z = i === 0 || i === 3 ? 5 : 6;
-//             return (
-//               <article
-//                 key={t.name}
-//                 className="absolute left-1/2 top-1/2 w-[78vw] max-w-[280px] -translate-x-1/2 -translate-y-1/2 rounded-lg border border-sand bg-cream p-5 shadow-lg md:w-[260px] md:p-6"
-//                 style={{
-//                   transform: `translate(-50%, -50%) translateX(${distVw}vw) rotate(${rotate}deg)`,
-//                   opacity,
-//                   zIndex: z,
-//                   transition: "opacity 200ms ease",
-//                 }}
-//               >
-//                 <p className="font-display text-base italic leading-snug text-espresso md:text-lg">
-//                   "{t.quote}"
-//                 </p>
-//                 <div className="mt-4 border-t border-sand pt-3">
-//                   <p className="font-sans text-sm font-bold uppercase tracking-wide text-espresso">
-//                     {t.name}
-//                   </p>
-//                   <p className="label mt-1 normal-case tracking-normal text-brown">{t.title}</p>
-//                 </div>
-//               </article>
-//             );
-//           })}
-//         </div>
-
-      
-//       </div>
-//     </section>
-//   );
-// }
-
-import { useEffect, useRef, useState } from "react";
-import portrait from "@/assets/architect-portrait.jpeg";
+const useIso = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 const testimonials = [
   {
-    quote: "They listened more than they spoke. Our home feels like the version of us we couldn't put into words.",
+    quote:
+      "They listened more than they spoke. Our home feels like the version of us we couldn't put into words.",
     name: "Charry Reddy",
     title: "Homeowner · Jubilee Hills",
   },
   {
-    quote: "Every drawing came back with care. The site team treated our half-built house like their own.",
+    quote:
+      "Every drawing came back with care. The site team treated our half-built house like their own.",
     name: "Muthyam Rao",
     title: "Client · Kompally Residence",
   },
   {
-    quote: "We changed our mind a hundred times. Vaasanthi never lost patience — and the result is honestly perfect.",
+    quote:
+      "We changed our mind a hundred times. Vaasanthi never lost patience — and the result is honestly perfect.",
     name: "Aparna Iyer",
     title: "Client · Kondapur Villa",
   },
-  {
-    quote: "A studio that builds slowly, in the best way. Stone, wood, light — exactly the home we asked for.",
-    name: "Rohan Kapoor",
-    title: "Client · Banjara Hills",
-  },
 ];
 
-// Ease out cubic — cards feel like they're being pulled apart, not pushed
-function easeOut(t: number) {
-  return 1 - Math.pow(1 - t, 3);
-}
-
+/**
+ * Three-phase scroll storytelling:
+ *   Phase 1 — One full-bleed image fills the screen.
+ *   Phase 2 — Image splits into three vertical cards that move apart.
+ *   Phase 3 — Each card flips along Y-axis to reveal client testimonial text.
+ *
+ * On mobile (<768px), the cards stack vertically after the split + flip.
+ */
 export function Testimonials() {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const [progress, setProgress] = useState(0);
+  const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
+  const innerRef = useRef<(HTMLDivElement | null)[]>([]);
 
-  useEffect(() => {
-    let raf = 0;
-    const onScroll = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        const el = sectionRef.current;
-        if (!el) return;
-        const rect = el.getBoundingClientRect();
-        const total = el.offsetHeight - window.innerHeight;
-        const scrolled = Math.min(Math.max(-rect.top, 0), total);
-        setProgress(total > 0 ? scrolled / total : 0);
+  useIso(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const ctx = gsap.context(() => {
+      const isMobile = window.matchMedia("(max-width: 767px)").matches;
+
+      const cards = cardsRef.current.filter(Boolean) as HTMLDivElement[];
+      const inners = innerRef.current.filter(Boolean) as HTMLDivElement[];
+
+      // Reset
+      gsap.set(cards, { x: 0, y: 0 });
+      gsap.set(inners, { rotationY: 0 });
+
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: "+=300%",
+          scrub: 1.2,
+          pin: true,
+          anticipatePin: 1,
+        },
       });
-    };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => { cancelAnimationFrame(raf); window.removeEventListener("scroll", onScroll); };
+
+      if (isMobile) {
+        // Phase 2 — stack vertically
+        tl.to(cards[0], { y: "-105%", duration: 1 }, 0)
+          .to(cards[2], { y: "105%", duration: 1 }, 0)
+          // Phase 3 — flip each card
+          .to(inners, { rotationY: 180, duration: 1, stagger: 0.15 }, 1.1);
+      } else {
+        // Phase 2 — fan apart horizontally
+        tl.to(cards[0], { x: "-105%", duration: 1 }, 0)
+          .to(cards[2], { x: "105%", duration: 1 }, 0)
+          // Phase 3 — flip each card to reveal text
+          .to(inners, { rotationY: 180, duration: 1, stagger: 0.15 }, 1.1);
+      }
+    }, section);
+
+    return () => ctx.revert();
   }, []);
-
-  // Cards start stacked, fan out from 20% scroll progress to 80%
-  const rawFan = Math.min(1, Math.max(0, (progress - 0.15) / 0.6));
-  const fan = easeOut(rawFan);
-
-  // Mobile: smaller spread so cards don't bleed off screen
-  const spreadVw = typeof window !== "undefined" && window.innerWidth < 768 ? 28 : 38;
-
-  const config = [
-    { dir: -1.0, rot: -10 },
-    { dir: -0.48, rot: -4.5 },
-    { dir:  0.48, rot:  4.5 },
-    { dir:  1.0,  rot:  10 },
-  ];
 
   return (
     <section
       id="testimonials"
       ref={sectionRef}
       className="relative bg-cream"
-      style={{ height: "280vh" }}
       aria-label="Client testimonials"
     >
-      <div className="sticky top-0 flex h-screen w-full flex-col items-center justify-center overflow-hidden px-4 py-10">
-        <h2 className="display mb-6 text-center text-[clamp(2rem,5vw,4rem)] text-espresso md:mb-10">
-          Client <em className="italic text-caramel">Words</em>
-        </h2>
+      <div className="relative h-screen w-full overflow-hidden">
+        {/* Heading */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-30 px-6 pt-8 md:px-10 md:pt-12">
+          <p className="label mb-3 inline-flex items-center gap-3">
+            <span className="h-px w-10 bg-caramel" />
+            Client Words
+          </p>
+          <h2 className="display max-w-3xl text-[clamp(2rem,5vw,4rem)] text-espresso">
+            What our clients <em className="italic text-caramel">remember</em>.
+          </h2>
+        </div>
 
-        <div className="relative flex h-[65vh] w-full max-w-[1400px] items-center justify-center">
-          {/* Portrait — always on top */}
-          <div className="relative z-20 h-full w-[clamp(160px,24vw,320px)] overflow-hidden bg-sand shadow-2xl">
-            <img src={portrait} alt="Founder — Vaasanthi" className="h-full w-full object-cover" style={{ aspectRatio: "4/5" }} />
-          </div>
-
-          {/* Cards fan out */}
-          {testimonials.map((t, i) => {
-            const { dir, rot } = config[i];
-            const x = dir * fan * spreadVw;
-            const rotate = fan * rot;
-            const opacity = Math.min(1, fan * 2);
-            const scale = 0.88 + fan * 0.12;
-
-            return (
-              <article
+        {/* Three-card stage */}
+        <div className="relative flex h-full w-full items-center justify-center px-4 pt-32 pb-10 md:px-8 md:pt-40 md:pb-16">
+          <div className="relative flex h-full w-full max-w-[1500px] flex-col gap-1 md:flex-row md:gap-2">
+            {testimonials.map((t, i) => (
+              <div
                 key={t.name}
-                className="absolute left-1/2 top-1/2 w-[min(75vw,268px)] -translate-x-1/2 -translate-y-1/2 border border-sand bg-cream p-5 shadow-lg md:p-6"
-                style={{
-                  transform: `translate(-50%, -50%) translateX(${x}vw) rotate(${rotate}deg) scale(${scale})`,
-                  opacity,
-                  zIndex: i === 0 || i === 3 ? 5 : 6,
-                  transition: "opacity 120ms linear",
-                  willChange: "transform, opacity",
-                }}
+                ref={(el) => (cardsRef.current[i] = el)}
+                className="relative h-1/3 w-full md:h-full md:w-1/3"
+                style={{ perspective: "1600px" }}
               >
-                <p className="font-display text-base italic leading-snug text-espresso md:text-lg">
-                  "{t.quote}"
-                </p>
-                <div className="mt-4 border-t border-sand pt-3">
-                  <p className="font-sans text-sm font-bold uppercase tracking-wide text-espresso">{t.name}</p>
-                  <p className="label mt-1 normal-case tracking-normal text-brown">{t.title}</p>
+                <div
+                  ref={(el) => (innerRef.current[i] = el)}
+                  className="relative h-full w-full"
+                  style={{ transformStyle: "preserve-3d" }}
+                >
+                  {/* FRONT — image slice (one image positioned via background) */}
+                  <div
+                    className="absolute inset-0 overflow-hidden bg-sand shadow-2xl"
+                    style={{
+                      backfaceVisibility: "hidden",
+                      WebkitBackfaceVisibility: "hidden",
+                    }}
+                  >
+                    <div
+                      className="absolute inset-0 bg-cover bg-no-repeat"
+                      style={{
+                        backgroundImage: `url(${heroImg})`,
+                        // Each card shows a vertical slice of the same image
+                        backgroundSize: "300% 100%",
+                        backgroundPosition: `${i * 50}% center`,
+                      }}
+                      aria-hidden
+                    />
+                  </div>
+
+                  {/* BACK — testimonial text */}
+                  <div
+                    className="absolute inset-0 flex flex-col justify-between border border-sand bg-cream p-6 shadow-2xl md:p-10"
+                    style={{
+                      backfaceVisibility: "hidden",
+                      WebkitBackfaceVisibility: "hidden",
+                      transform: "rotateY(180deg)",
+                    }}
+                  >
+                    <p className="label text-caramel">
+                      0{i + 1} · Client Words
+                    </p>
+                    <p className="font-display text-xl italic leading-snug text-espresso md:text-2xl lg:text-[28px]">
+                      “{t.quote}”
+                    </p>
+                    <div className="border-t border-sand pt-4">
+                      <p className="font-sans text-sm font-bold uppercase tracking-wide text-espresso">
+                        {t.name}
+                      </p>
+                      <p className="label mt-1 normal-case tracking-normal text-brown">
+                        {t.title}
+                      </p>
+                    </div>
+                  </div>
                 </div>
-              </article>
-            );
-          })}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
