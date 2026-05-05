@@ -3,7 +3,11 @@ import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { studio } from "@/data/projects";
 import { Logo } from "./Logo";
-import heroBg from "@/assets/projects/project-1.jpeg";
+import heroImg1 from "@/assets/walkthrough/02-facade.jpg";
+import heroImg2 from "@/assets/walkthrough/04-living.jpg";
+import heroImg3 from "@/assets/walkthrough/03-foyer.jpg";
+import heroImg4 from "@/assets/walkthrough/06-terrace.jpg";
+import heroImg5 from "@/assets/walkthrough/05-bedroom.jpg";
 
 export function Nav() {
   const [scrolled, setScrolled] = useState(false);
@@ -125,11 +129,41 @@ function MobileMenu({ links }: { links: { href: string; label: string }[] }) {
 }
 
 const STORY_BEATS = [
-  { label: "Architecture · Interior · Planning", headline: "We build\nfor people\nwho stay.", sub: null },
-  { label: "Residential", headline: "Every home\nis a slow\nconversation.", sub: "We listen before we draw." },
-  { label: "Interior", headline: "Rooms that\nage with\nyou.", sub: "Stone, wood and light — chosen for life, not the listing photos." },
-  { label: "Process", headline: "From first\nsketch to\nhandover.", sub: "One studio, end to end. No handoffs, no surprises." },
-  { label: "Terra Space Studio", headline: "Spaces that\nremember\nyou.", sub: "Begin a conversation →" },
+  {
+    chapter: "I",
+    label: "Architecture · Interior · Planning",
+    headline: "We build\nfor people\nwho stay.",
+    sub: "Terra Space Studio — a residential architecture and interior practice in Hyderabad.",
+    image: heroImg1,
+  },
+  {
+    chapter: "II",
+    label: "Residential",
+    headline: "Every home is\na slow\nconversation.",
+    sub: "We listen before we draw. Stone, wood, light — chosen for life, not for the listing photos.",
+    image: heroImg2,
+  },
+  {
+    chapter: "III",
+    label: "Interior",
+    headline: "Rooms that\nage with\nyou.",
+    sub: "Built-in joinery, layered lighting, partitions drawn room by room.",
+    image: heroImg3,
+  },
+  {
+    chapter: "IV",
+    label: "Process",
+    headline: "From first\nsketch to\nhandover.",
+    sub: "One studio, end to end. No handoffs, no surprises.",
+    image: heroImg4,
+  },
+  {
+    chapter: "V",
+    label: "Terra Space Studio",
+    headline: "Spaces that\nremember\nyou.",
+    sub: "Begin a conversation →",
+    image: heroImg5,
+  },
 ];
 
 export function Hero() {
@@ -149,11 +183,13 @@ export function Hero() {
     });
   }, [scrollYProgress, beatCount]);
 
-  const imageOpacity = useTransform(scrollYProgress, [0, 0.12, 0.9, 1], [0, 0.55, 0.55, 0.3]);
-  const imageScale = useTransform(scrollYProgress, [0, 1], [1.0, 1.12]);
-
   const beat = STORY_BEATS[activeIdx];
-  const textOpacity = subProgress < 0.15 ? subProgress / 0.15 : subProgress > 0.85 ? Math.max(0, 1 - (subProgress - 0.85) / 0.15) : 1;
+  const textOpacity =
+    subProgress < 0.12
+      ? subProgress / 0.12
+      : subProgress > 0.88
+        ? Math.max(0, 1 - (subProgress - 0.88) / 0.12)
+        : 1;
 
   return (
     <section
@@ -164,25 +200,54 @@ export function Hero() {
     >
       <div className="sticky top-0 h-screen w-full overflow-hidden bg-cream">
         {/* Subtle grid */}
-        <div className="pointer-events-none absolute inset-0 opacity-[0.05]" style={{
-          backgroundImage: "linear-gradient(var(--espresso) 1px, transparent 1px), linear-gradient(90deg, var(--espresso) 1px, transparent 1px)",
-          backgroundSize: "80px 80px",
-        }} />
+        <div
+          className="pointer-events-none absolute inset-0 opacity-[0.05]"
+          style={{
+            backgroundImage:
+              "linear-gradient(var(--espresso) 1px, transparent 1px), linear-gradient(90deg, var(--espresso) 1px, transparent 1px)",
+            backgroundSize: "80px 80px",
+          }}
+        />
 
-        {/* Full-bleed background image */}
-        <motion.div
-          className="pointer-events-none absolute inset-0"
-          style={{ opacity: imageOpacity }}
+        {/* Per-chapter imagery — crossfade with subtle Ken Burns */}
+        {STORY_BEATS.map((b, i) => {
+          const local = activeIdx + subProgress - i;
+          let opacity = 0;
+          if (local >= 0 && local < 1) {
+            opacity = 1 - Math.max(0, local - 0.7) / 0.3;
+          } else if (local < 0 && local > -0.3) {
+            opacity = 1 + local / 0.3;
+          }
+          opacity = Math.max(0, Math.min(1, opacity)) * 0.7;
+          const z = Math.max(-0.3, Math.min(1, local));
+          const scale = 1.04 + (z + 0.3) * 0.1;
+          return (
+            <div
+              key={i}
+              className="pointer-events-none absolute inset-0"
+              style={{ opacity, willChange: "opacity" }}
+              aria-hidden
+            >
+              <img
+                src={b.image}
+                alt=""
+                className="h-full w-full object-cover"
+                style={{ transform: `scale(${scale})`, willChange: "transform" }}
+                loading={i === 0 ? "eager" : "lazy"}
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-cream via-cream/70 to-cream/40 md:from-cream/95 md:via-cream/60 md:to-cream/20" />
+            </div>
+          );
+        })}
+
+        {/* Chapter numeral — large, faint, in the background */}
+        <div
+          key={`ch-${activeIdx}`}
+          className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 select-none font-display text-[28vw] font-light leading-none text-espresso/[0.06] md:right-10 md:text-[20vw]"
+          style={{ opacity: textOpacity }}
         >
-          <motion.img
-            src={heroBg}
-            alt=""
-            aria-hidden
-            className="h-full w-full object-cover"
-            style={{ scale: imageScale }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-cream/60 via-cream/20 to-cream/50" />
-        </motion.div>
+          {beat.chapter}
+        </div>
 
         {/* Story text */}
         <div
@@ -191,7 +256,9 @@ export function Hero() {
         >
           <p className="label mb-6 flex items-center gap-3 text-caramel" key={`label-${activeIdx}`}>
             <span className="h-px w-8 bg-caramel" />
-            {beat.label}
+            <span>Chapter {beat.chapter}</span>
+            <span className="text-caramel/50">·</span>
+            <span>{beat.label}</span>
           </p>
 
           <h1
@@ -217,11 +284,22 @@ export function Hero() {
           {STORY_BEATS.map((_, i) => (
             <span
               key={i}
-              className="block h-[2px] w-6 transition-all duration-300"
-              style={{ background: i === activeIdx ? "var(--espresso)" : "var(--sand)", width: i === activeIdx ? "32px" : "16px" }}
+              className="block h-[2px] transition-all duration-300"
+              style={{
+                background: i === activeIdx ? "var(--espresso)" : "var(--sand)",
+                width: i === activeIdx ? "32px" : "16px",
+              }}
             />
           ))}
         </div>
+
+        {/* First-beat scroll hint */}
+        {activeIdx === 0 && (
+          <div className="pointer-events-none absolute bottom-20 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
+            <span className="label text-brown">Scroll the story</span>
+            <span className="block h-10 w-px bg-espresso/40" />
+          </div>
+        )}
       </div>
     </section>
   );
