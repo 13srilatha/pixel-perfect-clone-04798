@@ -10,6 +10,7 @@ import { Contact } from "@/components/site/Contact";
 import { BackToTop } from "@/components/site/BackToTop";
 import { IntroLogo } from "@/components/site/IntroLogo";
 import { ChatBot } from "@/components/site/ChatBot";
+import { SmoothScroll } from "@/components/site/SmoothScroll";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -28,6 +29,7 @@ export const Route = createFileRoute("/")({
 function Index() {
   return (
     <main className="bg-cream text-espresso">
+      <SmoothScroll />
       <IntroLogo />
       <Nav />
       <Hero />
