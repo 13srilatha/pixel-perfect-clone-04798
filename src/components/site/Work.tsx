@@ -273,7 +273,6 @@ function HorizontalCategories({ onOpen }: { onOpen: (c: ProjectCategory) => void
 
   return (
     <>
-      {/* Services overview — what we do, with descriptions of offerings */}
       <Reveal className="mx-auto max-w-[1600px] px-6 pt-20 pb-10 md:px-10 md:pt-28 md:pb-14">
         <p className="label mb-4 inline-flex items-center gap-3">
           <span className="h-px w-10 bg-caramel" />
@@ -283,110 +282,45 @@ function HorizontalCategories({ onOpen }: { onOpen: (c: ProjectCategory) => void
           What we <em className="italic text-caramel">design</em>.
         </h2>
         <p className="mt-5 max-w-2xl text-base leading-relaxed text-brown md:text-lg">
-          A single studio for the full arc — architecture, interiors, planning and
-          renovation. Below is what each practice covers; scroll down for the full
-          gallery of completed work in every category.
+          A single studio for the full arc — architecture, interiors, commercial and renovation.
+          Scroll horizontally below: each practice arrives with its own description, offerings and gallery — together.
         </p>
-
-        <ul className="mt-12 grid grid-cols-1 gap-px bg-sand md:grid-cols-2 lg:grid-cols-4">
-          {[
-            {
-              num: "01",
-              title: "Architecture",
-              tag: "Residential",
-              copy: "Site studies, massing, façades and full architectural drawings — built around how your family actually lives.",
-              offers: ["Concept design", "Working drawings", "Site supervision"],
-            },
-            {
-              num: "02",
-              title: "Interior Design",
-              tag: "Interior",
-              copy: "Built-in joinery, partitions, layered lighting and material palettes drawn room by room.",
-              offers: ["Joinery & built-ins", "Lighting design", "Material palettes"],
-            },
-            {
-              num: "03",
-              title: "Commercial",
-              tag: "Commercial",
-              copy: "Cafés, showrooms and workplaces with the warmth of a private home and the performance of a professional space.",
-              offers: ["Workplaces", "Showrooms", "Hospitality"],
-            },
-            {
-              num: "04",
-              title: "Renovation",
-              tag: "Renovation",
-              copy: "Old buildings, listened to. Restored where possible, updated only where it genuinely serves the people inside.",
-              offers: ["Restoration", "Adaptive reuse", "Vastu re-planning"],
-            },
-          ].map((s) => (
-            <li
-              key={s.num}
-              className="group relative flex flex-col gap-4 bg-cream p-6 transition-colors hover:bg-sand/40 md:p-8"
-            >
-              <div className="flex items-baseline justify-between">
-                <span className="label text-caramel">{s.num}</span>
-                <span className="label text-brown">{s.tag}</span>
-              </div>
-              <h3 className="font-display text-2xl font-light text-espresso md:text-3xl">
-                {s.title}
-              </h3>
-              <p className="text-sm leading-relaxed text-brown md:text-base">
-                {s.copy}
-              </p>
-              <ul className="mt-auto flex flex-wrap gap-2 pt-2">
-                {s.offers.map((o) => (
-                  <li
-                    key={o}
-                    className="border border-sand px-2.5 py-1 text-[11px] uppercase tracking-wider text-espresso"
-                  >
-                    {o}
-                  </li>
-                ))}
-              </ul>
-            </li>
-          ))}
-        </ul>
-
-        <p className="mt-10 max-w-xl text-sm leading-relaxed text-brown">
-          ↓ Scroll through the four practices below — each opens a full project gallery.
-        </p>
+        <p className="mt-6 label text-caramel">↓ Scroll · the studio's four practices →</p>
       </Reveal>
 
+      <section
+        ref={trackRef}
+        className="relative bg-cream"
+        style={{ height: "400vh" }}
+        aria-label="Work categories — horizontal scroll"
+      >
+        <div className="sticky top-0 h-screen w-full overflow-hidden">
+          <div className="flex h-full items-center px-0">
+            <motion.div style={{ x }} className="flex h-full will-change-transform">
+              {CATEGORY_ORDER.map((cat, i) => (
+                <CategoryPanel
+                  key={cat}
+                  category={cat}
+                  index={i}
+                  onOpen={() => onOpen(cat)}
+                  progress={scrollYProgress}
+                />
+              ))}
+            </motion.div>
+          </div>
 
-    <section
-      ref={trackRef}
-      className="relative bg-cream"
-      style={{ height: "400vh" }} // 100vh per panel
-      aria-label="Work categories — horizontal scroll"
-    >
-      <div className="sticky top-0 h-screen w-full overflow-hidden">
-        <div className="flex h-full items-center px-0">
-          <motion.div style={{ x }} className="flex h-full will-change-transform">
-            {CATEGORY_ORDER.map((cat, i) => (
-              <CategoryPanel
-                key={cat}
-                category={cat}
-                index={i}
-                onOpen={() => onOpen(cat)}
-                progress={scrollYProgress}
+          <div className="pointer-events-none absolute inset-x-10 bottom-6 z-20 flex items-center gap-4">
+            <span className="label text-caramel">Services</span>
+            <span className="relative h-px flex-1 bg-sand">
+              <motion.span
+                className="absolute left-0 top-0 block h-full bg-espresso"
+                style={{ width: useTransform(scrollYProgress, [0, 1], ["0%", "100%"]) }}
               />
-            ))}
-          </motion.div>
+            </span>
+            <span className="label text-caramel">{CATEGORY_ORDER.length} of {CATEGORY_ORDER.length}</span>
+          </div>
         </div>
-
-        {/* progress rail */}
-        <div className="pointer-events-none absolute inset-x-10 bottom-6 z-20 flex items-center gap-4">
-          <span className="label text-caramel">Services</span>
-          <span className="relative h-px flex-1 bg-sand">
-            <motion.span
-              className="absolute left-0 top-0 block h-full bg-espresso"
-              style={{ width: useTransform(scrollYProgress, [0, 1], ["0%", "100%"]) }}
-            />
-          </span>
-          <span className="label text-caramel">{CATEGORY_ORDER.length} of {CATEGORY_ORDER.length}</span>
-        </div>
-      </div>
-    </section>
+      </section>
     </>
   );
 }
