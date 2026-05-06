@@ -11,36 +11,41 @@ const useIso = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 const testimonials = [
   {
-    quote:
-      "They listened more than they spoke. Our home feels like the version of us we couldn't put into words.",
+    quote: "They listened more than they spoke. Our home feels like the version of us we couldn't put into words.",
     name: "Charry Reddy",
     title: "Homeowner · Jubilee Hills",
   },
   {
-    quote:
-      "Every drawing came back with care. The site team treated our half-built house like their own.",
+    quote: "Every drawing came back with care. The site team treated our half-built house like their own.",
     name: "Muthyam Rao",
     title: "Client · Kompally Residence",
   },
   {
-    quote:
-      "We changed our mind a hundred times. Vaasanthi never lost patience — and the result is honestly perfect.",
+    quote: "We changed our mind a hundred times. Vaasanthi never lost patience — and the result is perfect.",
     name: "Aparna Iyer",
     title: "Client · Kondapur Villa",
   },
+  {
+    quote: "Honest, warm, and exact. They drew exactly what we needed — nothing more, nothing less.",
+    name: "Naveen K.",
+    title: "Client · Gachibowli Home",
+  },
+  {
+    quote: "Our café finally feels like a place people want to linger. That was the brief — and they nailed it.",
+    name: "Priya & Rahul",
+    title: "Owners · Brew House",
+  },
 ];
 
+const PANELS = testimonials.length; // 5
+
 /**
- * Three-phase scroll storytelling:
- *   Phase 1 — One full-bleed image fills the screen.
- *   Phase 2 — Image splits into three vertical cards that move apart.
- *   Phase 3 — Each card flips along Y-axis to reveal client testimonial text.
- *
- * On mobile (<768px), the cards stack vertically after the split + flip.
+ * One single image fills the screen as 5 perfectly seamless vertical slices.
+ * On scroll, each slice flips IN PLACE on its Y-axis (staggered) to reveal
+ * a client testimonial. No translation, no gaps — they sit flush throughout.
  */
 export function Testimonials() {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
   const innerRef = useRef<(HTMLDivElement | null)[]>([]);
 
   useIso(() => {
@@ -48,39 +53,22 @@ export function Testimonials() {
     if (!section) return;
 
     const ctx = gsap.context(() => {
-      const isMobile = window.matchMedia("(max-width: 767px)").matches;
-
-      const cards = cardsRef.current.filter(Boolean) as HTMLDivElement[];
       const inners = innerRef.current.filter(Boolean) as HTMLDivElement[];
-
-      // Reset
-      gsap.set(cards, { x: 0, y: 0 });
       gsap.set(inners, { rotationY: 0 });
 
-      const tl = gsap.timeline({
+      gsap.to(inners, {
+        rotationY: 180,
+        ease: "power2.inOut",
+        stagger: 0.18,
         scrollTrigger: {
           trigger: section,
           start: "top top",
-          end: "+=300%",
-          scrub: 1.2,
+          end: "+=250%",
+          scrub: 1.1,
           pin: true,
           anticipatePin: 1,
         },
       });
-
-      if (isMobile) {
-        // Phase 2 — stack vertically
-        tl.to(cards[0], { y: "-105%", duration: 1 }, 0)
-          .to(cards[2], { y: "105%", duration: 1 }, 0)
-          // Phase 3 — flip each card
-          .to(inners, { rotationY: 180, duration: 1, stagger: 0.15 }, 1.1);
-      } else {
-        // Phase 2 — fan apart horizontally
-        tl.to(cards[0], { x: "-105%", duration: 1 }, 0)
-          .to(cards[2], { x: "105%", duration: 1 }, 0)
-          // Phase 3 — flip each card to reveal text
-          .to(inners, { rotationY: 180, duration: 1, stagger: 0.15 }, 1.1);
-      }
     }, section);
 
     return () => ctx.revert();
@@ -105,69 +93,74 @@ export function Testimonials() {
           </h2>
         </div>
 
-        {/* Three-card stage */}
-        <div className="relative flex h-full w-full items-center justify-center px-4 pt-32 pb-10 md:px-8 md:pt-40 md:pb-16">
-          <div className="relative flex h-full w-full max-w-[1500px] flex-col gap-1 md:flex-row md:gap-2">
-            {testimonials.map((t, i) => (
+        {/* 5 flush panels — desktop horizontal, mobile vertical */}
+        <div className="absolute inset-0 flex flex-col md:flex-row">
+          {testimonials.map((t, i) => (
+            <div
+              key={t.name}
+              className="relative h-1/5 w-full md:h-full md:w-1/5"
+              style={{ perspective: "2400px" }}
+            >
               <div
-                key={t.name}
-                ref={(el) => { cardsRef.current[i] = el; }}
-                className="relative h-1/3 w-full md:h-full md:w-1/3"
-                style={{ perspective: "1600px" }}
+                ref={(el) => { innerRef.current[i] = el; }}
+                className="relative h-full w-full"
+                style={{ transformStyle: "preserve-3d" }}
               >
+                {/* FRONT — slice of single image */}
                 <div
-                  ref={(el) => { innerRef.current[i] = el; }}
-                  className="relative h-full w-full"
-                  style={{ transformStyle: "preserve-3d" }}
+                  className="absolute inset-0 overflow-hidden bg-sand"
+                  style={{
+                    backfaceVisibility: "hidden",
+                    WebkitBackfaceVisibility: "hidden",
+                  }}
                 >
-                  {/* FRONT — image slice (one image positioned via background) */}
+                  {/* Desktop: vertical slices. Mobile: horizontal slices. */}
                   <div
-                    className="absolute inset-0 overflow-hidden bg-sand shadow-2xl"
+                    className="absolute inset-0 hidden bg-no-repeat md:block"
                     style={{
-                      backfaceVisibility: "hidden",
-                      WebkitBackfaceVisibility: "hidden",
+                      backgroundImage: `url(${heroImg})`,
+                      backgroundSize: `${PANELS * 100}% 100%`,
+                      backgroundPosition: `${(i / (PANELS - 1)) * 100}% center`,
                     }}
-                  >
-                    <div
-                      className="absolute inset-0 bg-cover bg-no-repeat"
-                      style={{
-                        backgroundImage: `url(${heroImg})`,
-                        // Each card shows a vertical slice of the same image
-                        backgroundSize: "300% 100%",
-                        backgroundPosition: `${i * 50}% center`,
-                      }}
-                      aria-hidden
-                    />
-                  </div>
+                    aria-hidden
+                  />
+                  <div
+                    className="absolute inset-0 bg-no-repeat md:hidden"
+                    style={{
+                      backgroundImage: `url(${heroImg})`,
+                      backgroundSize: `100% ${PANELS * 100}%`,
+                      backgroundPosition: `center ${(i / (PANELS - 1)) * 100}%`,
+                    }}
+                    aria-hidden
+                  />
+                </div>
 
-                  {/* BACK — testimonial text */}
-                  <div
-                    className="absolute inset-0 flex flex-col justify-between border border-sand bg-cream p-6 shadow-2xl md:p-10"
-                    style={{
-                      backfaceVisibility: "hidden",
-                      WebkitBackfaceVisibility: "hidden",
-                      transform: "rotateY(180deg)",
-                    }}
-                  >
-                    <p className="label text-caramel">
-                      0{i + 1} · Client Words
+                {/* BACK — testimonial */}
+                <div
+                  className="absolute inset-0 flex flex-col justify-between bg-cream p-5 md:p-8"
+                  style={{
+                    backfaceVisibility: "hidden",
+                    WebkitBackfaceVisibility: "hidden",
+                    transform: "rotateY(180deg)",
+                    borderLeft: i === 0 ? undefined : "1px solid var(--sand)",
+                  }}
+                >
+                  <p className="label text-caramel">0{i + 1}</p>
+                  <p className="font-display text-base italic leading-snug text-espresso md:text-lg lg:text-xl">
+                    “{t.quote}”
+                  </p>
+                  <div className="border-t border-sand pt-3">
+                    <p className="font-sans text-xs font-bold uppercase tracking-wide text-espresso">
+                      {t.name}
                     </p>
-                    <p className="font-display text-xl italic leading-snug text-espresso md:text-2xl lg:text-[28px]">
-                      “{t.quote}”
+                    <p className="label mt-1 normal-case tracking-normal text-brown text-[10px]">
+                      {t.title}
                     </p>
-                    <div className="border-t border-sand pt-4">
-                      <p className="font-sans text-sm font-bold uppercase tracking-wide text-espresso">
-                        {t.name}
-                      </p>
-                      <p className="label mt-1 normal-case tracking-normal text-brown">
-                        {t.title}
-                      </p>
-                    </div>
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>
