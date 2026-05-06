@@ -343,6 +343,8 @@ function CategoryPanel({
   const scale = useTransform(dist, [0, 0.4], [1, 0.92]);
   const opacity = useTransform(dist, [0, 0.4], [1, 0.55]);
 
+  const meta = CATEGORY_META[category];
+
   return (
     <motion.button
       type="button"
@@ -350,45 +352,58 @@ function CategoryPanel({
       style={{ scale, opacity }}
       className="group relative flex h-full w-screen shrink-0 items-stretch p-6 text-left md:p-12"
     >
-      <div className="relative flex h-full w-full overflow-hidden bg-espresso">
-        {/* Image collage backdrop */}
-        <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-1 opacity-90">
+      <div className="relative grid h-full w-full grid-cols-1 gap-6 bg-cream md:grid-cols-12 md:gap-8">
+        {/* LEFT — service text panel that travels with the gallery */}
+        <div className="relative flex flex-col justify-between border border-sand bg-cream p-6 md:col-span-5 md:p-10">
+          <div>
+            <div className="flex items-center justify-between">
+              <p className="label text-caramel">{meta.num} · {meta.practice}</p>
+              <p className="label text-brown">{items.length} project{items.length === 1 ? "" : "s"}</p>
+            </div>
+            <h3 className="mt-6 display text-[clamp(2.5rem,5.5vw,5rem)] leading-[0.95] text-espresso">
+              {category}.
+            </h3>
+            <p className="mt-5 max-w-md text-base leading-relaxed text-brown md:text-lg">
+              {CATEGORY_BLURB[category]}
+            </p>
+            <ul className="mt-8 flex flex-wrap gap-2">
+              {meta.offers.map((o) => (
+                <li
+                  key={o}
+                  className="border border-sand px-3 py-1.5 text-[11px] uppercase tracking-wider text-espresso"
+                >
+                  {o}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <span className="mt-8 inline-flex items-center gap-3 self-start border border-espresso px-5 py-3 transition-colors group-hover:bg-espresso group-hover:text-cream">
+            <span className="label">Open {category.toLowerCase()} gallery</span>
+            <span className="transition-transform group-hover:translate-x-1">→</span>
+          </span>
+        </div>
+
+        {/* RIGHT — image gallery (collage of projects) */}
+        <div className="relative grid grid-cols-2 grid-rows-2 gap-2 overflow-hidden md:col-span-7">
           {items.slice(0, 4).map((p, i) => (
-            <div key={p.id} className="relative overflow-hidden bg-ink">
+            <div key={p.id} className="relative overflow-hidden bg-sand">
               <img
                 src={p.image}
-                alt=""
-                aria-hidden
+                alt={p.title}
                 loading="lazy"
                 className="h-full w-full object-cover transition-transform duration-[1800ms] ease-out group-hover:scale-110"
                 style={{ animationDelay: `${i * 80}ms` }}
               />
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/80 to-transparent p-3">
+                <p className="label text-cream">{p.title}</p>
+              </div>
             </div>
           ))}
-          {items.length === 0 && <div className="col-span-2 row-span-2 bg-espresso" />}
-        </div>
-
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/40 to-ink/30" />
-
-        <div className="relative z-10 flex h-full w-full flex-col justify-between p-8 text-cream md:p-14">
-          <div className="flex items-center justify-between">
-            <p className="label text-gold-lt">0{index + 1} · {items.length} project{items.length === 1 ? "" : "s"}</p>
-            <span className="label text-cream/70">Tap to open gallery →</span>
-          </div>
-
-          <div>
-            <h3 className="display text-[clamp(3rem,9vw,8rem)] text-cream">
-              {category}.
-            </h3>
-            <p className="mt-4 max-w-xl text-lg leading-relaxed text-cream/80">
-              {CATEGORY_BLURB[category]}
-            </p>
-
-            <span className="mt-8 inline-flex items-center gap-3 border border-cream/40 px-5 py-3 transition-colors group-hover:border-gold group-hover:bg-gold/10">
-              <span className="label text-cream">Open the {category.toLowerCase()} gallery</span>
-              <span className="text-cream transition-transform group-hover:translate-x-1">→</span>
-            </span>
-          </div>
+          {items.length === 0 && (
+            <div className="col-span-2 row-span-2 flex items-center justify-center bg-sand/40">
+              <p className="label text-brown">Coming soon</p>
+            </div>
+          )}
         </div>
       </div>
     </motion.button>
