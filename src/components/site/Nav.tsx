@@ -128,7 +128,7 @@ function MobileMenu({ links }: { links: { href: string; label: string }[] }) {
   );
 }
 
-const STORY_BEATS = [
+const _STORY_BEATS_UNUSED = [
   {
     chapter: "I",
     label: "Architecture · Interior · Planning",
@@ -166,10 +166,10 @@ const STORY_BEATS = [
   },
 ];
 
-export function Hero() {
+function _UnusedHero() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end end"] });
-  const beatCount = STORY_BEATS.length;
+  const beatCount = _STORY_BEATS_UNUSED.length;
 
   const [activeIdx, setActiveIdx] = useState(0);
   const [subProgress, setSubProgress] = useState(0);
