@@ -15,12 +15,13 @@ const CATEGORY_BLURB: Record<ProjectCategory, string> = {
   Commercial: "Workplaces, cafés and showrooms where people actually want to spend time. The warmth of a private home, the performance of a professional space.",
   Renovation: "Old buildings carry history. We listen to what's there, restore wherever possible, and update only where it genuinely serves the people living in it today.",
 };
-// const CATEGORY_BLURB: Record<ProjectCategory, string> = {
-//   Residential: "Homes designed to age slowly with the families inside them.",
-//   Interior: "Joinery, partitions, lighting and built-ins — drawn for each home, crafted on site.",
-//   Commercial: "Workplaces, cafés and showrooms with the warmth of a private home.",
-//   Renovation: "Old buildings, listened to. Restored where possible, updated only where needed.",
-// };
+
+const CATEGORY_META: Record<ProjectCategory, { num: string; practice: string; offers: string[] }> = {
+  Residential: { num: "01", practice: "Architecture", offers: ["Concept design", "Working drawings", "Site supervision"] },
+  Interior: { num: "02", practice: "Interior Design", offers: ["Joinery & built-ins", "Lighting design", "Material palettes"] },
+  Commercial: { num: "03", practice: "Commercial", offers: ["Workplaces", "Showrooms", "Hospitality"] },
+  Renovation: { num: "04", practice: "Renovation", offers: ["Restoration", "Adaptive reuse", "Vastu re-planning"] },
+};
 
 import { interiors } from "@/data/interiors";
 
