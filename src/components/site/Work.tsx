@@ -15,12 +15,13 @@ const CATEGORY_BLURB: Record<ProjectCategory, string> = {
   Commercial: "Workplaces, cafés and showrooms where people actually want to spend time. The warmth of a private home, the performance of a professional space.",
   Renovation: "Old buildings carry history. We listen to what's there, restore wherever possible, and update only where it genuinely serves the people living in it today.",
 };
-// const CATEGORY_BLURB: Record<ProjectCategory, string> = {
-//   Residential: "Homes designed to age slowly with the families inside them.",
-//   Interior: "Joinery, partitions, lighting and built-ins — drawn for each home, crafted on site.",
-//   Commercial: "Workplaces, cafés and showrooms with the warmth of a private home.",
-//   Renovation: "Old buildings, listened to. Restored where possible, updated only where needed.",
-// };
+
+const CATEGORY_META: Record<ProjectCategory, { num: string; practice: string; offers: string[] }> = {
+  Residential: { num: "01", practice: "Architecture", offers: ["Concept design", "Working drawings", "Site supervision"] },
+  Interior: { num: "02", practice: "Interior Design", offers: ["Joinery & built-ins", "Lighting design", "Material palettes"] },
+  Commercial: { num: "03", practice: "Commercial", offers: ["Workplaces", "Showrooms", "Hospitality"] },
+  Renovation: { num: "04", practice: "Renovation", offers: ["Restoration", "Adaptive reuse", "Vastu re-planning"] },
+};
 
 import { interiors } from "@/data/interiors";
 
@@ -272,7 +273,6 @@ function HorizontalCategories({ onOpen }: { onOpen: (c: ProjectCategory) => void
 
   return (
     <>
-      {/* Services overview — what we do, with descriptions of offerings */}
       <Reveal className="mx-auto max-w-[1600px] px-6 pt-20 pb-10 md:px-10 md:pt-28 md:pb-14">
         <p className="label mb-4 inline-flex items-center gap-3">
           <span className="h-px w-10 bg-caramel" />
@@ -282,110 +282,45 @@ function HorizontalCategories({ onOpen }: { onOpen: (c: ProjectCategory) => void
           What we <em className="italic text-caramel">design</em>.
         </h2>
         <p className="mt-5 max-w-2xl text-base leading-relaxed text-brown md:text-lg">
-          A single studio for the full arc — architecture, interiors, planning and
-          renovation. Below is what each practice covers; scroll down for the full
-          gallery of completed work in every category.
+          A single studio for the full arc — architecture, interiors, commercial and renovation.
+          Scroll horizontally below: each practice arrives with its own description, offerings and gallery — together.
         </p>
-
-        <ul className="mt-12 grid grid-cols-1 gap-px bg-sand md:grid-cols-2 lg:grid-cols-4">
-          {[
-            {
-              num: "01",
-              title: "Architecture",
-              tag: "Residential",
-              copy: "Site studies, massing, façades and full architectural drawings — built around how your family actually lives.",
-              offers: ["Concept design", "Working drawings", "Site supervision"],
-            },
-            {
-              num: "02",
-              title: "Interior Design",
-              tag: "Interior",
-              copy: "Built-in joinery, partitions, layered lighting and material palettes drawn room by room.",
-              offers: ["Joinery & built-ins", "Lighting design", "Material palettes"],
-            },
-            {
-              num: "03",
-              title: "Commercial",
-              tag: "Commercial",
-              copy: "Cafés, showrooms and workplaces with the warmth of a private home and the performance of a professional space.",
-              offers: ["Workplaces", "Showrooms", "Hospitality"],
-            },
-            {
-              num: "04",
-              title: "Renovation",
-              tag: "Renovation",
-              copy: "Old buildings, listened to. Restored where possible, updated only where it genuinely serves the people inside.",
-              offers: ["Restoration", "Adaptive reuse", "Vastu re-planning"],
-            },
-          ].map((s) => (
-            <li
-              key={s.num}
-              className="group relative flex flex-col gap-4 bg-cream p-6 transition-colors hover:bg-sand/40 md:p-8"
-            >
-              <div className="flex items-baseline justify-between">
-                <span className="label text-caramel">{s.num}</span>
-                <span className="label text-brown">{s.tag}</span>
-              </div>
-              <h3 className="font-display text-2xl font-light text-espresso md:text-3xl">
-                {s.title}
-              </h3>
-              <p className="text-sm leading-relaxed text-brown md:text-base">
-                {s.copy}
-              </p>
-              <ul className="mt-auto flex flex-wrap gap-2 pt-2">
-                {s.offers.map((o) => (
-                  <li
-                    key={o}
-                    className="border border-sand px-2.5 py-1 text-[11px] uppercase tracking-wider text-espresso"
-                  >
-                    {o}
-                  </li>
-                ))}
-              </ul>
-            </li>
-          ))}
-        </ul>
-
-        <p className="mt-10 max-w-xl text-sm leading-relaxed text-brown">
-          ↓ Scroll through the four practices below — each opens a full project gallery.
-        </p>
+        <p className="mt-6 label text-caramel">↓ Scroll · the studio's four practices →</p>
       </Reveal>
 
+      <section
+        ref={trackRef}
+        className="relative bg-cream"
+        style={{ height: "400vh" }}
+        aria-label="Work categories — horizontal scroll"
+      >
+        <div className="sticky top-0 h-screen w-full overflow-hidden">
+          <div className="flex h-full items-center px-0">
+            <motion.div style={{ x }} className="flex h-full will-change-transform">
+              {CATEGORY_ORDER.map((cat, i) => (
+                <CategoryPanel
+                  key={cat}
+                  category={cat}
+                  index={i}
+                  onOpen={() => onOpen(cat)}
+                  progress={scrollYProgress}
+                />
+              ))}
+            </motion.div>
+          </div>
 
-    <section
-      ref={trackRef}
-      className="relative bg-cream"
-      style={{ height: "400vh" }} // 100vh per panel
-      aria-label="Work categories — horizontal scroll"
-    >
-      <div className="sticky top-0 h-screen w-full overflow-hidden">
-        <div className="flex h-full items-center px-0">
-          <motion.div style={{ x }} className="flex h-full will-change-transform">
-            {CATEGORY_ORDER.map((cat, i) => (
-              <CategoryPanel
-                key={cat}
-                category={cat}
-                index={i}
-                onOpen={() => onOpen(cat)}
-                progress={scrollYProgress}
+          <div className="pointer-events-none absolute inset-x-10 bottom-6 z-20 flex items-center gap-4">
+            <span className="label text-caramel">Services</span>
+            <span className="relative h-px flex-1 bg-sand">
+              <motion.span
+                className="absolute left-0 top-0 block h-full bg-espresso"
+                style={{ width: useTransform(scrollYProgress, [0, 1], ["0%", "100%"]) }}
               />
-            ))}
-          </motion.div>
+            </span>
+            <span className="label text-caramel">{CATEGORY_ORDER.length} of {CATEGORY_ORDER.length}</span>
+          </div>
         </div>
-
-        {/* progress rail */}
-        <div className="pointer-events-none absolute inset-x-10 bottom-6 z-20 flex items-center gap-4">
-          <span className="label text-caramel">Services</span>
-          <span className="relative h-px flex-1 bg-sand">
-            <motion.span
-              className="absolute left-0 top-0 block h-full bg-espresso"
-              style={{ width: useTransform(scrollYProgress, [0, 1], ["0%", "100%"]) }}
-            />
-          </span>
-          <span className="label text-caramel">{CATEGORY_ORDER.length} of {CATEGORY_ORDER.length}</span>
-        </div>
-      </div>
-    </section>
+      </section>
     </>
   );
 }
@@ -408,6 +343,8 @@ function CategoryPanel({
   const scale = useTransform(dist, [0, 0.4], [1, 0.92]);
   const opacity = useTransform(dist, [0, 0.4], [1, 0.55]);
 
+  const meta = CATEGORY_META[category];
+
   return (
     <motion.button
       type="button"
@@ -415,45 +352,58 @@ function CategoryPanel({
       style={{ scale, opacity }}
       className="group relative flex h-full w-screen shrink-0 items-stretch p-6 text-left md:p-12"
     >
-      <div className="relative flex h-full w-full overflow-hidden bg-espresso">
-        {/* Image collage backdrop */}
-        <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-1 opacity-90">
+      <div className="relative grid h-full w-full grid-cols-1 gap-6 bg-cream md:grid-cols-12 md:gap-8">
+        {/* LEFT — service text panel that travels with the gallery */}
+        <div className="relative flex flex-col justify-between border border-sand bg-cream p-6 md:col-span-5 md:p-10">
+          <div>
+            <div className="flex items-center justify-between">
+              <p className="label text-caramel">{meta.num} · {meta.practice}</p>
+              <p className="label text-brown">{items.length} project{items.length === 1 ? "" : "s"}</p>
+            </div>
+            <h3 className="mt-6 display text-[clamp(2.5rem,5.5vw,5rem)] leading-[0.95] text-espresso">
+              {category}.
+            </h3>
+            <p className="mt-5 max-w-md text-base leading-relaxed text-brown md:text-lg">
+              {CATEGORY_BLURB[category]}
+            </p>
+            <ul className="mt-8 flex flex-wrap gap-2">
+              {meta.offers.map((o) => (
+                <li
+                  key={o}
+                  className="border border-sand px-3 py-1.5 text-[11px] uppercase tracking-wider text-espresso"
+                >
+                  {o}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <span className="mt-8 inline-flex items-center gap-3 self-start border border-espresso px-5 py-3 transition-colors group-hover:bg-espresso group-hover:text-cream">
+            <span className="label">Open {category.toLowerCase()} gallery</span>
+            <span className="transition-transform group-hover:translate-x-1">→</span>
+          </span>
+        </div>
+
+        {/* RIGHT — image gallery (collage of projects) */}
+        <div className="relative grid grid-cols-2 grid-rows-2 gap-2 overflow-hidden md:col-span-7">
           {items.slice(0, 4).map((p, i) => (
-            <div key={p.id} className="relative overflow-hidden bg-ink">
+            <div key={p.id} className="relative overflow-hidden bg-sand">
               <img
                 src={p.image}
-                alt=""
-                aria-hidden
+                alt={p.title}
                 loading="lazy"
                 className="h-full w-full object-cover transition-transform duration-[1800ms] ease-out group-hover:scale-110"
                 style={{ animationDelay: `${i * 80}ms` }}
               />
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/80 to-transparent p-3">
+                <p className="label text-cream">{p.title}</p>
+              </div>
             </div>
           ))}
-          {items.length === 0 && <div className="col-span-2 row-span-2 bg-espresso" />}
-        </div>
-
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/40 to-ink/30" />
-
-        <div className="relative z-10 flex h-full w-full flex-col justify-between p-8 text-cream md:p-14">
-          <div className="flex items-center justify-between">
-            <p className="label text-gold-lt">0{index + 1} · {items.length} project{items.length === 1 ? "" : "s"}</p>
-            <span className="label text-cream/70">Tap to open gallery →</span>
-          </div>
-
-          <div>
-            <h3 className="display text-[clamp(3rem,9vw,8rem)] text-cream">
-              {category}.
-            </h3>
-            <p className="mt-4 max-w-xl text-lg leading-relaxed text-cream/80">
-              {CATEGORY_BLURB[category]}
-            </p>
-
-            <span className="mt-8 inline-flex items-center gap-3 border border-cream/40 px-5 py-3 transition-colors group-hover:border-gold group-hover:bg-gold/10">
-              <span className="label text-cream">Open the {category.toLowerCase()} gallery</span>
-              <span className="text-cream transition-transform group-hover:translate-x-1">→</span>
-            </span>
-          </div>
+          {items.length === 0 && (
+            <div className="col-span-2 row-span-2 flex items-center justify-center bg-sand/40">
+              <p className="label text-brown">Coming soon</p>
+            </div>
+          )}
         </div>
       </div>
     </motion.button>

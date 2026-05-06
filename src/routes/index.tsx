@@ -67,7 +67,7 @@ function Index() {
         kicker="Client Words"
         title="What our clients"
         italic="remember."
-        subtitle="A single image splits into three, and each card flips to reveal the people we've built for."
+        subtitle="One image, five voices. Scroll — each panel turns to reveal the people we've built for."
       />
       <Testimonials />
 
