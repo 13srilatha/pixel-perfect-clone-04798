@@ -598,6 +598,7 @@
 //     </article>
 //   );
 // }
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { projects, type Project, type ProjectCategory } from "@/data/projects";
@@ -983,25 +984,24 @@ function CategoryPanel({
           </span>
         </div>
 
-        {/* RIGHT — image gallery (collage of projects) */}
-        <div className="relative grid grid-cols-2 grid-rows-2 gap-2 overflow-hidden md:col-span-7">
-          {items.slice(0, 4).map((p, i) => (
-            <div key={p.id} className="relative overflow-hidden bg-sand">
-              <img
-                src={p.image}
-                alt={p.title}
-                loading="lazy"
-                className="h-full w-full object-cover transition-transform duration-[1800ms] ease-out group-hover:scale-110"
-                style={{ animationDelay: `${i * 80}ms` }}
-              />
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/80 to-transparent p-3">
-                <p className="label text-cream">{p.title}</p>
-              </div>
-            </div>
-          ))}
-          {items.length === 0 && (
-            <div className="col-span-2 row-span-2 flex items-center justify-center bg-sand/40">
+        {/* RIGHT — single hero image */}
+        <div className="relative overflow-hidden bg-sand md:col-span-7">
+          {items[0] ? (
+            <img
+              src={items[0].image}
+              alt={items[0].title}
+              loading="lazy"
+              className="h-full w-full object-cover transition-transform duration-[1800ms] ease-out group-hover:scale-105"
+              style={{ minHeight: "320px" }}
+            />
+          ) : (
+            <div className="flex h-full items-center justify-center bg-sand/40">
               <p className="label text-brown">Coming soon</p>
+            </div>
+          )}
+          {items[0] && (
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/70 to-transparent p-4">
+              <p className="label text-cream">{items[0].title}</p>
             </div>
           )}
         </div>
@@ -1033,35 +1033,11 @@ function CategoryGallery({
     itemRefs.current[i] = el;
   };
 
-  // Freeze the page exactly where it is, then let only the gallery overlay
-  // handle vertical scrolling. On close we restore the previous page position.
+  // Prevent background page scroll without breaking overlay scroll
   useEffect(() => {
-    const scrollY = window.scrollY;
-    const bodyStyle = document.body.style;
-    const htmlStyle = document.documentElement.style;
-
-    const previousBody = {
-      overflow: bodyStyle.overflow,
-      position: bodyStyle.position,
-      top: bodyStyle.top,
-      width: bodyStyle.width,
-    };
-    const previousHtmlOverflow = htmlStyle.overflow;
-
-    htmlStyle.overflow = "hidden";
-    bodyStyle.overflow = "hidden";
-    bodyStyle.position = "fixed";
-    bodyStyle.top = `-${scrollY}px`;
-    bodyStyle.width = "100%";
-
-    return () => {
-      htmlStyle.overflow = previousHtmlOverflow;
-      bodyStyle.overflow = previousBody.overflow;
-      bodyStyle.position = previousBody.position;
-      bodyStyle.top = previousBody.top;
-      bodyStyle.width = previousBody.width;
-      window.scrollTo({ top: scrollY, left: 0, behavior: "auto" });
-    };
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
   }, []);
 
   // IntersectionObserver wired in effect via callback ref pattern
@@ -1075,7 +1051,8 @@ function CategoryGallery({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.4 }}
-      className="fixed inset-0 z-[60] overflow-y-auto overscroll-y-contain bg-cream"
+      className="fixed inset-0 z-[60] bg-cream"
+      style={{ overflowY: "scroll", WebkitOverflowScrolling: "touch" } as React.CSSProperties}
     >
       {/* Sticky header bar */}
       <div className="sticky top-0 z-20 flex items-center justify-between border-b border-sand bg-cream/95 px-6 py-4 backdrop-blur md:px-10">
@@ -1229,3 +1206,4 @@ function FlipCard({ project }: { project: Project }) {
     </article>
   );
 }
+
