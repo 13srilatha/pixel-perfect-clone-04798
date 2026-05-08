@@ -87,9 +87,9 @@
 //     </main>
 //   );
 // }
+
 import { createFileRoute } from "@tanstack/react-router";
 import { Hero, Nav } from "@/components/site/Nav";
-import { Walkthrough } from "@/components/site/Walkthrough";
 import { Work } from "@/components/site/Work";
 import { Process } from "@/components/site/Process";
 import { Testimonials } from "@/components/site/Testimonials";
@@ -100,10 +100,9 @@ import { BackToTop } from "@/components/site/BackToTop";
 import { IntroLogo } from "@/components/site/IntroLogo";
 import { ChatBot } from "@/components/site/ChatBot";
 import { SmoothScroll } from "@/components/site/SmoothScroll";
-import { ChapterIntro } from "@/components/site/ChapterIntro";
 import { TrustStory } from "@/components/site/TrustStory";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/")(({
   head: () => ({
     meta: [
       { title: "Terra Space Studio — Architecture & Interior Design, Hyderabad" },
@@ -115,7 +114,7 @@ export const Route = createFileRoute("/")({
     ],
   }),
   component: Index,
-});
+}));
 
 function Index() {
   return (
@@ -125,53 +124,11 @@ function Index() {
       <Nav />
       <Hero />
       <TrustStory />
-      <ChapterIntro
-        number="01"
-        kicker="The Walkthrough"
-        title="Step inside a"
-        italic="finished home."
-        subtitle="From the approach to the terrace, in one continuous scroll. No carousels — just rooms, light, and the way they sit together."
-      />
-      <Walkthrough />
-
-      <ChapterIntro
-        number="02"
-        kicker="The Practice"
-        title="What we"
-        italic="design."
-        subtitle="Architecture, interiors, commercial and renovation — under one studio. Each gallery below is real, completed work."
-      />
       <Work />
-
-      <ChapterIntro
-        number="03"
-        kicker="Before · After"
-        title="Drawings become"
-        italic="rooms."
-        subtitle="Drag the slider on each project to see what we inherited, and what we delivered."
-        tone="ink"
-      />
       <Process />
-
-      <ChapterIntro
-        number="04"
-        kicker="Client Words"
-        title="What our clients"
-        italic="remember."
-        subtitle="One image, five voices. Scroll — each panel turns to reveal the people we've built for."
-      />
       <Testimonials />
-
       <StudioLaunch />
-
-      <ChapterIntro
-        number="05"
-        kicker="The Architect"
-        title="The hand behind"
-        italic="the studio."
-      />
       <Architect />
-
       <Contact />
       <BackToTop />
       <ChatBot />
