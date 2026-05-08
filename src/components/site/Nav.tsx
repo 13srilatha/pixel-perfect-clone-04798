@@ -352,7 +352,6 @@
 //   );
 // }
 
-
 import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { studio } from "@/data/projects";
@@ -385,9 +384,7 @@ export function Nav() {
     <>
       <ScrollProgress />
       <nav
-        className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
-          scrolled ? "bg-cream/85 backdrop-blur-md border-b border-sand" : "bg-transparent"
-        }`}
+        className="fixed inset-x-0 top-0 z-50 bg-cream/90 backdrop-blur-md border-b border-sand"
       >
         <div className="mx-auto flex max-w-[1600px] items-center justify-between px-6 py-4 md:px-10">
           <a href="#top" aria-label={studio.name}>
@@ -396,7 +393,7 @@ export function Nav() {
           <ul className="hidden items-center gap-8 md:flex">
             {links.map((l) => (
               <li key={l.href}>
-                <a href={l.href} className={`label transition-colors ${scrolled ? "text-espresso hover:text-caramel" : "text-cream hover:text-gold"}`}>
+                <a href={l.href} className="label text-espresso transition-colors hover:text-caramel">
                   {l.label}
                 </a>
               </li>
@@ -404,11 +401,7 @@ export function Nav() {
           </ul>
           <a
             href="#contact"
-            className={`label hidden border px-4 py-2 transition-colors md:inline-block ${
-              scrolled
-                ? "border-espresso text-espresso hover:bg-espresso hover:text-cream"
-                : "border-cream text-cream hover:bg-cream hover:text-espresso"
-            }`}
+            className="label hidden border border-espresso px-4 py-2 text-espresso transition-colors hover:bg-espresso hover:text-cream md:inline-block"
           >
             Begin a Project
           </a>
@@ -451,8 +444,8 @@ function MobileMenu({ links }: { links: { href: string; label: string }[] }) {
         aria-label="Menu"
       >
         <span className="relative block h-3 w-6">
-          <span className={`absolute left-0 top-0 h-px w-full bg-cream transition-transform duration-300 ${open ? "translate-y-[6px] rotate-45" : ""}`} />
-          <span className={`absolute left-0 top-[6px] h-px w-full bg-cream transition-transform duration-300 ${open ? "-rotate-45" : ""}`} />
+          <span className={`absolute left-0 top-0 h-px w-full bg-espresso transition-transform duration-300 ${open ? "translate-y-[6px] rotate-45" : ""}`} />
+          <span className={`absolute left-0 top-[6px] h-px w-full bg-espresso transition-transform duration-300 ${open ? "-rotate-45" : ""}`} />
         </span>
       </button>
       <div
@@ -570,12 +563,12 @@ export function Hero() {
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-30 flex items-center justify-between px-6 pt-24 md:px-10 md:pt-28">
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-30 hidden items-center justify-between px-10 pt-28 md:flex">
         <p className="label flex items-center gap-3 text-cream/80">
           <span className="h-px w-10 bg-gold" />
           Terra Space Studio · Hyderabad
         </p>
-        <p className="label hidden text-cream/60 md:block">
+        <p className="label text-cream/60">
           Hover or tap a panel
         </p>
       </div>
