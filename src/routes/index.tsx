@@ -87,7 +87,7 @@
 //     </main>
 //   );
 // }
-
+import { FrameCanvas } from "@/components/FrameCanvas";
 import { createFileRoute } from "@tanstack/react-router";
 import { Hero, Nav } from "@/components/site/Nav";
 import { Work } from "@/components/site/Work";
@@ -122,6 +122,7 @@ function Index() {
       <SmoothScroll />
       <IntroLogo />
       <Nav />
+      <FrameCanvas />
       <Hero />
       <TrustStory />
       <Work />
