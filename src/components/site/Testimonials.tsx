@@ -176,18 +176,22 @@
  * USAGE: Drop-in replacement. Keep the same import in index.tsx.
  *   import { Testimonials } from "@/components/site/Testimonials";
  */
+/**
+ * Testimonials.tsx — Terra Space Studio
+ * Scroll-driven spotlight quotes. One quote fills the screen at a time.
+ * No flip cards. No side scroll. Each quote reveals word by word.
+ */
 
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-/* ─── Data ──────────────────────────────────────────────────────── */
 const TESTIMONIALS = [
   {
     num: "01",
     quote: "They listened more than they spoke.",
     detail: "Our home feels like the version of us we couldn't put into words.",
     name: "Charry Reddy",
-    title: "Homeowner · Jubilee Hills",
+    title: "Homeowner · Jubilee Hills, Hyderabad",
     tag: "Residential",
   },
   {
@@ -219,14 +223,13 @@ const TESTIMONIALS = [
     quote: "Our café finally feels like a place people want to linger.",
     detail: "That was the brief — and they nailed it.",
     name: "Priya & Rahul",
-    title: "Owners · Brew House",
+    title: "Owners · Brew House, Vijayawada",
     tag: "Commercial",
   },
 ] as const;
 
-const VH_PER = 120;  // 120vh per testimonial = smooth pace
+const VH_PER = 120;
 
-/* ─── Component ─────────────────────────────────────────────────── */
 export function Testimonials() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [activeIdx, setActiveIdx] = useState(0);
@@ -239,16 +242,12 @@ export function Testimonials() {
       rafRef.current = requestAnimationFrame(() => {
         const el = sectionRef.current;
         if (!el) return;
-        const rect = el.getBoundingClientRect();
-        const total = el.offsetHeight - window.innerHeight;
+        const rect    = el.getBoundingClientRect();
+        const total   = el.offsetHeight - window.innerHeight;
         const scrolled = Math.min(Math.max(-rect.top, 0), total);
-        const pct = total > 0 ? (scrolled / total) * 100 : 0;
+        const pct     = total > 0 ? (scrolled / total) * 100 : 0;
         setScrollPct(pct);
-        const idx = Math.min(
-          TESTIMONIALS.length - 1,
-          Math.floor((pct / 100) * TESTIMONIALS.length),
-        );
-        setActiveIdx(idx);
+        setActiveIdx(Math.min(TESTIMONIALS.length - 1, Math.floor((pct / 100) * TESTIMONIALS.length)));
       });
     };
     onScroll();
@@ -263,24 +262,19 @@ export function Testimonials() {
       id="testimonials"
       ref={sectionRef}
       style={{ height: `${TESTIMONIALS.length * VH_PER}vh` }}
-      aria-label="Client testimonials"
     >
-      {/* Sticky container */}
-      <div
-        className="sticky top-0 overflow-hidden"
-        style={{ height: "100svh", background: "#0f0d0a" }}
-      >
-        {/* Subtle texture — vertical rule lines */}
+      <div className="sticky top-0 overflow-hidden" style={{ height: "100svh", background: "#0f0d0a" }}>
+
+        {/* Subtle vertical rule lines */}
         <div aria-hidden style={{
           position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none", opacity: 0.04,
           backgroundImage: "repeating-linear-gradient(90deg, rgba(181,147,74,1) 0px, rgba(181,147,74,1) 1px, transparent 1px, transparent 120px)",
         }} />
 
-        {/* Section label — top */}
+        {/* Section label */}
         <div style={{
           position: "absolute", top: "clamp(1.8rem,4vh,3rem)", left: "clamp(1.8rem,5vw,4rem)",
-          zIndex: 20,
-          display: "flex", alignItems: "center", gap: "0.75rem",
+          zIndex: 20, display: "flex", alignItems: "center", gap: "0.75rem",
         }}>
           <span style={{ display: "block", width: 28, height: 1, background: "#B5934A" }} />
           <span style={{ fontFamily: "'Tenor Sans',sans-serif", fontSize: "0.58rem", letterSpacing: "0.38em", color: "#B5934A", textTransform: "uppercase" }}>
@@ -288,90 +282,84 @@ export function Testimonials() {
           </span>
         </div>
 
-        {/* Main testimonial content */}
+        {/* Main quote */}
         <AnimatePresence mode="wait">
           <motion.div
             key={activeIdx}
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            exit={{ opacity: 0, y: -18 }}
+            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
             style={{
               position: "absolute", inset: 0, zIndex: 10,
-              display: "flex", flexDirection: "column",
-              justifyContent: "center",
+              display: "flex", flexDirection: "column", justifyContent: "center",
               padding: "clamp(1.8rem,6vw,5rem)",
               paddingTop: "clamp(5rem,10vh,8rem)",
             }}
           >
-            {/* Giant quote mark */}
+            {/* Giant faint quote mark */}
             <motion.span
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.4, delay: 0.1 }}
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4, delay: 0.1 }}
               aria-hidden
               style={{
                 display: "block",
                 fontFamily: "'Cormorant Garamond','Cormorant',serif",
                 fontSize: "clamp(6rem,14vw,12rem)",
-                lineHeight: 0.7,
-                color: "#B5934A",
-                opacity: 0.18,
-                marginBottom: "-0.2em",
-                userSelect: "none",
+                lineHeight: 0.7, color: "#B5934A", opacity: 0.14,
+                marginBottom: "-0.2em", userSelect: "none",
               }}
             >
               "
             </motion.span>
 
-            {/* Primary quote — word by word */}
+            {/* Quote */}
             <div style={{ maxWidth: "min(900px, 92vw)" }}>
-              <QuoteReveal
-                text={t.quote}
-                style={{
-                  fontFamily: "'Cormorant Garamond','Cormorant',serif",
-                  fontSize: "clamp(2rem,5.5vw,5rem)",
-                  fontWeight: 300,
-                  color: "#f5f0e8",
-                  lineHeight: 1.1,
-                  letterSpacing: "0.01em",
-                  display: "block",
-                  marginBottom: "clamp(0.8rem,2vh,1.4rem)",
-                }}
-              />
+              <span style={{
+                fontFamily: "'Cormorant Garamond','Cormorant',serif",
+                fontSize: "clamp(2rem,5.5vw,5rem)",
+                fontWeight: 300, color: "#f5f0e8",
+                lineHeight: 1.1, letterSpacing: "0.01em",
+                display: "block", marginBottom: "clamp(0.8rem,2vh,1.4rem)",
+              }}>
+                {t.quote.split(" ").map((w, i) => (
+                  <motion.span
+                    key={i}
+                    initial={{ opacity: 0, y: 20, filter: "blur(3px)" }}
+                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                    transition={{ duration: 0.48, delay: 0.15 + i * 0.07, ease: [0.22, 1, 0.36, 1] }}
+                    style={{ display: "inline-block", marginRight: "0.25em" }}
+                  >
+                    {w}
+                  </motion.span>
+                ))}
+              </span>
 
-              {/* Detail line */}
               <motion.p
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.55 }}
+                initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.45, delay: 0.55 }}
                 style={{
                   fontFamily: "'Cormorant Garamond','Cormorant',serif",
-                  fontStyle: "italic",
-                  fontSize: "clamp(1rem,2vw,1.5rem)",
-                  fontWeight: 300,
-                  color: "rgba(245,240,232,0.6)",
-                  lineHeight: 1.5,
-                  maxWidth: "min(600px,88vw)",
+                  fontStyle: "italic", fontSize: "clamp(1rem,2vw,1.5rem)",
+                  fontWeight: 300, color: "rgba(245,240,232,0.58)",
+                  lineHeight: 1.5, maxWidth: "min(600px,88vw)",
                 }}
               >
                 {t.detail}
               </motion.p>
             </div>
 
-            {/* Client name + rule */}
+            {/* Client name */}
             <motion.div
-              initial={{ opacity: 0, x: -16 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.7 }}
+              initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.45, delay: 0.7 }}
               style={{ marginTop: "clamp(2rem,4vh,3.5rem)", display: "flex", alignItems: "center", gap: "1.2rem" }}
             >
-              <span style={{ display: "block", width: 40, height: 1, background: "#B5934A", opacity: 0.6 }} />
+              <span style={{ display: "block", width: 38, height: 1, background: "#B5934A", opacity: 0.6 }} />
               <div>
-                <p style={{ fontFamily: "'Tenor Sans',sans-serif", fontSize: "0.7rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "#f5f0e8", marginBottom: "0.25rem" }}>
+                <p style={{ fontFamily: "'Tenor Sans',sans-serif", fontSize: "0.68rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "#f5f0e8", marginBottom: "0.25rem" }}>
                   {t.name}
                 </p>
-                <p style={{ fontFamily: "'Tenor Sans',sans-serif", fontSize: "0.58rem", letterSpacing: "0.15em", color: "rgba(181,147,74,0.8)" }}>
+                <p style={{ fontFamily: "'Tenor Sans',sans-serif", fontSize: "0.56rem", letterSpacing: "0.15em", color: "rgba(181,147,74,0.75)" }}>
                   {t.title}
                 </p>
               </div>
@@ -379,103 +367,41 @@ export function Testimonials() {
           </motion.div>
         </AnimatePresence>
 
-        {/* ── Progress — bottom right ── */}
-        <div
-          aria-hidden
-          style={{
-            position: "absolute",
-            right: "clamp(1.8rem,4vw,3.5rem)",
-            bottom: "clamp(1.8rem,4vh,3rem)",
-            zIndex: 20,
-            display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "1.2rem",
-          }}
-        >
+        {/* Progress dots */}
+        <div aria-hidden style={{
+          position: "absolute", right: "clamp(1.8rem,4vw,3.5rem)", bottom: "clamp(1.8rem,4vh,3rem)",
+          zIndex: 20, display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "1rem",
+        }}>
           {TESTIMONIALS.map((_, i) => {
             const active = i === activeIdx;
             return (
               <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
                 {active && (
-                  <span style={{ fontFamily: "'Tenor Sans',sans-serif", fontSize: "0.5rem", letterSpacing: "0.2em", color: "rgba(245,240,232,0.5)", textTransform: "uppercase" }}>
+                  <span style={{ fontFamily: "'Tenor Sans',sans-serif", fontSize: "0.48rem", letterSpacing: "0.2em", color: "rgba(245,240,232,0.4)", textTransform: "uppercase" }}>
                     {TESTIMONIALS[i].tag}
                   </span>
                 )}
                 <span style={{
-                  display: "block", width: 1,
-                  height: active ? 30 : 12,
-                  background: active ? "#B5934A" : "rgba(181,147,74,0.25)",
-                  transition: "height 0.4s ease, background 0.4s ease",
+                  display: "block", width: 1, borderRadius: 1,
+                  height: active ? 28 : 11,
+                  background: active ? "#B5934A" : "rgba(181,147,74,0.22)",
+                  transition: "height 0.38s ease, background 0.38s ease",
                 }} />
               </div>
             );
           })}
         </div>
 
-        {/* ── Counter ── */}
-        <p
-          aria-hidden
-          className="hidden md:block"
-          style={{
-            position: "absolute",
-            left: "clamp(1.8rem,5vw,4rem)",
-            bottom: "clamp(1.8rem,4vh,3rem)",
-            zIndex: 20,
-            fontFamily: "'Tenor Sans',sans-serif",
-            fontSize: "0.55rem",
-            letterSpacing: "0.22em",
-            color: "rgba(181,147,74,0.35)",
-            pointerEvents: "none",
-          }}
-        >
+        {/* Counter */}
+        <p aria-hidden className="hidden md:block" style={{
+          position: "absolute", left: "clamp(1.8rem,5vw,4rem)", bottom: "clamp(1.8rem,4vh,3rem)",
+          zIndex: 20, fontFamily: "'Tenor Sans',sans-serif", fontSize: "0.52rem",
+          letterSpacing: "0.22em", color: "rgba(181,147,74,0.3)", pointerEvents: "none",
+        }}>
           {String(activeIdx + 1).padStart(2, "0")}&nbsp;/&nbsp;{String(TESTIMONIALS.length).padStart(2, "0")}
         </p>
 
-        {/* ── Mobile swipe hint (only shown at start of section) ── */}
-        {scrollPct < 8 && (
-          <motion.p
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
-            className="md:hidden"
-            style={{
-              position: "absolute",
-              bottom: "clamp(1.8rem,4vh,3rem)",
-              left: "50%",
-              transform: "translateX(-50%)",
-              zIndex: 20,
-              fontFamily: "'Tenor Sans',sans-serif",
-              fontSize: "0.52rem",
-              letterSpacing: "0.28em",
-              color: "rgba(181,147,74,0.5)",
-              textTransform: "uppercase",
-              pointerEvents: "none",
-              whiteSpace: "nowrap",
-            }}
-          >
-            Scroll through voices
-          </motion.p>
-        )}
-
       </div>
     </section>
-  );
-}
-
-/* ─── Word reveal for the quote ────────────────────────────────── */
-function QuoteReveal({ text, style }: { text: string; style: React.CSSProperties }) {
-  const words = text.split(" ");
-  return (
-    <span style={style}>
-      {words.map((w, i) => (
-        <motion.span
-          key={i}
-          initial={{ opacity: 0, y: 20, filter: "blur(3px)" }}
-          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          transition={{ duration: 0.5, delay: 0.15 + i * 0.07, ease: [0.22, 1, 0.36, 1] }}
-          style={{ display: "inline-block", marginRight: "0.25em" }}
-        >
-          {w}
-        </motion.span>
-      ))}
-    </span>
-  );
-}
   );
 }
