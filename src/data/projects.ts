@@ -224,21 +224,21 @@ export const projects: Project[] = [
 
 export const studio = {
   name: "Terra Space Studio",
-  tagline: "Architecture rooted in earth, light, and craft.",
-  city: "Hyderabad, Telangana, India",
-  address: "Street-2, Viharika Colony, Hyderabad, Telangana, 50098",
-  email: "terraspacestudios07@gmail.com",
-  phone: "+91 6305707859",
-  instagram: "terra_spacestudio",
-  instagramUrl:
-    "https://www.instagram.com/terra_spacestudio?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==",
+  tagline: "Grounded by Earth. Designed for Experience.",
+  city: "Hyderabad | Vijayawada",
+  address: "Hyderabad, Telangana, India",
+  email: "terraspacestudio07@gmail.com",
+  phone: "+91 63057 07859",
+  phone2: "+91 89783 88832",
+  instagram: "terra.spacestudio",
+  instagramUrl: "https://www.instagram.com/terra.spacestudio",
   reelUrl:
     "https://www.instagram.com/reel/DXHC-RsgerM/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
   founded: "2019",
   stats: [
     { label: "Projects Completed", value: "40+" },
-    { label: "Years of Practice", value: "6" },
-    { label: "Cities", value: "5" },
-    { label: "Awards", value: "3" },
+    { label: "Years of Practice", value: "6+" },
+    { label: "Cities", value: "2" },
+    { label: "Services", value: "7" },
   ],
 };
