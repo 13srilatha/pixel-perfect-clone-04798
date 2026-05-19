@@ -88,8 +88,6 @@
 //   );
 // }
 
-import { Testimonials } from "@/components/site/Testimonials";
-import { FrameCanvas } from "@/components/FrameCanvas";
 import { createFileRoute } from "@tanstack/react-router";
 import { Hero, Nav } from "@/components/site/Nav";
 import { Work } from "@/components/site/Work";
@@ -103,20 +101,21 @@ import { IntroLogo } from "@/components/site/IntroLogo";
 import { ChatBot } from "@/components/site/ChatBot";
 import { SmoothScroll } from "@/components/site/SmoothScroll";
 import { TrustStory } from "@/components/site/TrustStory";
+import { FrameCanvas } from "@/components/FrameCanvas";
 
-export const Route = createFileRoute("/")(({
+export const Route = createFileRoute("/")((({
   head: () => ({
     meta: [
       { title: "Terra Space Studio — Architecture & Interior Design, Hyderabad" },
       {
         name: "description",
         content:
-          "Residential architecture and interior design rooted in earth, light and craft. Walk through our spaces — from façade to foyer.",
+          "Multidisciplinary architecture and design practice. Grounded by Earth. Designed for Experience. Hyderabad | Vijayawada.",
       },
     ],
   }),
   component: Index,
-}));
+})));
 
 function Index() {
   return (
