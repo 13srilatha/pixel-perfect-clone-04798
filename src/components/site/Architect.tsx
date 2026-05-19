@@ -2,22 +2,17 @@ import portrait from "@/assets/architect-portrait.jpeg";
 import { Reveal } from "./Nav";
 
 const architect = {
-  name: "Ar. Kalava Vaasanthi",
+  name: "K. Vaasanthi",
   role: "Founder · Architect & Interior Designer",
   intro:
-    "I'm the one who designs every home that leaves this studio. Architecture, for me, is not about buildings — it's about the small, quiet moments people will live inside them years from now.",
+    "Every project begins with understanding how people live, feel, and experience a space. At Terra Space Studio, we approach design as a balance between functionality, warmth, and timeless simplicity — creating spaces that feel personal, refined, and deeply connected to everyday life.",
   education: "B.Arch · Council of Architecture, India",
-  experience: "6+ years · 40+ residences across India",
+  experience: "6+ years · 40+ projects across India",
   certifications: ["COA Registered Architect", "Interior Designer · Residential & Commercial"],
   vision:
-    "I don't build houses. I build the place a family will keep their first photograph, the corner a child will read in, the window someone will grow old beside. That reminder is what makes me work hard, every single day.",
+    "From concept to execution, our focus remains on thoughtful detailing, honest materials, and meaningful spatial experiences. Every project. Every detail. Designed with intention.",
 };
 
-/**
- * Drop a real portrait at: src/assets/architect-portrait.jpeg
- * Square or 4:5 portrait works best. Replaces the existing file in place —
- * the rest of the layout stays the same.
- */
 export function Architect() {
   return (
     <section id="architect" className="relative bg-cream py-24 md:py-36">
@@ -63,15 +58,45 @@ export function Architect() {
                 <dt className="label mb-2 text-caramel">Experience</dt>
                 <dd className="font-display text-lg font-light text-espresso">{architect.experience}</dd>
               </div>
-              <div className="md:col-span-2">
-                <dt className="label mb-2 text-caramel">Certifications</dt>
-                <dd className="font-display text-lg font-light text-espresso">{architect.certifications.join(" · ")}</dd>
-              </div>
+              {architect.certifications.map((c) => (
+                <div key={c} className="md:col-span-2">
+                  <dd className="flex items-center gap-3 text-sm text-espresso">
+                    <span className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-gold" />
+                    {c}
+                  </dd>
+                </div>
+              ))}
             </dl>
 
-            <blockquote className="mt-10 border-l-2 border-caramel pl-6 font-display text-xl italic leading-relaxed text-espresso md:text-2xl">
-              "{architect.vision}"
+            <blockquote className="mt-10 border-l-2 border-caramel pl-6">
+              <p className="font-display text-xl font-light italic leading-relaxed text-caramel md:text-2xl">
+                "{architect.vision}"
+              </p>
+              <footer className="mt-4">
+                <cite className="label not-italic text-brown">— K. Vaasanthi, Founder</cite>
+              </footer>
             </blockquote>
+
+            {/* Services quick-list from brochure */}
+            <div className="mt-10 border-t border-sand pt-8">
+              <p className="label mb-5 text-caramel">What we offer</p>
+              <ul className="grid grid-cols-2 gap-3 text-sm text-espresso md:grid-cols-1 md:gap-2">
+                {[
+                  "Architecture",
+                  "Interior Design",
+                  "Planning",
+                  "Landscape Design",
+                  "Estimation & Costing",
+                  "Execution",
+                  "Site Supervision",
+                ].map((s) => (
+                  <li key={s} className="flex items-center gap-3">
+                    <span className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-caramel" />
+                    {s}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </Reveal>
         </div>
       </div>
