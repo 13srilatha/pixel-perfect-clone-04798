@@ -87,6 +87,8 @@
 //     </main>
 //   );
 // }
+
+import { Testimonials } from "@/components/site/Testimonials";
 import { FrameCanvas } from "@/components/FrameCanvas";
 import { createFileRoute } from "@tanstack/react-router";
 import { Hero, Nav } from "@/components/site/Nav";
