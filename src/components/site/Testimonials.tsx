@@ -167,166 +167,315 @@
 //   );
 // }
 
-import { useEffect, useRef, useState } from "react";
+/**
+ * Testimonials.tsx — Terra Space Studio
+ * NEW design: scroll-driven fullscreen quote spotlight.
+ * Each testimonial pins to viewport while you scroll past it,
+ * then fades to the next. Clean, editorial, no cards, no flip, no side-scroll.
+ *
+ * USAGE: Drop-in replacement. Keep the same import in index.tsx.
+ *   import { Testimonials } from "@/components/site/Testimonials";
+ */
 
-const testimonials = [
+import { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+
+/* ─── Data ──────────────────────────────────────────────────────── */
+const TESTIMONIALS = [
   {
-    quote: "They listened more than they spoke. Our home feels like the version of us we couldn't put into words.",
+    num: "01",
+    quote: "They listened more than they spoke.",
+    detail: "Our home feels like the version of us we couldn't put into words.",
     name: "Charry Reddy",
     title: "Homeowner · Jubilee Hills",
-    num: "01",
+    tag: "Residential",
   },
   {
-    quote: "Every drawing came back with care. The site team treated our half-built house like their own.",
+    num: "02",
+    quote: "Every drawing came back with care.",
+    detail: "The site team treated our half-built house like their own.",
     name: "Muthyam Rao",
     title: "Client · Kompally Residence",
-    num: "02",
+    tag: "Architecture",
   },
   {
-    quote: "We changed our mind a hundred times. Vaasanthi never lost patience — and the result is perfect.",
+    num: "03",
+    quote: "We changed our mind a hundred times.",
+    detail: "Vaasanthi never lost patience — and the result is perfect.",
     name: "Aparna Iyer",
     title: "Client · Kondapur Villa",
-    num: "03",
+    tag: "Interior Design",
   },
   {
-    quote: "Honest, warm, and exact. They drew exactly what we needed — nothing more, nothing less.",
+    num: "04",
+    quote: "Honest, warm, and exact.",
+    detail: "They drew exactly what we needed — nothing more, nothing less.",
     name: "Naveen K.",
     title: "Client · Gachibowli Home",
-    num: "04",
+    tag: "Renovation",
   },
   {
-    quote: "Our café finally feels like a place people want to linger. That was the brief — and they nailed it.",
+    num: "05",
+    quote: "Our café finally feels like a place people want to linger.",
+    detail: "That was the brief — and they nailed it.",
     name: "Priya & Rahul",
     title: "Owners · Brew House",
-    num: "05",
+    tag: "Commercial",
   },
-];
+] as const;
 
-// Final resting positions + rotations for each card (desktop)
-const DESKTOP_FINAL: { x: string; y: string; rot: number }[] = [
-  { x: "0%",    y: "0%",   rot: -3 },
-  { x: "0%",    y: "0%",   rot:  2 },
-  { x: "0%",    y: "0%",   rot: -1.5 },
-  { x: "0%",    y: "0%",   rot:  2.5 },
-  { x: "0%",    y: "0%",   rot: -2 },
-];
+const VH_PER = 120;  // 120vh per testimonial = smooth pace
 
-/**
- * Card-deal testimonials.
- * Cards start stacked (like a deck at bottom-right) and fly into a grid
- * one by one when the section enters the viewport.
- */
+/* ─── Component ─────────────────────────────────────────────────── */
 export function Testimonials() {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const [dealt, setDealt] = useState(false);
-  const [dealIndex, setDealIndex] = useState(-1);
+  const [activeIdx, setActiveIdx] = useState(0);
+  const [scrollPct, setScrollPct] = useState(0);
+  const rafRef = useRef(0);
 
   useEffect(() => {
-    const el = sectionRef.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !dealt) {
-          setDealt(true);
-          obs.disconnect();
-        }
-      },
-      { threshold: 0.15 }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [dealt]);
+    const onScroll = () => {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(() => {
+        const el = sectionRef.current;
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        const total = el.offsetHeight - window.innerHeight;
+        const scrolled = Math.min(Math.max(-rect.top, 0), total);
+        const pct = total > 0 ? (scrolled / total) * 100 : 0;
+        setScrollPct(pct);
+        const idx = Math.min(
+          TESTIMONIALS.length - 1,
+          Math.floor((pct / 100) * TESTIMONIALS.length),
+        );
+        setActiveIdx(idx);
+      });
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => { cancelAnimationFrame(rafRef.current); window.removeEventListener("scroll", onScroll); };
+  }, []);
 
-  // Stagger each card deal
-  useEffect(() => {
-    if (!dealt) return;
-    let i = 0;
-    const id = setInterval(() => {
-      setDealIndex(i);
-      i++;
-      if (i >= testimonials.length) clearInterval(id);
-    }, 160);
-    return () => clearInterval(id);
-  }, [dealt]);
+  const t = TESTIMONIALS[activeIdx];
 
   return (
     <section
       id="testimonials"
       ref={sectionRef}
-      className="relative bg-cream py-20 md:py-32 overflow-hidden"
+      style={{ height: `${TESTIMONIALS.length * VH_PER}vh` }}
       aria-label="Client testimonials"
     >
-      <div className="mx-auto max-w-[1600px] px-6 md:px-10">
-        {/* Heading */}
-        <div className="mb-14">
-          <p className="label mb-4 inline-flex items-center gap-3">
-            <span className="h-px w-10 bg-caramel" />
+      {/* Sticky container */}
+      <div
+        className="sticky top-0 overflow-hidden"
+        style={{ height: "100svh", background: "#0f0d0a" }}
+      >
+        {/* Subtle texture — vertical rule lines */}
+        <div aria-hidden style={{
+          position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none", opacity: 0.04,
+          backgroundImage: "repeating-linear-gradient(90deg, rgba(181,147,74,1) 0px, rgba(181,147,74,1) 1px, transparent 1px, transparent 120px)",
+        }} />
+
+        {/* Section label — top */}
+        <div style={{
+          position: "absolute", top: "clamp(1.8rem,4vh,3rem)", left: "clamp(1.8rem,5vw,4rem)",
+          zIndex: 20,
+          display: "flex", alignItems: "center", gap: "0.75rem",
+        }}>
+          <span style={{ display: "block", width: 28, height: 1, background: "#B5934A" }} />
+          <span style={{ fontFamily: "'Tenor Sans',sans-serif", fontSize: "0.58rem", letterSpacing: "0.38em", color: "#B5934A", textTransform: "uppercase" }}>
             Client Words
-          </p>
-          <h2 className="display text-[clamp(2rem,5vw,4rem)] text-espresso">
-            What our clients <em className="italic text-caramel">remember</em>.
-          </h2>
-          <p className="mt-4 max-w-xl text-base leading-relaxed text-brown">
-            Five families, five stories — all handled with the same care, honesty and craft.
-          </p>
+          </span>
         </div>
 
-        {/* Card grid */}
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {testimonials.map((t, i) => {
-            const isDealt = i <= dealIndex;
-            const rot = DESKTOP_FINAL[i].rot;
-            return (
-              <div
-                key={t.name}
-                className="relative"
+        {/* Main testimonial content */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeIdx}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            style={{
+              position: "absolute", inset: 0, zIndex: 10,
+              display: "flex", flexDirection: "column",
+              justifyContent: "center",
+              padding: "clamp(1.8rem,6vw,5rem)",
+              paddingTop: "clamp(5rem,10vh,8rem)",
+            }}
+          >
+            {/* Giant quote mark */}
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+              aria-hidden
+              style={{
+                display: "block",
+                fontFamily: "'Cormorant Garamond','Cormorant',serif",
+                fontSize: "clamp(6rem,14vw,12rem)",
+                lineHeight: 0.7,
+                color: "#B5934A",
+                opacity: 0.18,
+                marginBottom: "-0.2em",
+                userSelect: "none",
+              }}
+            >
+              "
+            </motion.span>
+
+            {/* Primary quote — word by word */}
+            <div style={{ maxWidth: "min(900px, 92vw)" }}>
+              <QuoteReveal
+                text={t.quote}
                 style={{
-                  // Last card spans 2 cols on lg to balance a 5-card grid
-                  gridColumn: i === 4 ? "span 1 / span 1" : undefined,
+                  fontFamily: "'Cormorant Garamond','Cormorant',serif",
+                  fontSize: "clamp(2rem,5.5vw,5rem)",
+                  fontWeight: 300,
+                  color: "#f5f0e8",
+                  lineHeight: 1.1,
+                  letterSpacing: "0.01em",
+                  display: "block",
+                  marginBottom: "clamp(0.8rem,2vh,1.4rem)",
+                }}
+              />
+
+              {/* Detail line */}
+              <motion.p
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.55 }}
+                style={{
+                  fontFamily: "'Cormorant Garamond','Cormorant',serif",
+                  fontStyle: "italic",
+                  fontSize: "clamp(1rem,2vw,1.5rem)",
+                  fontWeight: 300,
+                  color: "rgba(245,240,232,0.6)",
+                  lineHeight: 1.5,
+                  maxWidth: "min(600px,88vw)",
                 }}
               >
-                <div
-                  style={{
-                    // Start: stacked at bottom-right corner of section, rotated like a deck
-                    transform: isDealt
-                      ? `rotate(${rot}deg) translateY(0px)`
-                      : `rotate(${-8 + i * 2}deg) translateY(120px)`,
-                    opacity: isDealt ? 1 : 0,
-                    transition: isDealt
-                      ? `transform 0.65s cubic-bezier(0.22, 1, 0.36, 1) ${i * 0}ms, opacity 0.4s ease`
-                      : "none",
-                  }}
-                  className="relative flex h-full flex-col justify-between border border-sand bg-cream p-7 shadow-sm md:p-8"
-                >
-                  {/* Quote mark */}
-                  <span
-                    className="pointer-events-none absolute right-5 top-4 select-none font-display text-6xl font-light leading-none text-sand"
-                    aria-hidden
-                  >
-                    "
+                {t.detail}
+              </motion.p>
+            </div>
+
+            {/* Client name + rule */}
+            <motion.div
+              initial={{ opacity: 0, x: -16 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.7 }}
+              style={{ marginTop: "clamp(2rem,4vh,3.5rem)", display: "flex", alignItems: "center", gap: "1.2rem" }}
+            >
+              <span style={{ display: "block", width: 40, height: 1, background: "#B5934A", opacity: 0.6 }} />
+              <div>
+                <p style={{ fontFamily: "'Tenor Sans',sans-serif", fontSize: "0.7rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "#f5f0e8", marginBottom: "0.25rem" }}>
+                  {t.name}
+                </p>
+                <p style={{ fontFamily: "'Tenor Sans',sans-serif", fontSize: "0.58rem", letterSpacing: "0.15em", color: "rgba(181,147,74,0.8)" }}>
+                  {t.title}
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        </AnimatePresence>
+
+        {/* ── Progress — bottom right ── */}
+        <div
+          aria-hidden
+          style={{
+            position: "absolute",
+            right: "clamp(1.8rem,4vw,3.5rem)",
+            bottom: "clamp(1.8rem,4vh,3rem)",
+            zIndex: 20,
+            display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "1.2rem",
+          }}
+        >
+          {TESTIMONIALS.map((_, i) => {
+            const active = i === activeIdx;
+            return (
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+                {active && (
+                  <span style={{ fontFamily: "'Tenor Sans',sans-serif", fontSize: "0.5rem", letterSpacing: "0.2em", color: "rgba(245,240,232,0.5)", textTransform: "uppercase" }}>
+                    {TESTIMONIALS[i].tag}
                   </span>
-
-                  <div>
-                    <p className="label mb-5 text-gold">{t.num}</p>
-                    <p className="font-display text-xl italic leading-snug text-espresso md:text-2xl">
-                      "{t.quote}"
-                    </p>
-                  </div>
-
-                  <div className="mt-8 border-t border-sand pt-5">
-                    <p className="font-sans text-xs font-bold uppercase tracking-widest text-espresso">
-                      {t.name}
-                    </p>
-                    <p className="label mt-1 normal-case tracking-normal text-brown text-[10px]">
-                      {t.title}
-                    </p>
-                  </div>
-                </div>
+                )}
+                <span style={{
+                  display: "block", width: 1,
+                  height: active ? 30 : 12,
+                  background: active ? "#B5934A" : "rgba(181,147,74,0.25)",
+                  transition: "height 0.4s ease, background 0.4s ease",
+                }} />
               </div>
             );
           })}
         </div>
+
+        {/* ── Counter ── */}
+        <p
+          aria-hidden
+          className="hidden md:block"
+          style={{
+            position: "absolute",
+            left: "clamp(1.8rem,5vw,4rem)",
+            bottom: "clamp(1.8rem,4vh,3rem)",
+            zIndex: 20,
+            fontFamily: "'Tenor Sans',sans-serif",
+            fontSize: "0.55rem",
+            letterSpacing: "0.22em",
+            color: "rgba(181,147,74,0.35)",
+            pointerEvents: "none",
+          }}
+        >
+          {String(activeIdx + 1).padStart(2, "0")}&nbsp;/&nbsp;{String(TESTIMONIALS.length).padStart(2, "0")}
+        </p>
+
+        {/* ── Mobile swipe hint (only shown at start of section) ── */}
+        {scrollPct < 8 && (
+          <motion.p
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
+            className="md:hidden"
+            style={{
+              position: "absolute",
+              bottom: "clamp(1.8rem,4vh,3rem)",
+              left: "50%",
+              transform: "translateX(-50%)",
+              zIndex: 20,
+              fontFamily: "'Tenor Sans',sans-serif",
+              fontSize: "0.52rem",
+              letterSpacing: "0.28em",
+              color: "rgba(181,147,74,0.5)",
+              textTransform: "uppercase",
+              pointerEvents: "none",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Scroll through voices
+          </motion.p>
+        )}
+
       </div>
     </section>
+  );
+}
+
+/* ─── Word reveal for the quote ────────────────────────────────── */
+function QuoteReveal({ text, style }: { text: string; style: React.CSSProperties }) {
+  const words = text.split(" ");
+  return (
+    <span style={style}>
+      {words.map((w, i) => (
+        <motion.span
+          key={i}
+          initial={{ opacity: 0, y: 20, filter: "blur(3px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          transition={{ duration: 0.5, delay: 0.15 + i * 0.07, ease: [0.22, 1, 0.36, 1] }}
+          style={{ display: "inline-block", marginRight: "0.25em" }}
+        >
+          {w}
+        </motion.span>
+      ))}
+    </span>
+  );
+}
   );
 }
