@@ -1,9 +1,15 @@
 import { useEffect } from "react";
 import Lenis from "lenis";
 
+// Expose lenis globally so any component can stop/start it
+declare global {
+  interface Window { lenis?: Lenis; }
+}
+
 /**
- * Mounts a single Lenis instance on the page for buttery smooth scrolling.
- * Respects prefers-reduced-motion.
+ * Mounts a single Lenis instance. Stored on window.lenis so
+ * gallery modals can call window.lenis?.stop() / .start()
+ * to prevent background scroll bleed.
  */
 export function SmoothScroll() {
   useEffect(() => {
@@ -17,6 +23,8 @@ export function SmoothScroll() {
       touchMultiplier: 1.2,
     });
 
+    window.lenis = lenis;
+
     let frame = 0;
     function raf(time: number) {
       lenis.raf(time);
@@ -27,6 +35,7 @@ export function SmoothScroll() {
     return () => {
       cancelAnimationFrame(frame);
       lenis.destroy();
+      window.lenis = undefined;
     };
   }, []);
 
