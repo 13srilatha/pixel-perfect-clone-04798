@@ -1033,11 +1033,16 @@ function CategoryGallery({
     itemRefs.current[i] = el;
   };
 
-  // Prevent background page scroll without breaking overlay scroll
+  // Prevent background scroll — stops Lenis (which ignores body.overflow) + CSS fallback
   useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = prev; };
+    // Stop Lenis so wheel events don't bleed through to the page behind
+    window.lenis?.stop();
+    return () => {
+      document.body.style.overflow = prev;
+      window.lenis?.start();
+    };
   }, []);
 
   // IntersectionObserver wired in effect via callback ref pattern
