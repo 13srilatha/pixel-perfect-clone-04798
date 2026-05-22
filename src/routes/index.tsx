@@ -87,7 +87,7 @@
 //     </main>
 //   );
 // }
-
+import { ScrollHero } from "@/components/site/Hero";
 import { createFileRoute } from "@tanstack/react-router";
 import { Hero, Nav } from "@/components/site/Nav";
 import { Work } from "@/components/site/Work";
@@ -118,22 +118,22 @@ export const Route = createFileRoute("/")((({
 })));
 
 function Index() {
-  return (
-    <main className="bg-cream text-espresso">
-      <SmoothScroll />
-      <IntroLogo />
-      <Nav />
-      <FrameCanvas />
-      <Hero />
-      <TrustStory />
-      <Work />
-      <Process />
-      <Testimonials />
-      <StudioLaunch />
-      <Architect />
-      <Contact />
-      <BackToTop />
-      <ChatBot />
-    </main>
-  );
+return (
+<main className="bg-cream text-espresso">
+<SmoothScroll />
+<IntroLogo />
+<Nav />
+<ScrollHero />
+<FrameCanvas />
+<TrustStory />
+<Work />
+<Process />
+<Testimonials />
+<StudioLaunch />
+<Architect />
+<Contact />
+<BackToTop />
+<ChatBot />
+</main>
+);
 }
