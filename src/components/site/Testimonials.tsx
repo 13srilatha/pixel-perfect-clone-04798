@@ -181,226 +181,351 @@
  * Scroll-driven spotlight quotes. One quote fills the screen at a time.
  * No flip cards. No side scroll. Each quote reveals word by word.
  */
+/**
+ * Testimonials.tsx — Terra Space Studio
+ * Squish Scroll animation — exact mechanism from the Framer community file.
+ *
+ * HOW IT WORKS (from the source code):
+ *   Each testimonial card has an outer wrapper div with a FIXED height (the "scroll territory").
+ *   Inside it, a div that SHRINKS from fullHeight → 0 as you scroll past it.
+ *   The inner div uses position:sticky so it stays visible while squishing.
+ *   As one card squishes away, the next card underneath is revealed.
+ *   Scroll back up → cards expand back. Full reversibility.
+ *
+ * RESULT: Cards appear to "squish" off the top as you scroll,
+ *         revealing the next testimonial stacked underneath.
+ */
 
-import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useRef, useCallback, ReactNode } from "react";
 
+/* ─── Data ──────────────────────────────────────────────────────── */
 const TESTIMONIALS = [
   {
     num: "01",
-    quote: "They listened more than they spoke.",
-    detail: "Our home feels like the version of us we couldn't put into words.",
+    tag: "Residential · Jubilee Hills",
+    quote: "They listened more\nthan they spoke.",
+    detail: "Our home feels like the version of us we couldn't put into words. Every room, every material — chosen.",
     name: "Charry Reddy",
-    title: "Homeowner · Jubilee Hills, Hyderabad",
-    tag: "Residential",
+    title: "Homeowner",
+    bg: "#f5f0e8",   // cream
+    text: "#2c1a0e", // espresso
+    accent: "#B5934A",
   },
   {
     num: "02",
-    quote: "Every drawing came back with care.",
-    detail: "The site team treated our half-built house like their own.",
+    tag: "Architecture · Kompally",
+    quote: "Every drawing came\nback with care.",
+    detail: "The site team treated our half-built house like their own. That kind of ownership is rare.",
     name: "Muthyam Rao",
-    title: "Client · Kompally Residence",
-    tag: "Architecture",
+    title: "Client",
+    bg: "#0f0d0a",   // dark
+    text: "#f5f0e8", // cream
+    accent: "#B5934A",
   },
   {
     num: "03",
-    quote: "We changed our mind a hundred times.",
-    detail: "Vaasanthi never lost patience — and the result is perfect.",
+    tag: "Interior Design · Kondapur",
+    quote: "We changed our mind\na hundred times.",
+    detail: "Vaasanthi never lost patience — and the result is exactly what we always wanted but couldn't describe.",
     name: "Aparna Iyer",
-    title: "Client · Kondapur Villa",
-    tag: "Interior Design",
+    title: "Client",
+    bg: "#1a1410",   // warm dark
+    text: "#f5f0e8",
+    accent: "#B5934A",
   },
   {
     num: "04",
-    quote: "Honest, warm, and exact.",
-    detail: "They drew exactly what we needed — nothing more, nothing less.",
+    tag: "Renovation · Gachibowli",
+    quote: "Honest, warm,\nand exact.",
+    detail: "They drew exactly what we needed — nothing more, nothing less. That clarity is everything.",
     name: "Naveen K.",
-    title: "Client · Gachibowli Home",
-    tag: "Renovation",
+    title: "Client",
+    bg: "#f0ebe2",   // warm cream
+    text: "#2c1a0e",
+    accent: "#B5934A",
   },
   {
     num: "05",
-    quote: "Our café finally feels like a place people want to linger.",
-    detail: "That was the brief — and they nailed it.",
+    tag: "Commercial · Vijayawada",
+    quote: "Our café finally feels like\na place people linger.",
+    detail: "That was the brief. They understood it before we finished the sentence.",
     name: "Priya & Rahul",
-    title: "Owners · Brew House, Vijayawada",
-    tag: "Commercial",
+    title: "Business Owners",
+    bg: "#0a0a0a",
+    text: "#f5f0e8",
+    accent: "#B5934A",
   },
 ] as const;
 
-const VH_PER = 120;
+/* ─── Squish section — EXACT mechanism from the Framer source ────── */
+interface SquishSectionProps {
+  children: ReactNode;
+  fullHeight: number;
+  index: number;
+  isLast?: boolean;
+}
 
-export function Testimonials() {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const [activeIdx, setActiveIdx] = useState(0);
-  const [scrollPct, setScrollPct] = useState(0);
-  const rafRef = useRef(0);
+function SquishSection({ children, fullHeight, index, isLast }: SquishSectionProps) {
+  const outerRef  = useRef<HTMLDivElement>(null);
+  const innerRef  = useRef<HTMLDivElement>(null);
+  const rafRef    = useRef<number>(0);
+  const lastProg  = useRef(0);
+
+  const update = useCallback(() => {
+    if (!outerRef.current || !innerRef.current) return;
+    const rect = outerRef.current.getBoundingClientRect();
+
+    // Progress: 0 when section top hits viewport top, 1 when fully squished
+    let progress = 0;
+    if (rect.top <= 0) {
+      progress = Math.min(Math.abs(rect.top) / fullHeight, 1);
+    }
+
+    // Skip tiny changes (perf)
+    if (Math.abs(progress - lastProg.current) < 0.0008) return;
+    lastProg.current = progress;
+
+    const currentH = Math.max(fullHeight * (1 - progress), 0);
+    innerRef.current.style.height = `${currentH}px`;
+
+    if (progress > 0 && progress < 1) {
+      innerRef.current.style.position = "sticky";
+      innerRef.current.style.top = "0px";
+      innerRef.current.style.zIndex = String(10 + index);
+    } else {
+      innerRef.current.style.position = "static";
+    }
+  }, [fullHeight, index]);
+
+  const onScroll = useCallback(() => {
+    cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(update);
+  }, [update]);
 
   useEffect(() => {
-    const onScroll = () => {
-      cancelAnimationFrame(rafRef.current);
-      rafRef.current = requestAnimationFrame(() => {
-        const el = sectionRef.current;
-        if (!el) return;
-        const rect    = el.getBoundingClientRect();
-        const total   = el.offsetHeight - window.innerHeight;
-        const scrolled = Math.min(Math.max(-rect.top, 0), total);
-        const pct     = total > 0 ? (scrolled / total) * 100 : 0;
-        setScrollPct(pct);
-        setActiveIdx(Math.min(TESTIMONIALS.length - 1, Math.floor((pct / 100) * TESTIMONIALS.length)));
-      });
-    };
-    onScroll();
+    update(); // initial
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => { cancelAnimationFrame(rafRef.current); window.removeEventListener("scroll", onScroll); };
-  }, []);
-
-  const t = TESTIMONIALS[activeIdx];
+    // Lenis fires native scroll events, so window listener covers it
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, [onScroll, update]);
 
   return (
-    <section
-      id="testimonials"
-      ref={sectionRef}
-      style={{ height: `${TESTIMONIALS.length * VH_PER}vh` }}
+    <div
+      ref={outerRef}
+      style={{
+        width: "100%",
+        height: isLast ? "100vh" : `${fullHeight}px`, // last card doesn't squish
+        flexShrink: 0,
+        display: "block",
+        // Overlap cards by 1px to avoid sub-pixel gaps
+        marginTop: index > 0 ? "-1px" : 0,
+      }}
     >
-      <div className="sticky top-0 overflow-hidden" style={{ height: "100svh", background: "#0f0d0a" }}>
+      <div
+        ref={innerRef}
+        style={{
+          width: "100%",
+          height: `${fullHeight}px`,
+          overflow: "hidden",
+          display: "block",
+          willChange: "height",
+        }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
 
-        {/* Subtle vertical rule lines */}
-        <div aria-hidden style={{
-          position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none", opacity: 0.04,
-          backgroundImage: "repeating-linear-gradient(90deg, rgba(181,147,74,1) 0px, rgba(181,147,74,1) 1px, transparent 1px, transparent 120px)",
-        }} />
-
-        {/* Section label */}
-        <div style={{
-          position: "absolute", top: "clamp(1.8rem,4vh,3rem)", left: "clamp(1.8rem,5vw,4rem)",
-          zIndex: 20, display: "flex", alignItems: "center", gap: "0.75rem",
-        }}>
-          <span style={{ display: "block", width: 28, height: 1, background: "#B5934A" }} />
-          <span style={{ fontFamily: "'Tenor Sans',sans-serif", fontSize: "0.58rem", letterSpacing: "0.38em", color: "#B5934A", textTransform: "uppercase" }}>
-            Client Words
+/* ─── Individual testimonial card ───────────────────────────────── */
+function TestimonialCard({
+  t,
+  cardHeight,
+}: {
+  t: (typeof TESTIMONIALS)[number];
+  cardHeight: number;
+}) {
+  return (
+    <div
+      style={{
+        width: "100%",
+        height: `${cardHeight}px`,
+        background: t.bg,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        padding: "clamp(2.5rem, 5vw, 5rem)",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      {/* ── TOP ROW ── */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+        {/* Tag */}
+        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          <span style={{ display: "block", width: 22, height: 1, background: t.accent }} />
+          <span style={{
+            fontFamily: "'Tenor Sans', sans-serif",
+            fontSize: "clamp(0.48rem, 0.9vw, 0.58rem)",
+            letterSpacing: "0.32em",
+            textTransform: "uppercase",
+            color: t.accent,
+          }}>
+            {t.tag}
           </span>
         </div>
-
-        {/* Main quote */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeIdx}
-            initial={{ opacity: 0, y: 28 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -18 }}
-            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-            style={{
-              position: "absolute", inset: 0, zIndex: 10,
-              display: "flex", flexDirection: "column", justifyContent: "center",
-              padding: "clamp(1.8rem,6vw,5rem)",
-              paddingTop: "clamp(5rem,10vh,8rem)",
-            }}
-          >
-            {/* Giant faint quote mark */}
-            <motion.span
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4, delay: 0.1 }}
-              aria-hidden
-              style={{
-                display: "block",
-                fontFamily: "'Cormorant Garamond','Cormorant',serif",
-                fontSize: "clamp(6rem,14vw,12rem)",
-                lineHeight: 0.7, color: "#B5934A", opacity: 0.14,
-                marginBottom: "-0.2em", userSelect: "none",
-              }}
-            >
-              "
-            </motion.span>
-
-            {/* Quote */}
-            <div style={{ maxWidth: "min(900px, 92vw)" }}>
-              <span style={{
-                fontFamily: "'Cormorant Garamond','Cormorant',serif",
-                fontSize: "clamp(2rem,5.5vw,5rem)",
-                fontWeight: 300, color: "#f5f0e8",
-                lineHeight: 1.1, letterSpacing: "0.01em",
-                display: "block", marginBottom: "clamp(0.8rem,2vh,1.4rem)",
-              }}>
-                {t.quote.split(" ").map((w, i) => (
-                  <motion.span
-                    key={i}
-                    initial={{ opacity: 0, y: 20, filter: "blur(3px)" }}
-                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                    transition={{ duration: 0.48, delay: 0.15 + i * 0.07, ease: [0.22, 1, 0.36, 1] }}
-                    style={{ display: "inline-block", marginRight: "0.25em" }}
-                  >
-                    {w}
-                  </motion.span>
-                ))}
-              </span>
-
-              <motion.p
-                initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.45, delay: 0.55 }}
-                style={{
-                  fontFamily: "'Cormorant Garamond','Cormorant',serif",
-                  fontStyle: "italic", fontSize: "clamp(1rem,2vw,1.5rem)",
-                  fontWeight: 300, color: "rgba(245,240,232,0.58)",
-                  lineHeight: 1.5, maxWidth: "min(600px,88vw)",
-                }}
-              >
-                {t.detail}
-              </motion.p>
-            </div>
-
-            {/* Client name */}
-            <motion.div
-              initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.45, delay: 0.7 }}
-              style={{ marginTop: "clamp(2rem,4vh,3.5rem)", display: "flex", alignItems: "center", gap: "1.2rem" }}
-            >
-              <span style={{ display: "block", width: 38, height: 1, background: "#B5934A", opacity: 0.6 }} />
-              <div>
-                <p style={{ fontFamily: "'Tenor Sans',sans-serif", fontSize: "0.68rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "#f5f0e8", marginBottom: "0.25rem" }}>
-                  {t.name}
-                </p>
-                <p style={{ fontFamily: "'Tenor Sans',sans-serif", fontSize: "0.56rem", letterSpacing: "0.15em", color: "rgba(181,147,74,0.75)" }}>
-                  {t.title}
-                </p>
-              </div>
-            </motion.div>
-          </motion.div>
-        </AnimatePresence>
-
-        {/* Progress dots */}
-        <div aria-hidden style={{
-          position: "absolute", right: "clamp(1.8rem,4vw,3.5rem)", bottom: "clamp(1.8rem,4vh,3rem)",
-          zIndex: 20, display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "1rem",
+        {/* Counter */}
+        <span style={{
+          fontFamily: "'Tenor Sans', sans-serif",
+          fontSize: "0.55rem",
+          letterSpacing: "0.2em",
+          color: `${t.text}40`,
         }}>
-          {TESTIMONIALS.map((_, i) => {
-            const active = i === activeIdx;
-            return (
-              <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
-                {active && (
-                  <span style={{ fontFamily: "'Tenor Sans',sans-serif", fontSize: "0.48rem", letterSpacing: "0.2em", color: "rgba(245,240,232,0.4)", textTransform: "uppercase" }}>
-                    {TESTIMONIALS[i].tag}
-                  </span>
-                )}
-                <span style={{
-                  display: "block", width: 1, borderRadius: 1,
-                  height: active ? 28 : 11,
-                  background: active ? "#B5934A" : "rgba(181,147,74,0.22)",
-                  transition: "height 0.38s ease, background 0.38s ease",
-                }} />
-              </div>
-            );
-          })}
+          {t.num} / 0{TESTIMONIALS.length}
+        </span>
+      </div>
+
+      {/* ── CENTER QUOTE ── */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", padding: "clamp(1.5rem, 3vh, 3rem) 0" }}>
+        {/* Big faint quotation mark */}
+        <div
+          aria-hidden
+          style={{
+            fontFamily: "'Cormorant Garamond', 'Cormorant', serif",
+            fontSize: "clamp(8rem, 18vw, 16rem)",
+            lineHeight: 0.6,
+            color: t.accent,
+            opacity: 0.1,
+            marginBottom: "-0.15em",
+            userSelect: "none",
+          }}
+        >
+          "
         </div>
 
-        {/* Counter */}
-        <p aria-hidden className="hidden md:block" style={{
-          position: "absolute", left: "clamp(1.8rem,5vw,4rem)", bottom: "clamp(1.8rem,4vh,3rem)",
-          zIndex: 20, fontFamily: "'Tenor Sans',sans-serif", fontSize: "0.52rem",
-          letterSpacing: "0.22em", color: "rgba(181,147,74,0.3)", pointerEvents: "none",
+        {/* Quote */}
+        <h2 style={{
+          fontFamily: "'Cormorant Garamond', 'Cormorant', serif",
+          fontSize: "clamp(2.4rem, 6vw, 6.5rem)",
+          fontWeight: 300,
+          lineHeight: 1.0,
+          color: t.text,
+          letterSpacing: "0.01em",
+          whiteSpace: "pre-line",
+          maxWidth: "min(900px, 88vw)",
+          marginBottom: "clamp(1.2rem, 2.5vh, 2rem)",
         }}>
-          {String(activeIdx + 1).padStart(2, "0")}&nbsp;/&nbsp;{String(TESTIMONIALS.length).padStart(2, "0")}
-        </p>
+          {t.quote}
+        </h2>
 
+        {/* Supporting detail */}
+        <p style={{
+          fontFamily: "'Cormorant Garamond', 'Cormorant', serif",
+          fontStyle: "italic",
+          fontSize: "clamp(1rem, 1.8vw, 1.4rem)",
+          fontWeight: 300,
+          color: `${t.text}BB`,
+          lineHeight: 1.55,
+          maxWidth: "min(580px, 88vw)",
+        }}>
+          {t.detail}
+        </p>
+      </div>
+
+      {/* ── BOTTOM ROW ── */}
+      <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between" }}>
+        {/* Client info */}
+        <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+          <span style={{ display: "block", width: 32, height: 1, background: t.accent, opacity: 0.6 }} />
+          <div>
+            <p style={{
+              fontFamily: "'Tenor Sans', sans-serif",
+              fontSize: "clamp(0.6rem, 1vw, 0.72rem)",
+              letterSpacing: "0.22em",
+              textTransform: "uppercase",
+              color: t.text,
+              marginBottom: "0.2rem",
+            }}>
+              {t.name}
+            </p>
+            <p style={{
+              fontFamily: "'Tenor Sans', sans-serif",
+              fontSize: "clamp(0.5rem, 0.85vw, 0.6rem)",
+              letterSpacing: "0.15em",
+              color: t.accent,
+            }}>
+              {t.title}
+            </p>
+          </div>
+        </div>
+
+        {/* Terra branding mark */}
+        <span style={{
+          fontFamily: "'Cormorant Garamond', 'Cormorant', serif",
+          fontSize: "clamp(0.55rem, 1vw, 0.68rem)",
+          letterSpacing: "0.35em",
+          textTransform: "uppercase",
+          color: `${t.text}40`,
+        }}>
+          Terra
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Main export ─────────────────────────────────────────────────── */
+export function Testimonials() {
+  // 100vh card height — each card = full viewport
+  const CARD_H = typeof window !== "undefined" ? window.innerHeight : 800;
+
+  return (
+    <section id="testimonials" aria-label="Client words">
+      {/* Section heading — visible above the cards */}
+      <div style={{
+        background: "#f5f0e8",
+        padding: "clamp(3rem, 6vh, 5rem) clamp(1.8rem, 5vw, 4rem) clamp(1.5rem, 3vh, 2.5rem)",
+        display: "flex",
+        alignItems: "center",
+        gap: "0.75rem",
+      }}>
+        <span style={{ display: "block", width: 28, height: 1, background: "#B5934A" }} />
+        <span style={{
+          fontFamily: "'Tenor Sans', sans-serif",
+          fontSize: "0.58rem",
+          letterSpacing: "0.38em",
+          color: "#B5934A",
+          textTransform: "uppercase",
+        }}>
+          Client Words
+        </span>
+        <span style={{
+          fontFamily: "'Cormorant Garamond', 'Cormorant', serif",
+          fontSize: "clamp(1.8rem, 4vw, 3.5rem)",
+          fontWeight: 300,
+          color: "#2c1a0e",
+          marginLeft: "1.5rem",
+          letterSpacing: "0.01em",
+        }}>
+          What they say.
+        </span>
+      </div>
+
+      {/* Squish stack */}
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        {TESTIMONIALS.map((t, i) => (
+          <SquishSection
+            key={t.num}
+            fullHeight={CARD_H}
+            index={i}
+            isLast={i === TESTIMONIALS.length - 1}
+          >
+            <TestimonialCard t={t} cardHeight={CARD_H} />
+          </SquishSection>
+        ))}
       </div>
     </section>
   );
