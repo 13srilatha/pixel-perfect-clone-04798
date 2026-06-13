@@ -1,13 +1,15 @@
 import { useEffect } from "react";
 import Lenis from "lenis";
 
-// Expose lenis globally so any component can stop/start it
+// Expose lenis globally so any component can stop/start it.
+// Use a custom key to avoid colliding with the lenis package's own
+// Window.lenis ambient declaration.
 declare global {
-  interface Window { lenis?: Lenis; }
+  interface Window { __lenis?: Lenis; }
 }
 
 /**
- * Mounts a single Lenis instance. Stored on window.lenis so
+ * Mounts a single Lenis instance. Stored on window.__lenis so
  * gallery modals can call window.lenis?.stop() / .start()
  * to prevent background scroll bleed.
  */
