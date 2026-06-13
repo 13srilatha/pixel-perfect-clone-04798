@@ -101,7 +101,7 @@ import { IntroLogo } from "@/components/site/IntroLogo";
 import { ChatBot } from "@/components/site/ChatBot";
 import { SmoothScroll } from "@/components/site/SmoothScroll";
 import { TrustStory } from "@/components/site/TrustStory";
-import { FrameCanvas } from "@/components/FrameCanvas";
+
 
 export const Route = createFileRoute("/")((({
   head: () => ({
@@ -123,7 +123,6 @@ function Index() {
       <SmoothScroll />
       <IntroLogo />
       <Nav />
-      <FrameCanvas />
       <CinematicHero />
       <TrustStory />
       <Work />
