@@ -10,7 +10,7 @@ declare global {
 
 /**
  * Mounts a single Lenis instance. Stored on window.__lenis so
- * gallery modals can call window.lenis?.stop() / .start()
+ * gallery modals can call window.__lenis?.stop() / .start()
  * to prevent background scroll bleed.
  */
 export function SmoothScroll() {
@@ -25,7 +25,7 @@ export function SmoothScroll() {
       touchMultiplier: 1.2,
     });
 
-    window.lenis = lenis;
+    window.__lenis = lenis;
 
     let frame = 0;
     function raf(time: number) {
@@ -37,7 +37,7 @@ export function SmoothScroll() {
     return () => {
       cancelAnimationFrame(frame);
       lenis.destroy();
-      window.lenis = undefined;
+      window.__lenis = undefined;
     };
   }, []);
 

@@ -91,7 +91,7 @@ export function CinematicHero() {
 
     // ── sync Lenis with ScrollTrigger ──────────────────────────────
     const lenisHandler = () => ScrollTrigger.update();
-    if (window.lenis) window.lenis.on("scroll", lenisHandler);
+    if (window.__lenis) window.__lenis.on("scroll", lenisHandler);
 
     // ── main scroll timeline ───────────────────────────────────────
     const ctx = gsap.context(() => {
@@ -140,7 +140,7 @@ export function CinematicHero() {
     }, section);
 
     return () => {
-      if (window.lenis) window.lenis.off("scroll", lenisHandler);
+      if (window.__lenis) window.__lenis.off("scroll", lenisHandler);
       ctx.revert();
     };
   }, []);
