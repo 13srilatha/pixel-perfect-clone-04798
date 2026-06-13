@@ -1038,10 +1038,10 @@ function CategoryGallery({
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     // Stop Lenis so wheel events don't bleed through to the page behind
-    window.lenis?.stop();
+    window.__lenis?.stop();
     return () => {
       document.body.style.overflow = prev;
-      window.lenis?.start();
+      window.__lenis?.start();
     };
   }, []);
 
