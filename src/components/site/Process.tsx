@@ -9,11 +9,14 @@ export function Process() {
         <Reveal className="mb-14 max-w-3xl">
           <p className="label mb-4 inline-flex items-center gap-3">
             <span className="h-px w-10 bg-caramel" />
-            Before to After
+            From Drawing to Done
           </p>
           <h2 className="display text-[clamp(2.5rem,6vw,5rem)] text-espresso">
-            Drawings become <em className="italic text-caramel">rooms</em>.
+            Every project, <em className="italic text-caramel">built</em> — not just rendered.
           </h2>
+          <p className="mt-5 max-w-xl text-base leading-relaxed text-espresso/70">
+            We stay from first sketch to final handover. Here's what that looks like.
+          </p>
         </Reveal>
 
         <div className="grid gap-12 md:gap-20">

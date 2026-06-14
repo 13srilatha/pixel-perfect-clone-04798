@@ -29,6 +29,25 @@ export function Contact() {
           </Reveal>
 
           <Reveal className="md:col-span-4 md:col-start-9" delay={150}>
+            {/* WhatsApp is the most important CTA — your 4th-standard client will click this, not the form. */}
+            <a
+              href="https://wa.me/916305707859?text=Hi%20Terra%20Space%20Studio%2C%20I%27d%20like%20to%20discuss%20a%20project."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mb-8 flex items-center justify-between gap-4 bg-[#25D366] px-6 py-5 text-white transition-transform hover:scale-[1.02]"
+            >
+              <span className="flex items-center gap-3">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                  <path d="M20.52 3.48A11.94 11.94 0 0 0 12.05 0C5.5 0 .18 5.32.18 11.87a11.8 11.8 0 0 0 1.6 5.94L0 24l6.34-1.66a11.86 11.86 0 0 0 5.7 1.45h.01c6.55 0 11.87-5.32 11.87-11.87a11.8 11.8 0 0 0-3.4-8.44ZM12.05 21.5a9.6 9.6 0 0 1-4.9-1.34l-.35-.21-3.76.98 1-3.67-.23-.38a9.63 9.63 0 0 1-1.47-5.11c0-5.31 4.33-9.64 9.66-9.64a9.6 9.6 0 0 1 9.65 9.65c0 5.32-4.33 9.64-9.6 9.72Z" />
+                </svg>
+                <span>
+                  <span className="block font-display text-xl font-light">Chat on WhatsApp</span>
+                  <span className="label text-white/80">Fastest way to reach us</span>
+                </span>
+              </span>
+              <span>→</span>
+            </a>
+
             <dl className="space-y-8">
               <div>
                 <dt className="label mb-2 text-gold">Email</dt>
@@ -44,6 +63,7 @@ export function Contact() {
                   <a href={`tel:${studio.phone.replace(/\s/g, "")}`} className="font-display text-2xl font-light text-cream hover:text-gold-lt">
                     {studio.phone}
                   </a>
+                  <p className="label mt-2 text-cream/50">Available 10am–7pm · Mon–Sat</p>
                 </dd>
               </div>
               <div>
