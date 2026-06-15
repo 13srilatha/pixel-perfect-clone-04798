@@ -23,26 +23,48 @@ const REVIEWS: Review[] = [
 const GOOGLE_REVIEWS_URL =
   "https://www.google.com/search?q=Terra+Space+Studio+Hyderabad+reviews";
 
+function mod(n: number, m: number) {
+  return ((n % m) + m) % m;
+}
+
 export function StackedTestimonials() {
   const [idx, setIdx] = useState(0);
+  const [phase, setPhase] = useState<"idle" | "exiting">("idle");
   const [paused, setPaused] = useState(false);
 
+  /* Auto-advance every 5 s */
   useEffect(() => {
-    if (paused) return;
-    const t = setInterval(() => setIdx((i) => (i + 1) % REVIEWS.length), 5000);
+    if (paused || phase !== "idle") return;
+    const t = setInterval(() => {
+      setPhase("exiting");
+      setTimeout(() => {
+        setIdx((i) => (i + 1) % REVIEWS.length);
+        setPhase("idle");
+      }, 500);
+    }, 5000);
     return () => clearInterval(t);
-  }, [paused]);
+  }, [paused, phase]);
 
-  const visible = [0, 1, 2, 3].map((o) => REVIEWS[(idx + o) % REVIEWS.length]);
+  const goNext = () => {
+    if (phase !== "idle") return;
+    setIdx((i) => (i + 1) % REVIEWS.length);
+  };
+  const goPrev = () => {
+    if (phase !== "idle") return;
+    setIdx((i) => mod(i - 1, REVIEWS.length));
+  };
+
+  const visibleIndices = [0, 1, 2, 3, 4].map((o) => mod(idx + o, REVIEWS.length));
 
   return (
     <section
       id="testimonials"
       aria-label="Client words"
-      style={{ background: "#FAF8F4", padding: "7rem 1.5rem" }}
+      style={{ background: "#1A1A14", padding: "7rem 1.5rem" }}
     >
-      <div className="mx-auto max-w-[1400px]">
-        <header className="mb-14 max-w-2xl">
+      <div style={{ maxWidth: 1400, margin: "0 auto" }}>
+        {/* Header */}
+        <header style={{ textAlign: "center", marginBottom: "3.5rem" }}>
           <p
             style={{
               fontFamily: "'DM Sans','Inter',sans-serif",
@@ -53,203 +75,287 @@ export function StackedTestimonials() {
               marginBottom: "0.9rem",
             }}
           >
-            Client Words
+            CLIENT WORDS
           </p>
           <h2
             style={{
               fontFamily: "'Cormorant Garamond',serif",
               fontWeight: 300,
               fontSize: "clamp(2.2rem, 5vw, 4rem)",
-              color: "#1A1A14",
+              color: "#FAF8F4",
               margin: 0,
               lineHeight: 1.05,
             }}
           >
-            What they <em style={{ color: "#C4955A" }}>say.</em>
+            What they <em style={{ color: "#C4955A", fontStyle: "italic" }}>say.</em>
           </h2>
           <p
             style={{
               marginTop: "1rem",
               fontFamily: "'DM Sans','Inter',sans-serif",
-              fontSize: "0.92rem",
-              color: "#4A4A42",
+              fontSize: "0.9rem",
+              color: "#8a7355",
             }}
           >
-            Real Google reviews. Click below to verify on Google.
+            Real Google reviews — click any name to verify.
           </p>
         </header>
 
+        {/* Stacked cards */}
         <div
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
           style={{
             position: "relative",
             margin: "0 auto",
-            width: "min(480px, 92vw)",
-            minHeight: 320,
+            maxWidth: 520,
+            width: "100%",
+            minHeight: 340,
           }}
         >
-          {visible.map((r, layer) => (
-            <Card key={`${idx}-${layer}`} review={r} layer={layer} />
-          ))}
+          {visibleIndices.map((reviewIndex, position) => {
+            const review = REVIEWS[reviewIndex];
+            const isExiting = phase === "exiting" && position === 0;
+            const isEntering = position === 4 && phase === "idle";
+
+            let transform = "";
+            let opacity = 1;
+            let zIndex = 4;
+
+            if (isExiting) {
+              transform = "translateX(-120%)";
+              opacity = 0;
+              zIndex = 10;
+            } else if (isEntering) {
+              transform = "translate(calc(24px + 40px), 24px)";
+              opacity = 0;
+              zIndex = 0;
+            } else {
+              const layer = phase === "exiting" ? position - 1 : position;
+              const offsets = [
+                { x: 0, y: 0, o: 1, z: 4 },
+                { x: 8, y: 8, o: 0.7, z: 3 },
+                { x: 16, y: 16, o: 0.45, z: 2 },
+                { x: 24, y: 24, o: 0.2, z: 1 },
+              ];
+              const off = offsets[layer] ?? offsets[3];
+              transform = `translate(${off.x}px, ${off.y}px)`;
+              opacity = off.o;
+              zIndex = off.z;
+            }
+
+            return (
+              <article
+                key={review.name}
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  background: "#FAF8F4",
+                  borderRadius: 16,
+                  padding: "2.5rem",
+                  boxShadow: "0 24px 48px rgba(0,0,0,0.25)",
+                  border: "1px solid #E8E2D9",
+                  transform,
+                  opacity,
+                  zIndex,
+                  transition:
+                    "transform 0.5s cubic-bezier(0.22,1,0.36,1), opacity 0.5s cubic-bezier(0.22,1,0.36,1)",
+                  willChange: "transform, opacity",
+                  pointerEvents: position === 0 || (phase === "exiting" && position === 1) ? "auto" : "none",
+                }}
+              >
+                {/* Stars */}
+                <div
+                  style={{
+                    color: "#C4955A",
+                    fontSize: "1.1rem",
+                    letterSpacing: "0.1em",
+                    lineHeight: 1,
+                  }}
+                >
+                  ★★★★★
+                </div>
+
+                {/* Quote */}
+                <p
+                  style={{
+                    fontFamily: "'Cormorant Garamond',serif",
+                    fontStyle: "italic",
+                    fontSize: "1.35rem",
+                    lineHeight: 1.6,
+                    color: "#1A1A14",
+                    margin: "1rem 0",
+                  }}
+                >
+                  “{review.quote}”
+                </p>
+
+                {/* Divider */}
+                <div
+                  style={{
+                    borderTop: "1px solid #E8E2D9",
+                    margin: "1.2rem 0",
+                  }}
+                />
+
+                {/* Bottom row */}
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-end",
+                    gap: "1rem",
+                  }}
+                >
+                  {/* Left: name + type/location */}
+                  <div>
+                    <div
+                      style={{
+                        fontFamily: "'DM Sans',sans-serif",
+                        fontWeight: 700,
+                        fontSize: "0.9rem",
+                        color: "#1A1A14",
+                      }}
+                    >
+                      {review.name}
+                    </div>
+                    <div
+                      style={{
+                        marginTop: "0.25rem",
+                        fontFamily: "'DM Sans',sans-serif",
+                        fontSize: "0.65rem",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.1em",
+                        color: "#8a7355",
+                      }}
+                    >
+                      {review.type} · {review.location}
+                    </div>
+                  </div>
+
+                  {/* Right side: Google link + TERRA */}
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "1.25rem",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <a
+                      href={review.url ?? GOOGLE_REVIEWS_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        fontFamily: "'DM Sans',sans-serif",
+                        fontSize: "0.75rem",
+                        color: "#C4955A",
+                        textDecoration: "none",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      View on Google →
+                    </a>
+                    <span
+                      style={{
+                        fontFamily: "'DM Sans',sans-serif",
+                        fontSize: "0.6rem",
+                        letterSpacing: "0.2em",
+                        color: "#C4955A",
+                        textTransform: "uppercase",
+                      }}
+                    >
+                      TERRA
+                    </span>
+                  </div>
+                </div>
+              </article>
+            );
+          })}
         </div>
 
-        <div className="mt-10 flex items-center justify-center gap-4">
-          <NavBtn label="←" onClick={() => setIdx((i) => (i - 1 + REVIEWS.length) % REVIEWS.length)} />
-          <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: "0.7rem", letterSpacing: "0.25em", color: "#4A4A42" }}>
-            {String(idx + 1).padStart(2, "0")} / {String(REVIEWS.length).padStart(2, "0")}
-          </span>
-          <NavBtn label="→" onClick={() => setIdx((i) => (i + 1) % REVIEWS.length)} />
-        </div>
-
-        <div className="mt-8 text-center">
-          <a
-            href={GOOGLE_REVIEWS_URL}
-            target="_blank"
-            rel="noopener noreferrer"
+        {/* Navigation */}
+        <div
+          style={{
+            marginTop: "2.5rem",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "1.25rem",
+          }}
+        >
+          <ArrowBtn direction="left" onClick={goPrev} />
+          <span
             style={{
               fontFamily: "'DM Sans',sans-serif",
-              fontSize: "0.72rem",
-              letterSpacing: "0.25em",
-              textTransform: "uppercase",
-              color: "#C4955A",
-              borderBottom: "1px solid #C4955A",
-              paddingBottom: "0.2rem",
-              textDecoration: "none",
+              fontSize: "0.8rem",
+              color: "#8a7355",
+              minWidth: 60,
+              textAlign: "center",
             }}
           >
-            See all Google reviews →
-          </a>
+            {String(idx + 1).padStart(2, "0")} / {String(REVIEWS.length).padStart(2, "0")}
+          </span>
+          <ArrowBtn direction="right" onClick={goNext} />
         </div>
       </div>
     </section>
   );
 }
 
-function Card({ review, layer }: { review: Review; layer: number }) {
-  const offset = layer * 8;
-  const scale = 1 - layer * 0.03;
-  const opacity = layer === 0 ? 1 : layer === 1 ? 0.55 : layer === 2 ? 0.35 : 0.18;
-  const z = 10 - layer;
-
-  return (
-    <article
-      style={{
-        position: "absolute",
-        inset: 0,
-        transform: `translate(${offset}px, ${offset}px) scale(${scale})`,
-        opacity,
-        zIndex: z,
-        background: "#FAF8F4",
-        border: "1px solid #E8E2D9",
-        borderRadius: 16,
-        boxShadow: "0 18px 40px -22px rgba(26,26,20,0.25)",
-        padding: "2rem 1.8rem 1.6rem",
-        transition: "transform 0.5s cubic-bezier(0.22,1,0.36,1), opacity 0.5s ease",
-        display: "flex",
-        flexDirection: "column",
-        gap: "1.1rem",
-        pointerEvents: layer === 0 ? "auto" : "none",
-      }}
-    >
-      <div style={{ color: "#C4955A", letterSpacing: "0.2em", fontSize: "1rem" }}>
-        ★★★★★
-      </div>
-      <p
-        style={{
-          fontFamily: "'Cormorant Garamond',serif",
-          fontStyle: "italic",
-          fontSize: "1.2rem",
-          lineHeight: 1.55,
-          color: "#1A1A14",
-          margin: 0,
-          flex: 1,
-        }}
-      >
-        "{review.quote}"
-      </p>
-      <div className="flex items-end justify-between gap-3">
-        <div>
-          <div
-            style={{
-              fontFamily: "'DM Sans',sans-serif",
-              fontWeight: 600,
-              fontSize: "0.95rem",
-              color: "#1A1A14",
-            }}
-          >
-            {review.name}
-          </div>
-          <div
-            style={{
-              marginTop: "0.25rem",
-              fontFamily: "'DM Sans',sans-serif",
-              fontSize: "0.58rem",
-              letterSpacing: "0.28em",
-              textTransform: "uppercase",
-              color: "#8a7355",
-            }}
-          >
-            {review.type} · {review.location}
-          </div>
-          <a
-            href={review.url ?? GOOGLE_REVIEWS_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              marginTop: "0.6rem",
-              display: "inline-block",
-              fontFamily: "'DM Sans',sans-serif",
-              fontSize: "0.7rem",
-              color: "#C4955A",
-              textDecoration: "underline",
-              textUnderlineOffset: "3px",
-            }}
-          >
-            View on Google →
-          </a>
-        </div>
-        <span
-          style={{
-            fontFamily: "'Cormorant Garamond',serif",
-            fontSize: "0.7rem",
-            letterSpacing: "0.2em",
-            color: "#8a7355",
-            textTransform: "uppercase",
-          }}
-        >
-          Terra
-        </span>
-      </div>
-    </article>
-  );
-}
-
-function NavBtn({ label, onClick }: { label: string; onClick: () => void }) {
+function ArrowBtn({
+  direction,
+  onClick,
+}: {
+  direction: "left" | "right";
+  onClick: () => void;
+}) {
   return (
     <button
       onClick={onClick}
-      aria-label={label === "←" ? "Previous review" : "Next review"}
+      aria-label={direction === "left" ? "Previous review" : "Next review"}
       style={{
-        width: 42,
-        height: 42,
+        width: 44,
+        height: 44,
+        borderRadius: "50%",
         border: "1px solid #C4955A",
         background: "transparent",
-        color: "#1A1A14",
-        fontFamily: "'DM Sans',sans-serif",
+        color: "#C4955A",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
         cursor: "pointer",
         transition: "background 0.2s, color 0.2s",
+        padding: 0,
       }}
       onMouseEnter={(e) => {
-        (e.currentTarget as HTMLButtonElement).style.background = "#C4955A";
-        (e.currentTarget as HTMLButtonElement).style.color = "#FAF8F4";
+        const btn = e.currentTarget;
+        btn.style.background = "#C4955A";
+        btn.style.color = "#1A1A14";
       }}
       onMouseLeave={(e) => {
-        (e.currentTarget as HTMLButtonElement).style.background = "transparent";
-        (e.currentTarget as HTMLButtonElement).style.color = "#1A1A14";
+        const btn = e.currentTarget;
+        btn.style.background = "transparent";
+        btn.style.color = "#C4955A";
       }}
     >
-      {label}
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        style={{
+          transform: direction === "left" ? "rotate(180deg)" : undefined,
+        }}
+      >
+        <path d="M5 12h14M12 5l7 7-7 7" />
+      </svg>
     </button>
   );
 }
