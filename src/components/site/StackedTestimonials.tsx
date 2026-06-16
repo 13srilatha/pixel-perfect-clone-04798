@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
+import { motion, AnimatePresence, type PanInfo } from "framer-motion";
 
 type Review = {
   name: string;
   quote: string;
   type: string;
   location: string;
-  url?: string;
 };
 
 const REVIEWS: Review[] = [
@@ -27,295 +27,319 @@ function mod(n: number, m: number) {
   return ((n % m) + m) % m;
 }
 
+// Subtle, varied rotations so the stack feels "thrown down" not algorithmic
+const TILTS = [-7, 5, -3, 8, -5, 4, -8, 6, -4];
+
 export function StackedTestimonials() {
   const [idx, setIdx] = useState(0);
-  const [phase, setPhase] = useState<"idle" | "exiting">("idle");
   const [paused, setPaused] = useState(false);
+  const [direction, setDirection] = useState<1 | -1>(1);
 
-  /* Auto-advance every 5 s */
   useEffect(() => {
-    if (paused || phase !== "idle") return;
+    if (paused) return;
     const t = setInterval(() => {
-      setPhase("exiting");
-      setTimeout(() => {
-        setIdx((i) => (i + 1) % REVIEWS.length);
-        setPhase("idle");
-      }, 500);
+      setDirection(1);
+      setIdx((i) => (i + 1) % REVIEWS.length);
     }, 5000);
     return () => clearInterval(t);
-  }, [paused, phase]);
+  }, [paused]);
 
   const goNext = () => {
-    if (phase !== "idle") return;
+    setDirection(1);
     setIdx((i) => (i + 1) % REVIEWS.length);
   };
   const goPrev = () => {
-    if (phase !== "idle") return;
+    setDirection(-1);
     setIdx((i) => mod(i - 1, REVIEWS.length));
   };
 
-  const visibleIndices = [0, 1, 2, 3, 4].map((o) => mod(idx + o, REVIEWS.length));
+  const handleDragEnd = (_: unknown, info: PanInfo) => {
+    if (info.offset.x < -80 || info.velocity.x < -400) goNext();
+    else if (info.offset.x > 80 || info.velocity.x > 400) goPrev();
+  };
+
+  // Show active + 3 behind it
+  const stack = [0, 1, 2, 3].map((o) => ({
+    review: REVIEWS[mod(idx + o, REVIEWS.length)],
+    layer: o,
+    key: mod(idx + o, REVIEWS.length),
+  }));
 
   return (
     <section
       id="testimonials"
-      aria-label="Client words"
-      style={{ background: "#1A1A14", padding: "7rem 1.5rem" }}
+      style={{
+        background: "#1A1A14",
+        padding: "7rem 1.5rem",
+        position: "relative",
+        overflow: "hidden",
+      }}
     >
-      <div style={{ maxWidth: 1400, margin: "0 auto" }}>
+      {/* Ambient gold glow */}
+      <div
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          width: 700,
+          height: 700,
+          transform: "translate(-50%, -50%)",
+          background: "radial-gradient(circle, rgba(196,149,90,0.08) 0%, transparent 60%)",
+          pointerEvents: "none",
+        }}
+      />
+
+      <div style={{ maxWidth: 1400, margin: "0 auto", position: "relative" }}>
         {/* Header */}
-        <header style={{ textAlign: "center", marginBottom: "3.5rem" }}>
-          <p
+        <div style={{ textAlign: "center", marginBottom: "4.5rem" }}>
+          <div
             style={{
-              fontFamily: "'DM Sans','Inter',sans-serif",
+              fontFamily: "'DM Sans', sans-serif",
               fontSize: "0.68rem",
-              letterSpacing: "0.32em",
-              textTransform: "uppercase",
               color: "#C4955A",
-              marginBottom: "0.9rem",
+              textTransform: "uppercase",
+              letterSpacing: "0.32em",
+              marginBottom: "1.25rem",
             }}
           >
-            CLIENT WORDS
-          </p>
+            Client Words
+          </div>
           <h2
             style={{
-              fontFamily: "'Cormorant Garamond',serif",
+              fontFamily: "'Cormorant Garamond', serif",
               fontWeight: 300,
-              fontSize: "clamp(2.2rem, 5vw, 4rem)",
+              fontSize: "clamp(2.5rem, 6vw, 4.5rem)",
               color: "#FAF8F4",
               margin: 0,
               lineHeight: 1.05,
             }}
           >
-            What they <em style={{ color: "#C4955A", fontStyle: "italic" }}>say.</em>
+            What they say.
           </h2>
           <p
             style={{
               marginTop: "1rem",
-              fontFamily: "'DM Sans','Inter',sans-serif",
-              fontSize: "0.9rem",
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: "0.85rem",
               color: "#8a7355",
+              letterSpacing: "0.04em",
             }}
           >
-            Real Google reviews — click any name to verify.
+            Drag the card · or use the arrows
           </p>
-        </header>
+        </div>
 
-        {/* Stacked cards */}
+        {/* Card stack */}
         <div
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
           style={{
             position: "relative",
+            height: 460,
+            maxWidth: 560,
             margin: "0 auto",
-            maxWidth: 520,
-            width: "100%",
-            minHeight: 340,
+            perspective: 1200,
           }}
         >
-          {visibleIndices.map((reviewIndex, position) => {
-            const review = REVIEWS[reviewIndex];
-            const isExiting = phase === "exiting" && position === 0;
-            const isEntering = position === 4 && phase === "idle";
+          {stack
+            .slice()
+            .reverse() /* render back-to-front */
+            .map(({ review, layer, key }) => {
+              const isActive = layer === 0;
+              const tilt = TILTS[key % TILTS.length];
 
-            let transform = "";
-            let opacity = 1;
-            let zIndex = 4;
+              const backStyle = {
+                scale: 1 - layer * 0.05,
+                y: layer * 18,
+                rotate: tilt * (1 - layer * 0.3),
+                opacity: layer === 0 ? 1 : 0.55 - layer * 0.12,
+              };
 
-            if (isExiting) {
-              transform = "translateX(-120%)";
-              opacity = 0;
-              zIndex = 10;
-            } else if (isEntering) {
-              transform = "translate(calc(24px + 40px), 24px)";
-              opacity = 0;
-              zIndex = 0;
-            } else {
-              const layer = phase === "exiting" ? position - 1 : position;
-              const offsets = [
-                { x: 0, y: 0, o: 1, z: 4 },
-                { x: 8, y: 8, o: 0.7, z: 3 },
-                { x: 16, y: 16, o: 0.45, z: 2 },
-                { x: 24, y: 24, o: 0.2, z: 1 },
-              ];
-              const off = offsets[layer] ?? offsets[3];
-              transform = `translate(${off.x}px, ${off.y}px)`;
-              opacity = off.o;
-              zIndex = off.z;
-            }
-
-            return (
-              <article
-                key={review.name}
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  background: "#FAF8F4",
-                  borderRadius: 16,
-                  padding: "2.5rem",
-                  boxShadow: "0 24px 48px rgba(0,0,0,0.25)",
-                  border: "1px solid #E8E2D9",
-                  transform,
-                  opacity,
-                  zIndex,
-                  transition:
-                    "transform 0.5s cubic-bezier(0.22,1,0.36,1), opacity 0.5s cubic-bezier(0.22,1,0.36,1)",
-                  willChange: "transform, opacity",
-                  pointerEvents: position === 0 || (phase === "exiting" && position === 1) ? "auto" : "none",
-                }}
-              >
-                {/* Stars */}
-                <div
+              return (
+                <motion.div
+                  key={key}
+                  initial={
+                    isActive
+                      ? { x: direction * 320, rotate: direction * 15, opacity: 0, scale: 0.9 }
+                      : backStyle
+                  }
+                  animate={backStyle}
+                  exit={{ x: -direction * 320, rotate: -direction * 15, opacity: 0 }}
+                  transition={{ type: "spring", stiffness: 220, damping: 26 }}
+                  drag={isActive ? "x" : false}
+                  dragConstraints={{ left: 0, right: 0 }}
+                  dragElastic={0.7}
+                  onDragEnd={isActive ? handleDragEnd : undefined}
+                  whileDrag={isActive ? { cursor: "grabbing", scale: 1.02 } : undefined}
                   style={{
-                    color: "#C4955A",
-                    fontSize: "1.1rem",
-                    letterSpacing: "0.1em",
-                    lineHeight: 1,
+                    position: "absolute",
+                    inset: 0,
+                    zIndex: 10 - layer,
+                    cursor: isActive ? "grab" : "default",
+                    transformOrigin: "center bottom",
                   }}
                 >
-                  ★★★★★
-                </div>
-
-                {/* Quote */}
-                <p
-                  style={{
-                    fontFamily: "'Cormorant Garamond',serif",
-                    fontStyle: "italic",
-                    fontSize: "1.35rem",
-                    lineHeight: 1.6,
-                    color: "#1A1A14",
-                    margin: "1rem 0",
-                  }}
-                >
-                  “{review.quote}”
-                </p>
-
-                {/* Divider */}
-                <div
-                  style={{
-                    borderTop: "1px solid #E8E2D9",
-                    margin: "1.2rem 0",
-                  }}
-                />
-
-                {/* Bottom row */}
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "flex-end",
-                    gap: "1rem",
-                  }}
-                >
-                  {/* Left: name + type/location */}
-                  <div>
-                    <div
-                      style={{
-                        fontFamily: "'DM Sans',sans-serif",
-                        fontWeight: 700,
-                        fontSize: "0.9rem",
-                        color: "#1A1A14",
-                      }}
-                    >
-                      {review.name}
-                    </div>
-                    <div
-                      style={{
-                        marginTop: "0.25rem",
-                        fontFamily: "'DM Sans',sans-serif",
-                        fontSize: "0.65rem",
-                        textTransform: "uppercase",
-                        letterSpacing: "0.1em",
-                        color: "#8a7355",
-                      }}
-                    >
-                      {review.type} · {review.location}
-                    </div>
-                  </div>
-
-                  {/* Right side: Google link + TERRA */}
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "1.25rem",
-                      flexShrink: 0,
-                    }}
-                  >
-                    <a
-                      href={review.url ?? GOOGLE_REVIEWS_URL}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{
-                        fontFamily: "'DM Sans',sans-serif",
-                        fontSize: "0.75rem",
-                        color: "#C4955A",
-                        textDecoration: "none",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      View on Google →
-                    </a>
-                    <span
-                      style={{
-                        fontFamily: "'DM Sans',sans-serif",
-                        fontSize: "0.6rem",
-                        letterSpacing: "0.2em",
-                        color: "#C4955A",
-                        textTransform: "uppercase",
-                      }}
-                    >
-                      TERRA
-                    </span>
-                  </div>
-                </div>
-              </article>
-            );
-          })}
+                  <Polaroid review={review} />
+                </motion.div>
+              );
+            })}
         </div>
 
-        {/* Navigation */}
+        {/* Nav */}
         <div
           style={{
-            marginTop: "2.5rem",
+            marginTop: "3rem",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            gap: "1.25rem",
+            gap: "1.5rem",
           }}
         >
-          <ArrowBtn direction="left" onClick={goPrev} />
-          <span
+          <ArrowBtn dir="prev" onClick={goPrev} />
+          <div
             style={{
-              fontFamily: "'DM Sans',sans-serif",
+              fontFamily: "'DM Sans', sans-serif",
               fontSize: "0.8rem",
               color: "#8a7355",
-              minWidth: 60,
+              letterSpacing: "0.15em",
+              minWidth: 70,
               textAlign: "center",
             }}
           >
             {String(idx + 1).padStart(2, "0")} / {String(REVIEWS.length).padStart(2, "0")}
-          </span>
-          <ArrowBtn direction="right" onClick={goNext} />
+          </div>
+          <ArrowBtn dir="next" onClick={goNext} />
         </div>
       </div>
     </section>
   );
 }
 
-function ArrowBtn({
-  direction,
-  onClick,
-}: {
-  direction: "left" | "right";
-  onClick: () => void;
-}) {
+/* ---------- Polaroid card ---------- */
+
+function Polaroid({ review }: { review: Review }) {
+  return (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        background: "#FAF8F4",
+        border: "1px solid #E8E2D9",
+        borderRadius: 6,
+        padding: "2.5rem 2.25rem 1.5rem",
+        display: "flex",
+        flexDirection: "column",
+        boxShadow:
+          "0 30px 60px -20px rgba(0,0,0,0.55), 0 10px 25px -10px rgba(0,0,0,0.4)",
+      }}
+    >
+      {/* Tape strip */}
+      <div
+        style={{
+          position: "absolute",
+          top: -12,
+          left: "50%",
+          transform: "translateX(-50%) rotate(-2deg)",
+          width: 90,
+          height: 22,
+          background: "rgba(196,149,90,0.35)",
+          backdropFilter: "blur(2px)",
+          border: "1px solid rgba(196,149,90,0.4)",
+        }}
+      />
+
+      {/* Stars */}
+      <div style={{ display: "flex", gap: 4, color: "#C4955A", fontSize: "1.1rem" }}>
+        {"★★★★★".split("").map((s, i) => (
+          <span key={i}>{s}</span>
+        ))}
+      </div>
+
+      {/* Quote */}
+      <p
+        style={{
+          fontFamily: "'Cormorant Garamond', serif",
+          fontStyle: "italic",
+          fontWeight: 400,
+          fontSize: "clamp(1.25rem, 2.2vw, 1.6rem)",
+          lineHeight: 1.45,
+          color: "#1A1A14",
+          margin: "1.5rem 0",
+          flex: 1,
+        }}
+      >
+        &ldquo;{review.quote}&rdquo;
+      </p>
+
+      {/* Divider */}
+      <div style={{ height: 1, background: "#E8E2D9", marginBottom: "1.25rem" }} />
+
+      {/* Footer */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "flex-end",
+          justifyContent: "space-between",
+          gap: "1rem",
+        }}
+      >
+        <div style={{ minWidth: 0 }}>
+          <div
+            style={{
+              fontFamily: "'DM Sans', sans-serif",
+              fontWeight: 600,
+              fontSize: "0.95rem",
+              color: "#1A1A14",
+              letterSpacing: "0.01em",
+            }}
+          >
+            {review.name}
+          </div>
+          <div
+            style={{
+              marginTop: 4,
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: "0.72rem",
+              color: "#8a7355",
+              textTransform: "uppercase",
+              letterSpacing: "0.18em",
+            }}
+          >
+            {review.type} · {review.location}
+          </div>
+        </div>
+
+        <a
+          href={GOOGLE_REVIEWS_URL}
+          target="_blank"
+          rel="noreferrer"
+          onPointerDown={(e) => e.stopPropagation()}
+          style={{
+            fontFamily: "'DM Sans', sans-serif",
+            fontSize: "0.7rem",
+            color: "#C4955A",
+            textTransform: "uppercase",
+            letterSpacing: "0.18em",
+            textDecoration: "none",
+            whiteSpace: "nowrap",
+            borderBottom: "1px solid #C4955A",
+            paddingBottom: 2,
+          }}
+        >
+          View on Google →
+        </a>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- Arrow button ---------- */
+
+function ArrowBtn({ dir, onClick }: { dir: "prev" | "next"; onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      aria-label={direction === "left" ? "Previous review" : "Next review"}
+      aria-label={dir === "prev" ? "Previous" : "Next"}
       style={{
         width: 44,
         height: 44,
@@ -323,39 +347,28 @@ function ArrowBtn({
         border: "1px solid #C4955A",
         background: "transparent",
         color: "#C4955A",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
         cursor: "pointer",
-        transition: "background 0.2s, color 0.2s",
-        padding: 0,
+        display: "grid",
+        placeItems: "center",
+        transition: "background 0.2s, transform 0.2s",
       }}
       onMouseEnter={(e) => {
-        const btn = e.currentTarget;
-        btn.style.background = "#C4955A";
-        btn.style.color = "#1A1A14";
+        e.currentTarget.style.background = "rgba(196,149,90,0.12)";
       }}
       onMouseLeave={(e) => {
-        const btn = e.currentTarget;
-        btn.style.background = "transparent";
-        btn.style.color = "#C4955A";
+        e.currentTarget.style.background = "transparent";
       }}
     >
-      <svg
-        width="16"
-        height="16"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        style={{
-          transform: direction === "left" ? "rotate(180deg)" : undefined,
-        }}
-      >
-        <path d="M5 12h14M12 5l7 7-7 7" />
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        {dir === "prev" ? (
+          <path d="M9 2L4 7L9 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        ) : (
+          <path d="M5 2L10 7L5 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        )}
       </svg>
     </button>
   );
 }
+
+// AnimatePresence reserved for future exit transitions
+export const _ap = AnimatePresence;
