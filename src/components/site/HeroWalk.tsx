@@ -33,7 +33,7 @@ export function HeroWalk() {
 
     const ctx = gsap.context(() => {
       gsap.set(chapterRefs.current, { autoAlpha: 0, y: 42, scale: 0.96 });
-      gsap.set(frameRef.current, { clipPath: "inset(7% 8% round 6px)", scale: 0.94 });
+      gsap.set(frameRef.current, { clipPath: "inset(0% 0% round 0px)", scale: 1 });
       gsap.set(progressRef.current, { scaleX: 0, transformOrigin: "left center" });
 
       const tl = gsap.timeline({
@@ -51,7 +51,7 @@ export function HeroWalk() {
         },
       });
 
-      tl.to(frameRef.current, { clipPath: "inset(0% 0% round 0px)", scale: 1, ease: "none" }, 0);
+      tl.to(frameRef.current, { scale: 1.08, ease: "none" }, 0);
       tl.to(introRef.current, { autoAlpha: 0, y: -48, scale: 0.96, ease: "power1.out" }, 0.1);
       chapterRefs.current.forEach((chapter, i) => {
         const at = 0.18 + i * 0.18;
