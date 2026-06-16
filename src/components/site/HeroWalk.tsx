@@ -1,58 +1,71 @@
-/**
- * HeroWalk — scroll-driven exterior → interior reveal.
- * Pinned section. Scroll = camera walks from the street into the living room.
- */
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-import exteriorImg from "@/assets/uploads/hero-exterior.png";
-import interiorImg from "@/assets/uploads/hero-interior.png";
-
 gsap.registerPlugin(ScrollTrigger);
+
+const HERO_VIDEO_URL = "/__l5e/assets-v1/0d750651-aed7-4dec-bfd0-9d3bd9f0ca3b/hero-walk-clean.mp4";
+const HERO_POSTER_URL = "/__l5e/assets-v1/7b454854-cb0a-4e0f-ba2e-d21b598025ec/terra-hero-poster.jpg";
+
+const CHAPTERS = ["Land", "Plan", "Design", "Home"];
 
 export function HeroWalk() {
   const sectionRef = useRef<HTMLElement>(null);
-  const extRef = useRef<HTMLDivElement>(null);
-  const intRef = useRef<HTMLDivElement>(null);
-  const overlayRef = useRef<HTMLDivElement>(null);
-  const hintRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const introRef = useRef<HTMLDivElement>(null);
+  const chapterRefs = useRef<HTMLDivElement[]>([]);
+  const frameRef = useRef<HTMLDivElement>(null);
+  const progressRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const section = sectionRef.current;
-    if (!section) return;
+    const video = videoRef.current;
+    if (!section || !video) return;
 
     const sync = () => ScrollTrigger.update();
-    if (window.__lenis) window.__lenis.on("scroll", sync);
+    window.__lenis?.on("scroll", sync);
+
+    const safeDuration = () => (Number.isFinite(video.duration) && video.duration > 0 ? video.duration : 8);
+    const setVideoTime = (progress: number) => {
+      const nextTime = Math.min(safeDuration() - 0.05, Math.max(0.01, progress * safeDuration()));
+      if (Math.abs(video.currentTime - nextTime) > 0.03) video.currentTime = nextTime;
+    };
 
     const ctx = gsap.context(() => {
-      gsap.set(intRef.current, { autoAlpha: 0, scale: 1.15 });
-      gsap.set(extRef.current, { scale: 1 });
+      gsap.set(chapterRefs.current, { autoAlpha: 0, y: 42, scale: 0.96 });
+      gsap.set(frameRef.current, { clipPath: "inset(0% 0% round 0px)", scale: 1 });
+      gsap.set(progressRef.current, { scaleX: 0, transformOrigin: "left center" });
 
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: section,
           start: "top top",
-          end: "+=180%",
+          end: "+=360%",
           pin: true,
-          scrub: 1.2,
+          scrub: 0.55,
           anticipatePin: 1,
+          onUpdate: (self) => {
+            setVideoTime(self.progress);
+            gsap.set(progressRef.current, { scaleX: self.progress });
+          },
         },
       });
 
-      // camera moves forward through exterior
-      tl.to(extRef.current, { scale: 1.4, ease: "none" }, 0);
-      tl.to(overlayRef.current, { opacity: 0.55, ease: "none" }, 0.25);
-      tl.to(hintRef.current, { autoAlpha: 0, ease: "none" }, 0.05);
-
-      // dissolve into interior
-      tl.to(extRef.current, { autoAlpha: 0, ease: "none" }, 0.45);
-      tl.to(intRef.current, { autoAlpha: 1, scale: 1, ease: "none" }, 0.45);
-      tl.to(overlayRef.current, { opacity: 0.25, ease: "none" }, 0.6);
+      tl.to(frameRef.current, { scale: 1.08, ease: "none", duration: 1 }, 0);
+      tl.to(introRef.current, { autoAlpha: 0, y: -70, scale: 0.94, duration: 0.08, ease: "power2.in" }, 0.055);
+      chapterRefs.current.forEach((chapter, i) => {
+        const at = 0.16 + i * 0.18;
+        tl.to(chapter, { autoAlpha: 1, y: 0, scale: 1, duration: 0.09, ease: "power2.out" }, at);
+        tl.to(chapter, { autoAlpha: 0, y: -44, scale: 1.04, duration: 0.08, ease: "power2.in" }, at + 0.12);
+      });
     }, section);
 
+    const onLoaded = () => setVideoTime(0.01);
+    video.addEventListener("loadedmetadata", onLoaded);
+
     return () => {
-      if (window.__lenis) window.__lenis.off("scroll", sync);
+      window.__lenis?.off("scroll", sync);
+      video.removeEventListener("loadedmetadata", onLoaded);
       ctx.revert();
     };
   }, []);
@@ -61,108 +74,92 @@ export function HeroWalk() {
     <section
       ref={sectionRef}
       id="hero"
-      aria-label="Walk through a Terra Space home"
+      aria-label="Scroll through a Terra Space home walkthrough"
       style={{
         position: "relative",
-        height: "100svh",
-        width: "100%",
+        minHeight: "100svh",
         overflow: "hidden",
         background: "#1A1A14",
       }}
     >
-      {/* Exterior frame */}
+      <div ref={frameRef} style={{ position: "absolute", inset: 0, willChange: "clip-path, transform" }}>
+        <video
+          ref={videoRef}
+          src={HERO_VIDEO_URL}
+          poster={HERO_POSTER_URL}
+          muted
+          playsInline
+          preload="auto"
+          aria-hidden="true"
+          style={{ height: "100%", width: "100%", objectFit: "cover", display: "block" }}
+        />
+      </div>
+
       <div
-        ref={extRef}
-        style={{
-          position: "absolute",
-          inset: 0,
-          backgroundImage: `url(${exteriorImg})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          willChange: "transform, opacity",
-        }}
-      />
-      {/* Interior frame */}
-      <div
-        ref={intRef}
-        style={{
-          position: "absolute",
-          inset: 0,
-          backgroundImage: `url(${interiorImg})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          willChange: "transform, opacity",
-        }}
-      />
-      {/* Dark vignette overlay for legibility */}
-      <div
-        ref={overlayRef}
+        aria-hidden="true"
         style={{
           position: "absolute",
           inset: 0,
           background:
-            "linear-gradient(180deg, rgba(26,26,20,0.35) 0%, rgba(26,26,20,0.25) 40%, rgba(26,26,20,0.7) 100%)",
-          opacity: 0.4,
+            "linear-gradient(180deg, rgba(26,26,20,0.62) 0%, rgba(26,26,20,0.18) 45%, rgba(26,26,20,0.72) 100%), radial-gradient(circle at 50% 50%, transparent 0%, rgba(26,26,20,0.5) 82%)",
           pointerEvents: "none",
         }}
       />
 
-      {/* Copy */}
       <div
+        ref={introRef}
         style={{
           position: "absolute",
           inset: 0,
+          zIndex: 3,
           display: "flex",
           flexDirection: "column",
-          justifyContent: "center",
           alignItems: "center",
-          textAlign: "center",
+          justifyContent: "center",
           padding: "0 1.5rem",
-          zIndex: 5,
+          textAlign: "center",
+          willChange: "opacity, transform",
         }}
       >
-        <span
+        <p
           style={{
+            margin: "0 0 1.6rem",
             fontFamily: "'DM Sans','Inter',sans-serif",
-            fontSize: "0.7rem",
-            letterSpacing: "0.4em",
+            fontSize: "0.68rem",
+            letterSpacing: "0.38em",
             textTransform: "uppercase",
-            color: "#E8DAB9",
-            marginBottom: "1.8rem",
+            color: "#C4955A",
           }}
         >
           Terra Space Studio · Hyderabad
-        </span>
-
+        </p>
         <h1
           style={{
+            margin: 0,
+            maxWidth: 980,
             fontFamily: "'Cormorant Garamond','Cormorant',serif",
             fontWeight: 300,
-            fontSize: "clamp(2.8rem, 7vw, 6rem)",
-            lineHeight: 1.05,
+            fontSize: "clamp(3.4rem, 9vw, 8.5rem)",
+            lineHeight: 0.92,
             color: "#FAF8F4",
-            margin: 0,
-            maxWidth: 900,
           }}
         >
           We build where
           <br />
-          <em style={{ fontStyle: "italic", color: "#C4955A" }}>love&nbsp;lives.</em>
+          <em style={{ color: "#C4955A", fontStyle: "italic" }}>love lives.</em>
         </h1>
-
         <p
           style={{
-            marginTop: "1.4rem",
+            margin: "1.5rem 0 0",
             fontFamily: "'DM Sans','Inter',sans-serif",
-            fontSize: "clamp(0.85rem, 1.1vw, 1rem)",
-            letterSpacing: "0.18em",
+            fontSize: "0.86rem",
+            letterSpacing: "0.22em",
             textTransform: "uppercase",
-            color: "rgba(250,248,244,0.78)",
+            color: "rgba(250,248,244,0.8)",
           }}
         >
           Architecture · Interiors · Planning
         </p>
-
         <a
           href="#contact"
           onClick={(e) => {
@@ -170,46 +167,94 @@ export function HeroWalk() {
             document.querySelector("#contact")?.scrollIntoView({ behavior: "smooth" });
           }}
           style={{
-            marginTop: "2.4rem",
+            marginTop: "2rem",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "0.6rem",
             background: "#C4955A",
             color: "#1A1A14",
-            padding: "16px 30px",
-            fontFamily: "'DM Sans','Inter',sans-serif",
-            fontSize: "0.78rem",
-            letterSpacing: "0.22em",
-            textTransform: "uppercase",
+            padding: "1rem 1.7rem",
             textDecoration: "none",
-            transition: "background 0.25s, transform 0.25s",
-          }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLAnchorElement).style.background = "#d6a86c";
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLAnchorElement).style.background = "#C4955A";
+            fontFamily: "'DM Sans','Inter',sans-serif",
+            fontSize: "0.76rem",
+            letterSpacing: "0.2em",
+            textTransform: "uppercase",
           }}
         >
           Begin Your Space →
         </a>
       </div>
 
-      {/* Scroll hint */}
+      <div style={{ position: "absolute", inset: 0, zIndex: 4, pointerEvents: "none" }}>
+        {CHAPTERS.map((chapter, i) => (
+          <div
+            key={chapter}
+            ref={(el) => {
+              if (el) chapterRefs.current[i] = el;
+            }}
+            style={{
+              position: "absolute",
+              left: i % 2 === 0 ? "7vw" : "auto",
+              right: i % 2 === 0 ? "auto" : "7vw",
+              top: i < 2 ? "22vh" : "58vh",
+              maxWidth: 520,
+              willChange: "opacity, transform",
+            }}
+          >
+            <div
+              style={{
+                fontFamily: "'DM Sans','Inter',sans-serif",
+                fontSize: "0.66rem",
+                letterSpacing: "0.36em",
+                textTransform: "uppercase",
+                color: "#C4955A",
+                marginBottom: "0.6rem",
+              }}
+            >
+              {String(i + 1).padStart(2, "0")} / 04
+            </div>
+            <div
+              style={{
+                fontFamily: "'Cormorant Garamond','Cormorant',serif",
+                fontSize: "clamp(3rem, 7vw, 7rem)",
+                lineHeight: 0.9,
+                color: "#FAF8F4",
+              }}
+            >
+              {chapter}
+            </div>
+          </div>
+        ))}
+      </div>
+
       <div
-        ref={hintRef}
         style={{
           position: "absolute",
-          bottom: "2rem",
-          left: 0,
-          right: 0,
-          textAlign: "center",
-          zIndex: 6,
-          fontFamily: "'DM Sans','Inter',sans-serif",
-          fontSize: "0.62rem",
-          letterSpacing: "0.32em",
-          textTransform: "uppercase",
-          color: "rgba(250,248,244,0.7)",
+          left: "1.5rem",
+          right: "1.5rem",
+          bottom: "1.5rem",
+          zIndex: 5,
+          display: "grid",
+          gridTemplateColumns: "minmax(0,1fr) auto",
+          alignItems: "center",
+          gap: "1rem",
         }}
       >
-        ↓ Scroll to walk through a home
+        <div style={{ height: 1, background: "rgba(250,248,244,0.22)", overflow: "hidden" }}>
+          <div ref={progressRef} style={{ height: "100%", width: "100%", background: "#C4955A" }} />
+        </div>
+        <span
+          style={{
+            fontFamily: "'DM Sans','Inter',sans-serif",
+            fontSize: "0.62rem",
+            letterSpacing: "0.28em",
+            textTransform: "uppercase",
+            color: "rgba(250,248,244,0.72)",
+            whiteSpace: "nowrap",
+          }}
+        >
+          Scroll the walkthrough
+        </span>
       </div>
     </section>
   );

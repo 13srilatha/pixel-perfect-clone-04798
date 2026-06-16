@@ -1,5 +1,8 @@
-import { useEffect, useState } from "react";
-import { motion, AnimatePresence, type PanInfo } from "framer-motion";
+import { useEffect, useMemo, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 type Review = {
   name: string;
@@ -9,366 +12,347 @@ type Review = {
 };
 
 const REVIEWS: Review[] = [
-  { name: "Sai Kiran Galla",   quote: "Outstanding experience. Exceptional professionalism, creativity, and attention to detail.", type: "Residential",      location: "Hyderabad" },
-  { name: "Sharath Chandra",   quote: "Innovative design approach and attention to detail. Highly professional and transparent.",   type: "Interior Design",  location: "Hyderabad" },
-  { name: "Sharath Dhoni",     quote: "Knowledgeable, professional and dedicated to delivering quality work. They understand client needs well.", type: "Commercial", location: "Hyderabad" },
-  { name: "Naresh Chary M",    quote: "Exceeded expectations. Creative concepts, practical advice, zero pushy sales tactics.",      type: "Renovation",       location: "Hyderabad" },
-  { name: "Praneeth Sai",      quote: "Combines creativity, technical expertise and modern design concepts.",                       type: "Residential",      location: "Jubilee Hills" },
-  { name: "Sai Charan Dandu",  quote: "Excellent architecture firm.",                                                                type: "Architecture",     location: "Hyderabad" },
-  { name: "Aniket Anand",      quote: "Good design is one thing, but good communication is equally important. This firm delivered on both.", type: "Commercial", location: "Hyderabad" },
-  { name: "Nikhitha Sabbani",  quote: "They cleared all my doubts and I had satisfied designs from Terra Space.",                    type: "Interior Design",  location: "Hyderabad" },
-  { name: "Srilatha Yadav",    quote: "Designs feel fresh yet practical. The whole process was simple and stress-free.",            type: "Residential",      location: "Vijayawada" },
+  { name: "Sai Kiran Galla", quote: "Outstanding experience. Exceptional professionalism, creativity, and attention to detail.", type: "Residential", location: "Hyderabad" },
+  { name: "Sharath Chandra", quote: "Innovative design approach and attention to detail. Highly professional and transparent.", type: "Interior Design", location: "Hyderabad" },
+  { name: "Sharath Dhoni", quote: "Knowledgeable, professional and dedicated to delivering quality work. They understand client needs well.", type: "Commercial", location: "Hyderabad" },
+  { name: "Naresh Chary M", quote: "Exceeded expectations. Creative concepts, practical advice, zero pushy sales tactics.", type: "Renovation", location: "Hyderabad" },
+  { name: "Praneeth Sai", quote: "Combines creativity, technical expertise and modern design concepts.", type: "Residential", location: "Jubilee Hills" },
+  { name: "Sai Charan Dandu", quote: "Excellent architecture firm.", type: "Architecture", location: "Hyderabad" },
+  { name: "Aniket Anand", quote: "Good design is one thing, but good communication is equally important. This firm delivered on both.", type: "Commercial", location: "Hyderabad" },
+  { name: "Nikhitha Sabbani", quote: "They cleared all my doubts and I had satisfied designs from Terra Space.", type: "Interior Design", location: "Hyderabad" },
+  { name: "Srilatha Yadav", quote: "Designs feel fresh yet practical. The whole process was simple and stress-free.", type: "Residential", location: "Vijayawada" },
 ];
 
-const GOOGLE_REVIEWS_URL =
-  "https://www.google.com/search?q=Terra+Space+Studio+Hyderabad+reviews";
+const GOOGLE_REVIEWS_URL = "https://www.google.com/search?q=Terra+Space+Studio+Hyderabad+reviews";
 
-function mod(n: number, m: number) {
-  return ((n % m) + m) % m;
-}
-
-// Subtle, varied rotations so the stack feels "thrown down" not algorithmic
-const TILTS = [-7, 5, -3, 8, -5, 4, -8, 6, -4];
+const CARD_STYLE = [
+  { x: -44, y: -18, r: -7 },
+  { x: -22, y: 26, r: 4 },
+  { x: 8, y: -30, r: -2 },
+  { x: 36, y: 20, r: 7 },
+  { x: -12, y: 48, r: -5 },
+  { x: 58, y: -8, r: 3 },
+  { x: -54, y: 34, r: 6 },
+  { x: 26, y: 52, r: -4 },
+  { x: 0, y: 0, r: 2 },
+];
 
 export function StackedTestimonials() {
-  const [idx, setIdx] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const [direction, setDirection] = useState<1 | -1>(1);
+  const sectionRef = useRef<HTMLElement>(null);
+  const railRef = useRef<HTMLDivElement>(null);
+  const cardsRef = useRef<HTMLAnchorElement[]>([]);
+  const meterRef = useRef<HTMLDivElement>(null);
+  const headlineRef = useRef<HTMLDivElement>(null);
+
+  const repeatedReviews = useMemo(() => REVIEWS, []);
 
   useEffect(() => {
-    if (paused) return;
-    const t = setInterval(() => {
-      setDirection(1);
-      setIdx((i) => (i + 1) % REVIEWS.length);
-    }, 5000);
-    return () => clearInterval(t);
-  }, [paused]);
+    const section = sectionRef.current;
+    const cards = cardsRef.current.filter(Boolean);
+    if (!section || !cards.length) return;
 
-  const goNext = () => {
-    setDirection(1);
-    setIdx((i) => (i + 1) % REVIEWS.length);
-  };
-  const goPrev = () => {
-    setDirection(-1);
-    setIdx((i) => mod(i - 1, REVIEWS.length));
-  };
+    const sync = () => ScrollTrigger.update();
+    window.__lenis?.on("scroll", sync);
 
-  const handleDragEnd = (_: unknown, info: PanInfo) => {
-    if (info.offset.x < -80 || info.velocity.x < -400) goNext();
-    else if (info.offset.x > 80 || info.velocity.x > 400) goPrev();
-  };
+    const ctx = gsap.context(() => {
+      gsap.set(headlineRef.current, { y: 70, autoAlpha: 0 });
+      gsap.set(cards, {
+        xPercent: 145,
+        y: (i) => CARD_STYLE[i]?.y ?? 0,
+        rotate: (i) => (CARD_STYLE[i]?.r ?? 0) + 11,
+        scale: 0.96,
+        autoAlpha: 0,
+        transformOrigin: "center bottom",
+      });
+      gsap.set(meterRef.current, { scaleX: 0, transformOrigin: "left center" });
 
-  // Show active + 3 behind it
-  const stack = [0, 1, 2, 3].map((o) => ({
-    review: REVIEWS[mod(idx + o, REVIEWS.length)],
-    layer: o,
-    key: mod(idx + o, REVIEWS.length),
-  }));
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: "+=430%",
+          pin: true,
+          scrub: 0.75,
+          anticipatePin: 1,
+          onUpdate: (self) => gsap.set(meterRef.current, { scaleX: self.progress }),
+        },
+      });
+
+      tl.to(headlineRef.current, { y: 0, autoAlpha: 1, duration: 0.12, ease: "power2.out" }, 0);
+
+      cards.forEach((card, i) => {
+        const style = CARD_STYLE[i] ?? { x: 0, y: 0, r: 0 };
+        const enterAt = 0.08 + i * 0.07;
+        tl.to(
+          card,
+          {
+            xPercent: 0,
+            x: style.x,
+            y: style.y,
+            rotate: style.r,
+            scale: 1,
+            autoAlpha: 1,
+            duration: 0.18,
+            ease: "back.out(1.15)",
+          },
+          enterAt,
+        );
+        tl.to(
+          card,
+          {
+            x: style.x - 16 + (i % 3) * 14,
+            y: style.y - 18,
+            rotate: style.r - 1.5,
+            duration: 0.16,
+            ease: "none",
+          },
+          enterAt + 0.2,
+        );
+      });
+
+      tl.to(cards, { xPercent: -120, rotate: (i) => (CARD_STYLE[i]?.r ?? 0) - 8, stagger: 0.025, duration: 0.2, ease: "power2.in" }, 0.82);
+    }, section);
+
+    return () => {
+      window.__lenis?.off("scroll", sync);
+      ctx.revert();
+    };
+  }, []);
 
   return (
     <section
+      ref={sectionRef}
       id="testimonials"
+      aria-label="Client reviews"
       style={{
-        background: "#1A1A14",
-        padding: "7rem 1.5rem",
         position: "relative",
+        minHeight: "100svh",
         overflow: "hidden",
+        background: "#1A1A14",
+        color: "#FAF8F4",
       }}
     >
-      {/* Ambient gold glow */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          inset: 0,
+          background:
+            "linear-gradient(90deg, rgba(250,248,244,0.06) 1px, transparent 1px), linear-gradient(180deg, rgba(250,248,244,0.04) 1px, transparent 1px)",
+          backgroundSize: "72px 72px",
+          opacity: 0.25,
+        }}
+      />
+      <div
+        ref={headlineRef}
+        style={{
+          position: "absolute",
+          left: "50%",
+          top: "8vh",
+          zIndex: 2,
+          width: "min(1400px, calc(100vw - 3rem))",
+          transform: "translateX(-50%)",
+          willChange: "opacity, transform",
+        }}
+      >
+        <p
+          style={{
+            margin: "0 0 1rem",
+            fontFamily: "'DM Sans','Inter',sans-serif",
+            fontSize: "0.68rem",
+            color: "#C4955A",
+            textTransform: "uppercase",
+            letterSpacing: "0.32em",
+          }}
+        >
+          Client Words
+        </p>
+        <h2
+          style={{
+            margin: 0,
+            fontFamily: "'Cormorant Garamond','Cormorant',serif",
+            fontWeight: 300,
+            fontSize: "clamp(3rem, 8vw, 8rem)",
+            lineHeight: 0.88,
+            color: "#FAF8F4",
+          }}
+        >
+          What they say.
+        </h2>
+      </div>
+
+      <div
+        ref={railRef}
+        style={{
+          position: "absolute",
+          left: "50%",
+          top: "52%",
+          zIndex: 3,
+          width: "min(1380px, 96vw)",
+          height: "min(58vh, 520px)",
+          transform: "translate(-50%, -45%)",
+          perspective: 1400,
+        }}
+      >
+        <div
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            left: "-5%",
+            right: "-5%",
+            top: "47%",
+            height: "34%",
+            background: "#FAF8F4",
+            transform: "rotate(-2deg)",
+            opacity: 0.1,
+          }}
+        />
+        {repeatedReviews.map((review, i) => (
+          <ReviewCard
+            key={review.name}
+            review={review}
+            index={i}
+            refCallback={(el) => {
+              if (el) cardsRef.current[i] = el;
+            }}
+          />
+        ))}
+      </div>
+
       <div
         style={{
           position: "absolute",
-          top: "50%",
-          left: "50%",
-          width: 700,
-          height: 700,
-          transform: "translate(-50%, -50%)",
-          background: "radial-gradient(circle, rgba(196,149,90,0.08) 0%, transparent 60%)",
-          pointerEvents: "none",
+          left: "1.5rem",
+          right: "1.5rem",
+          bottom: "1.4rem",
+          zIndex: 5,
+          display: "grid",
+          gridTemplateColumns: "minmax(0,1fr) auto",
+          alignItems: "center",
+          gap: "1rem",
         }}
-      />
-
-      <div style={{ maxWidth: 1400, margin: "0 auto", position: "relative" }}>
-        {/* Header */}
-        <div style={{ textAlign: "center", marginBottom: "4.5rem" }}>
-          <div
-            style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: "0.68rem",
-              color: "#C4955A",
-              textTransform: "uppercase",
-              letterSpacing: "0.32em",
-              marginBottom: "1.25rem",
-            }}
-          >
-            Client Words
-          </div>
-          <h2
-            style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontWeight: 300,
-              fontSize: "clamp(2.5rem, 6vw, 4.5rem)",
-              color: "#FAF8F4",
-              margin: 0,
-              lineHeight: 1.05,
-            }}
-          >
-            What they say.
-          </h2>
-          <p
-            style={{
-              marginTop: "1rem",
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: "0.85rem",
-              color: "#8a7355",
-              letterSpacing: "0.04em",
-            }}
-          >
-            Drag the card · or use the arrows
-          </p>
+      >
+        <div style={{ height: 1, background: "rgba(196,149,90,0.25)", overflow: "hidden" }}>
+          <div ref={meterRef} style={{ width: "100%", height: "100%", background: "#C4955A" }} />
         </div>
-
-        {/* Card stack */}
-        <div
-          onMouseEnter={() => setPaused(true)}
-          onMouseLeave={() => setPaused(false)}
+        <span
           style={{
-            position: "relative",
-            height: 460,
-            maxWidth: 560,
-            margin: "0 auto",
-            perspective: 1200,
+            fontFamily: "'DM Sans','Inter',sans-serif",
+            fontSize: "0.68rem",
+            letterSpacing: "0.22em",
+            textTransform: "uppercase",
+            color: "#8a7355",
+            whiteSpace: "nowrap",
           }}
         >
-          {stack
-            .slice()
-            .reverse() /* render back-to-front */
-            .map(({ review, layer, key }) => {
-              const isActive = layer === 0;
-              const tilt = TILTS[key % TILTS.length];
-
-              const backStyle = {
-                scale: 1 - layer * 0.05,
-                y: layer * 18,
-                rotate: tilt * (1 - layer * 0.3),
-                opacity: layer === 0 ? 1 : 0.55 - layer * 0.12,
-              };
-
-              return (
-                <motion.div
-                  key={key}
-                  initial={
-                    isActive
-                      ? { x: direction * 320, rotate: direction * 15, opacity: 0, scale: 0.9 }
-                      : backStyle
-                  }
-                  animate={backStyle}
-                  exit={{ x: -direction * 320, rotate: -direction * 15, opacity: 0 }}
-                  transition={{ type: "spring", stiffness: 220, damping: 26 }}
-                  drag={isActive ? "x" : false}
-                  dragConstraints={{ left: 0, right: 0 }}
-                  dragElastic={0.7}
-                  onDragEnd={isActive ? handleDragEnd : undefined}
-                  whileDrag={isActive ? { cursor: "grabbing", scale: 1.02 } : undefined}
-                  style={{
-                    position: "absolute",
-                    inset: 0,
-                    zIndex: 10 - layer,
-                    cursor: isActive ? "grab" : "default",
-                    transformOrigin: "center bottom",
-                  }}
-                >
-                  <Polaroid review={review} />
-                </motion.div>
-              );
-            })}
-        </div>
-
-        {/* Nav */}
-        <div
-          style={{
-            marginTop: "3rem",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "1.5rem",
-          }}
-        >
-          <ArrowBtn dir="prev" onClick={goPrev} />
-          <div
-            style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: "0.8rem",
-              color: "#8a7355",
-              letterSpacing: "0.15em",
-              minWidth: 70,
-              textAlign: "center",
-            }}
-          >
-            {String(idx + 1).padStart(2, "0")} / {String(REVIEWS.length).padStart(2, "0")}
-          </div>
-          <ArrowBtn dir="next" onClick={goNext} />
-        </div>
+          09 Google reviews
+        </span>
       </div>
     </section>
   );
 }
 
-/* ---------- Polaroid card ---------- */
-
-function Polaroid({ review }: { review: Review }) {
+function ReviewCard({ review, index, refCallback }: { review: Review; index: number; refCallback: (el: HTMLAnchorElement | null) => void }) {
   return (
-    <div
+    <a
+      ref={refCallback}
+      href={GOOGLE_REVIEWS_URL}
+      target="_blank"
+      rel="noreferrer"
+      aria-label={`Read ${review.name}'s Google review`}
       style={{
-        width: "100%",
-        height: "100%",
-        background: "#FAF8F4",
-        border: "1px solid #E8E2D9",
-        borderRadius: 6,
-        padding: "2.5rem 2.25rem 1.5rem",
+        position: "absolute",
+        left: `calc(${7 + index * 9.8}% - 80px)`,
+        top: index % 2 === 0 ? "18%" : "9%",
+        width: "clamp(190px, 18vw, 292px)",
+        minHeight: "clamp(310px, 39vh, 430px)",
         display: "flex",
         flexDirection: "column",
-        boxShadow:
-          "0 30px 60px -20px rgba(0,0,0,0.55), 0 10px 25px -10px rgba(0,0,0,0.4)",
+        justifyContent: "space-between",
+        padding: "1.3rem 1.1rem 1rem",
+        borderRadius: 22,
+        border: "4px solid #FAF8F4",
+        background: index % 3 === 0 ? "#C4955A" : "#FAF8F4",
+        color: index % 3 === 0 ? "#1A1A14" : "#1A1A14",
+        textDecoration: "none",
+        boxShadow: "0 34px 70px rgba(0,0,0,0.45)",
+        willChange: "opacity, transform",
+        overflow: "hidden",
       }}
     >
-      {/* Tape strip */}
       <div
+        aria-hidden="true"
         style={{
           position: "absolute",
-          top: -12,
-          left: "50%",
-          transform: "translateX(-50%) rotate(-2deg)",
-          width: 90,
-          height: 22,
-          background: "rgba(196,149,90,0.35)",
-          backdropFilter: "blur(2px)",
-          border: "1px solid rgba(196,149,90,0.4)",
+          inset: 0,
+          opacity: index % 3 === 0 ? 0.09 : 0.05,
+          background: "repeating-linear-gradient(-45deg, #1A1A14 0 1px, transparent 1px 11px)",
         }}
       />
-
-      {/* Stars */}
-      <div style={{ display: "flex", gap: 4, color: "#C4955A", fontSize: "1.1rem" }}>
-        {"★★★★★".split("").map((s, i) => (
-          <span key={i}>{s}</span>
-        ))}
-      </div>
-
-      {/* Quote */}
-      <p
-        style={{
-          fontFamily: "'Cormorant Garamond', serif",
-          fontStyle: "italic",
-          fontWeight: 400,
-          fontSize: "clamp(1.25rem, 2.2vw, 1.6rem)",
-          lineHeight: 1.45,
-          color: "#1A1A14",
-          margin: "1.5rem 0",
-          flex: 1,
-        }}
-      >
-        &ldquo;{review.quote}&rdquo;
-      </p>
-
-      {/* Divider */}
-      <div style={{ height: 1, background: "#E8E2D9", marginBottom: "1.25rem" }} />
-
-      {/* Footer */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "flex-end",
-          justifyContent: "space-between",
-          gap: "1rem",
-        }}
-      >
-        <div style={{ minWidth: 0 }}>
-          <div
+      <div style={{ position: "relative" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.75rem" }}>
+          <span
             style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontWeight: 600,
-              fontSize: "0.95rem",
-              color: "#1A1A14",
-              letterSpacing: "0.01em",
+              height: 38,
+              width: 38,
+              flex: "0 0 auto",
+              display: "grid",
+              placeItems: "center",
+              borderRadius: "50%",
+              background: "#1A1A14",
+              color: "#C4955A",
+              fontFamily: "'DM Sans','Inter',sans-serif",
+              fontSize: "0.76rem",
+              fontWeight: 700,
             }}
           >
-            {review.name}
-          </div>
-          <div
-            style={{
-              marginTop: 4,
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: "0.72rem",
-              color: "#8a7355",
-              textTransform: "uppercase",
-              letterSpacing: "0.18em",
-            }}
-          >
-            {review.type} · {review.location}
-          </div>
+            {review.name
+              .split(" ")
+              .slice(0, 2)
+              .map((n) => n[0])
+              .join("")}
+          </span>
+          <span style={{ color: "#1A1A14", fontSize: "0.92rem", letterSpacing: "0.02em" }}>★★★★★</span>
         </div>
-
-        <a
-          href={GOOGLE_REVIEWS_URL}
-          target="_blank"
-          rel="noreferrer"
-          onPointerDown={(e) => e.stopPropagation()}
+        <p
           style={{
-            fontFamily: "'DM Sans', sans-serif",
-            fontSize: "0.7rem",
-            color: "#C4955A",
-            textTransform: "uppercase",
-            letterSpacing: "0.18em",
-            textDecoration: "none",
-            whiteSpace: "nowrap",
-            borderBottom: "1px solid #C4955A",
-            paddingBottom: 2,
+            margin: "1.4rem 0 0",
+            fontFamily: "'Cormorant Garamond','Cormorant',serif",
+            fontStyle: "italic",
+            fontWeight: 500,
+            fontSize: "clamp(1.15rem, 1.7vw, 1.5rem)",
+            lineHeight: 1.2,
           }}
         >
-          View on Google →
-        </a>
+          “{review.quote}”
+        </p>
       </div>
-    </div>
+      <div style={{ position: "relative" }}>
+        <div style={{ height: 1, background: "rgba(26,26,20,0.18)", marginBottom: "0.9rem" }} />
+        <strong
+          style={{
+            display: "block",
+            fontFamily: "'DM Sans','Inter',sans-serif",
+            fontSize: "0.86rem",
+            lineHeight: 1.15,
+          }}
+        >
+          {review.name}
+        </strong>
+        <span
+          style={{
+            display: "block",
+            marginTop: 5,
+            fontFamily: "'DM Sans','Inter',sans-serif",
+            fontSize: "0.58rem",
+            letterSpacing: "0.18em",
+            textTransform: "uppercase",
+            opacity: 0.72,
+          }}
+        >
+          {review.type} · {review.location}
+        </span>
+      </div>
+    </a>
   );
 }
-
-/* ---------- Arrow button ---------- */
-
-function ArrowBtn({ dir, onClick }: { dir: "prev" | "next"; onClick: () => void }) {
-  return (
-    <button
-      onClick={onClick}
-      aria-label={dir === "prev" ? "Previous" : "Next"}
-      style={{
-        width: 44,
-        height: 44,
-        borderRadius: "50%",
-        border: "1px solid #C4955A",
-        background: "transparent",
-        color: "#C4955A",
-        cursor: "pointer",
-        display: "grid",
-        placeItems: "center",
-        transition: "background 0.2s, transform 0.2s",
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.background = "rgba(196,149,90,0.12)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.background = "transparent";
-      }}
-    >
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-        {dir === "prev" ? (
-          <path d="M9 2L4 7L9 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        ) : (
-          <path d="M5 2L10 7L5 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        )}
-      </svg>
-    </button>
-  );
-}
-
-// AnimatePresence reserved for future exit transitions
-export const _ap = AnimatePresence;
