@@ -51,12 +51,12 @@ export function HeroWalk() {
         },
       });
 
-      tl.to(frameRef.current, { scale: 1.08, ease: "none" }, 0);
-      tl.to(introRef.current, { autoAlpha: 0, y: -48, scale: 0.96, ease: "power1.out" }, 0.1);
+      tl.to(frameRef.current, { scale: 1.08, ease: "none", duration: 1 }, 0);
+      tl.to(introRef.current, { autoAlpha: 0, y: -70, scale: 0.94, duration: 0.08, ease: "power2.in" }, 0.055);
       chapterRefs.current.forEach((chapter, i) => {
-        const at = 0.18 + i * 0.18;
-        tl.to(chapter, { autoAlpha: 1, y: 0, scale: 1, ease: "power2.out" }, at);
-        tl.to(chapter, { autoAlpha: 0, y: -36, scale: 1.04, ease: "power2.in" }, at + 0.12);
+        const at = 0.16 + i * 0.18;
+        tl.to(chapter, { autoAlpha: 1, y: 0, scale: 1, duration: 0.09, ease: "power2.out" }, at);
+        tl.to(chapter, { autoAlpha: 0, y: -44, scale: 1.04, duration: 0.08, ease: "power2.in" }, at + 0.12);
       });
     }, section);
 
