@@ -3,6 +3,7 @@ import { Nav } from "@/components/site/Nav";
 import { HeroWalk } from "@/components/site/HeroWalk";
 import { TrustBar } from "@/components/site/TrustBar";
 import { EmotionalBridge } from "@/components/site/EmotionalBridge";
+import { StudioLaunch } from "@/components/site/StudioLaunch";
 import { SelectedWork } from "@/components/site/SelectedWork";
 import { Process } from "@/components/site/Process";
 import { Services } from "@/components/site/Services";
@@ -37,6 +38,7 @@ function Index() {
       <HeroWalk />
       <TrustBar />
       <EmotionalBridge />
+      <StudioLaunch />
       <SelectedWork />
       <Process />
       <Services />
