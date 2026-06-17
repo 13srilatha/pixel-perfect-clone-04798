@@ -26,7 +26,11 @@ const REVIEWS: Review[] = [
 
 const GOOGLE_REVIEWS_URL = "https://www.google.com/search?q=Terra+Space+Studio+Hyderabad+reviews";
 
-const BG_IMAGES = ["/images/terra-review-exterior.png", "/images/terra-review-interior.png", "/images/terra-review-light.png"];
+const BG_IMAGES = [
+  "/__l5e/assets-v1/f11ec85c-5cd6-4d2f-b7b3-2accf4dfce99/terra-review-exterior.png",
+  "/__l5e/assets-v1/5eae488c-5e18-4b70-be8d-58239f148568/terra-review-interior.png",
+  "/__l5e/assets-v1/d936c36b-a0fd-4fef-80e7-7c543efb32bd/terra-review-light.png",
+];
 const CARD_POSITIONS = [
   { x: -430, y: -128, r: -8 },
   { x: -220, y: 88, r: 5 },
@@ -107,7 +111,7 @@ export function StackedTestimonials() {
       <div style={{ position: "sticky", top: 0, minHeight: "100svh", overflow: "hidden" }}>
         <video
           ref={mediaRef}
-          src="/videos/client-words.mp4"
+          src="/__l5e/assets-v1/5d2bf09f-683f-410c-93f3-dfec6d49e67f/client-words.mp4"
           muted
           loop
           playsInline

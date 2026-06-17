@@ -11,13 +11,13 @@ const SERVICES = [
     num: "01",
     title: "Residential",
     line: "Homes planned around privacy, light, family routines, and long-term comfort.",
-    image: "/images/terra-review-exterior.png",
+    image: "/__l5e/assets-v1/f11ec85c-5cd6-4d2f-b7b3-2accf4dfce99/terra-review-exterior.png",
   },
   {
     num: "02",
     title: "Interior Design",
     line: "Warm, refined rooms shaped through material palettes, joinery, lighting, and detail.",
-    image: "/images/terra-review-interior.png",
+    image: "/__l5e/assets-v1/5eae488c-5e18-4b70-be8d-58239f148568/terra-review-interior.png",
   },
   {
     num: "03",

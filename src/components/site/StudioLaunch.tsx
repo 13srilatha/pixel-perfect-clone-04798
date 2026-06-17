@@ -79,7 +79,7 @@ export function StudioLaunch() {
         >
           <video
             ref={videoRef}
-            src="/videos/studio-launch.mp4"
+            src="/__l5e/assets-v1/d54fb526-aea1-4340-8dc2-324e44c5394c/studio-launch.mp4"
             muted
             loop
             playsInline

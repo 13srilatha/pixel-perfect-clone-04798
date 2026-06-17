@@ -4,7 +4,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const HERO_VIDEO_URL = "/videos/hero-walk-clean.mp4";
+const HERO_VIDEO_URL = "/__l5e/assets-v1/0d750651-aed7-4dec-bfd0-9d3bd9f0ca3b/hero-walk-clean.mp4";
 const HERO_POSTER_URL = "/__l5e/assets-v1/7b454854-cb0a-4e0f-ba2e-d21b598025ec/terra-hero-poster.jpg";
 
 const NOTES = [
