@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import type { CSSProperties } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { projects } from "@/data/projects";
@@ -105,7 +106,7 @@ export function SelectedWork() {
         style={{ position: "relative", overflow: "hidden", background: "#FAF8F4", padding: "7rem 1.5rem" }}
       >
         <div style={{ maxWidth: 1400, margin: "0 auto" }}>
-          <header style={{ display: "grid", gridTemplateColumns: "minmax(0, 0.95fr) minmax(260px, 0.55fr)", gap: "2rem", alignItems: "end", marginBottom: "3.5rem" }}>
+          <header style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 320px), 1fr))", gap: "2rem", alignItems: "end", marginBottom: "3.5rem" }}>
             <div>
               <p style={eyebrowStyle}>What We Do</p>
               <h2 style={headlineStyle}>From concept to completion.</h2>
@@ -115,7 +116,7 @@ export function SelectedWork() {
             </p>
           </header>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", minHeight: 560, borderTop: "1px solid #E8E2D9", borderLeft: "1px solid #E8E2D9" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 260px), 1fr))", minHeight: 560, borderTop: "1px solid #E8E2D9", borderLeft: "1px solid #E8E2D9" }}>
             {SERVICES.map((service, index) => (
               <div
                 key={service.title}
@@ -149,7 +150,7 @@ export function SelectedWork() {
             <h2 style={{ ...headlineStyle, color: "#FAF8F4" }}>Spaces that feel lived-in before they are lived in.</h2>
           </header>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(230px, 1fr))", gap: "1.2rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 240px), 1fr))", gap: "1.2rem" }}>
             {FEATURED.map(({ project, emotion }, index) => (
               <article
                 key={project.id}
@@ -176,7 +177,7 @@ export function SelectedWork() {
   );
 }
 
-const eyebrowStyle: React.CSSProperties = {
+const eyebrowStyle: CSSProperties = {
   margin: "0 0 0.9rem",
   fontFamily: "'DM Sans','Inter',sans-serif",
   fontSize: "0.68rem",
@@ -185,7 +186,7 @@ const eyebrowStyle: React.CSSProperties = {
   color: "#C4955A",
 };
 
-const headlineStyle: React.CSSProperties = {
+const headlineStyle: CSSProperties = {
   margin: 0,
   fontFamily: "'Cormorant Garamond','Cormorant',serif",
   fontWeight: 300,
