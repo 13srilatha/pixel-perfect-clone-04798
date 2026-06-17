@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useRef } from "react";
+import type { CSSProperties } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -25,26 +26,29 @@ const REVIEWS: Review[] = [
 
 const GOOGLE_REVIEWS_URL = "https://www.google.com/search?q=Terra+Space+Studio+Hyderabad+reviews";
 
-const CARD_STYLE = [
-  { x: -44, y: -18, r: -7 },
-  { x: -22, y: 26, r: 4 },
-  { x: 8, y: -30, r: -2 },
-  { x: 36, y: 20, r: 7 },
-  { x: -12, y: 48, r: -5 },
-  { x: 58, y: -8, r: 3 },
-  { x: -54, y: 34, r: 6 },
-  { x: 26, y: 52, r: -4 },
-  { x: 0, y: 0, r: 2 },
+const BG_IMAGES = [
+  "/__l5e/assets-v1/f11ec85c-5cd6-4d2f-b7b3-2accf4dfce99/terra-review-exterior.png",
+  "/__l5e/assets-v1/5eae488c-5e18-4b70-be8d-58239f148568/terra-review-interior.png",
+  "/__l5e/assets-v1/d936c36b-a0fd-4fef-80e7-7c543efb32bd/terra-review-light.png",
+];
+const CARD_POSITIONS = [
+  { x: -430, y: -128, r: -8 },
+  { x: -220, y: 88, r: 5 },
+  { x: -28, y: -82, r: -3 },
+  { x: 176, y: 122, r: 7 },
+  { x: 382, y: -58, r: -5 },
+  { x: -330, y: 206, r: 4 },
+  { x: -92, y: 212, r: -6 },
+  { x: 142, y: -188, r: 3 },
+  { x: 352, y: 198, r: 6 },
 ];
 
 export function StackedTestimonials() {
   const sectionRef = useRef<HTMLElement>(null);
-  const railRef = useRef<HTMLDivElement>(null);
+  const copyRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLAnchorElement[]>([]);
+  const mediaRef = useRef<HTMLVideoElement>(null);
   const meterRef = useRef<HTMLDivElement>(null);
-  const headlineRef = useRef<HTMLDivElement>(null);
-
-  const repeatedReviews = useMemo(() => REVIEWS, []);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -55,62 +59,40 @@ export function StackedTestimonials() {
     window.__lenis?.on("scroll", sync);
 
     const ctx = gsap.context(() => {
-      gsap.set(headlineRef.current, { y: 70, autoAlpha: 0 });
+      gsap.set(copyRef.current, { autoAlpha: 0, y: 34 });
       gsap.set(cards, {
-        xPercent: 145,
-        y: (i) => CARD_STYLE[i]?.y ?? 0,
-        rotate: (i) => (CARD_STYLE[i]?.r ?? 0) + 11,
-        scale: 0.96,
+        x: 0,
+        y: 0,
+        rotate: 0,
+        scale: 0.82,
         autoAlpha: 0,
-        transformOrigin: "center bottom",
+        transformOrigin: "center center",
       });
       gsap.set(meterRef.current, { scaleX: 0, transformOrigin: "left center" });
 
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: section,
-          start: "top top",
-          end: "+=430%",
-          pin: true,
-          scrub: 0.75,
-          anticipatePin: 1,
+          start: "top 82%",
+          end: "bottom 55%",
+          scrub: 0.9,
+          onEnter: () => mediaRef.current?.play().catch(() => {}),
+          onEnterBack: () => mediaRef.current?.play().catch(() => {}),
+          onLeave: () => mediaRef.current?.pause(),
+          onLeaveBack: () => mediaRef.current?.pause(),
           onUpdate: (self) => gsap.set(meterRef.current, { scaleX: self.progress }),
         },
       });
 
-      tl.to(headlineRef.current, { y: 0, autoAlpha: 1, duration: 0.12, ease: "power2.out" }, 0);
-
-      cards.forEach((card, i) => {
-        const style = CARD_STYLE[i] ?? { x: 0, y: 0, r: 0 };
-        const enterAt = 0.08 + i * 0.07;
+      tl.to(copyRef.current, { autoAlpha: 1, y: 0, duration: 0.22, ease: "power2.out" }, 0);
+      cards.forEach((card, index) => {
+        const pos = CARD_POSITIONS[index] ?? { x: 0, y: 0, r: 0 };
         tl.to(
           card,
-          {
-            xPercent: 0,
-            x: style.x,
-            y: style.y,
-            rotate: style.r,
-            scale: 1,
-            autoAlpha: 1,
-            duration: 0.18,
-            ease: "back.out(1.15)",
-          },
-          enterAt,
-        );
-        tl.to(
-          card,
-          {
-            x: style.x - 16 + (i % 3) * 14,
-            y: style.y - 18,
-            rotate: style.r - 1.5,
-            duration: 0.16,
-            ease: "none",
-          },
-          enterAt + 0.2,
+          { autoAlpha: 1, x: pos.x, y: pos.y, rotate: pos.r, scale: 1, duration: 0.34, ease: "power3.out" },
+          0.08 + index * 0.045,
         );
       });
-
-      tl.to(cards, { xPercent: -120, rotate: (i) => (CARD_STYLE[i]?.r ?? 0) - 8, stagger: 0.025, duration: 0.2, ease: "power2.in" }, 0.82);
     }, section);
 
     return () => {
@@ -124,129 +106,53 @@ export function StackedTestimonials() {
       ref={sectionRef}
       id="testimonials"
       aria-label="Client reviews"
-      style={{
-        position: "relative",
-        minHeight: "100svh",
-        overflow: "hidden",
-        background: "#1A1A14",
-        color: "#FAF8F4",
-      }}
+      style={{ position: "relative", minHeight: "145svh", overflow: "hidden", background: "#1A1A14", color: "#FAF8F4" }}
     >
-      <div
-        aria-hidden="true"
-        style={{
-          position: "absolute",
-          inset: 0,
-          background:
-            "linear-gradient(90deg, rgba(250,248,244,0.06) 1px, transparent 1px), linear-gradient(180deg, rgba(250,248,244,0.04) 1px, transparent 1px)",
-          backgroundSize: "72px 72px",
-          opacity: 0.25,
-        }}
-      />
-      <div
-        ref={headlineRef}
-        style={{
-          position: "absolute",
-          left: "50%",
-          top: "8vh",
-          zIndex: 2,
-          width: "min(1400px, calc(100vw - 3rem))",
-          transform: "translateX(-50%)",
-          willChange: "opacity, transform",
-        }}
-      >
-        <p
-          style={{
-            margin: "0 0 1rem",
-            fontFamily: "'DM Sans','Inter',sans-serif",
-            fontSize: "0.68rem",
-            color: "#C4955A",
-            textTransform: "uppercase",
-            letterSpacing: "0.32em",
-          }}
-        >
-          Client Words
-        </p>
-        <h2
-          style={{
-            margin: 0,
-            fontFamily: "'Cormorant Garamond','Cormorant',serif",
-            fontWeight: 300,
-            fontSize: "clamp(3rem, 8vw, 8rem)",
-            lineHeight: 0.88,
-            color: "#FAF8F4",
-          }}
-        >
-          What they say.
-        </h2>
-      </div>
-
-      <div
-        ref={railRef}
-        style={{
-          position: "absolute",
-          left: "50%",
-          top: "52%",
-          zIndex: 3,
-          width: "min(1380px, 96vw)",
-          height: "min(58vh, 520px)",
-          transform: "translate(-50%, -45%)",
-          perspective: 1400,
-        }}
-      >
-        <div
+      <div style={{ position: "sticky", top: 0, minHeight: "100svh", overflow: "hidden" }}>
+        <video
+          ref={mediaRef}
+          src="/__l5e/assets-v1/5d2bf09f-683f-410c-93f3-dfec6d49e67f/client-words.mp4"
+          muted
+          loop
+          playsInline
+          preload="metadata"
           aria-hidden="true"
-          style={{
-            position: "absolute",
-            left: "-5%",
-            right: "-5%",
-            top: "47%",
-            height: "34%",
-            background: "#FAF8F4",
-            transform: "rotate(-2deg)",
-            opacity: 0.1,
-          }}
+          style={{ position: "absolute", right: "min(5vw, 5rem)", top: "50%", width: "min(27vw, 320px)", height: "min(58vh, 620px)", objectFit: "cover", transform: "translateY(-50%)", opacity: 0.42, filter: "saturate(0.75)", border: "1px solid rgba(196,149,90,0.3)" }}
         />
-        {repeatedReviews.map((review, i) => (
-          <ReviewCard
-            key={review.name}
-            review={review}
-            index={i}
-            refCallback={(el) => {
-              if (el) cardsRef.current[i] = el;
-            }}
-          />
-        ))}
-      </div>
+        <div aria-hidden="true" style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, #1A1A14 0%, rgba(26,26,20,0.9) 45%, rgba(26,26,20,0.72) 100%)" }} />
 
-      <div
-        style={{
-          position: "absolute",
-          left: "1.5rem",
-          right: "1.5rem",
-          bottom: "1.4rem",
-          zIndex: 5,
-          display: "grid",
-          gridTemplateColumns: "minmax(0,1fr) auto",
-          alignItems: "center",
-          gap: "1rem",
-        }}
-      >
-        <div style={{ height: 1, background: "rgba(196,149,90,0.25)", overflow: "hidden" }}>
-          <div ref={meterRef} style={{ width: "100%", height: "100%", background: "#C4955A" }} />
+        <div ref={copyRef} style={{ position: "absolute", zIndex: 3, left: "max(1.5rem, 7vw)", top: "12vh", width: "min(39rem, calc(100vw - 3rem))" }}>
+          <p style={eyebrowStyle}>Client Words</p>
+          <h2 style={headlineStyle}>Proof, without performance.</h2>
+          <p style={{ margin: "1.1rem 0 0", maxWidth: "34rem", fontFamily: "'DM Sans','Inter',sans-serif", fontSize: "1rem", lineHeight: 1.85, color: "rgba(250,248,244,0.72)" }}>
+            These are a few real client notes. More will keep coming, so the cards stay curated — and the full Google review page stays one click away.
+          </p>
+          <a href={GOOGLE_REVIEWS_URL} target="_blank" rel="noreferrer" style={{ display: "inline-flex", marginTop: "1.4rem", color: "#C4955A", fontFamily: "'DM Sans','Inter',sans-serif", fontSize: "0.72rem", letterSpacing: "0.22em", textTransform: "uppercase", textDecoration: "none", borderBottom: "1px solid rgba(196,149,90,0.42)", paddingBottom: "0.28rem" }}>
+            Read all Google reviews →
+          </a>
         </div>
-        <span
-          style={{
-            fontFamily: "'DM Sans','Inter',sans-serif",
-            fontSize: "0.68rem",
-            letterSpacing: "0.22em",
-            textTransform: "uppercase",
-            color: "#8a7355",
-            whiteSpace: "nowrap",
-          }}
-        >
-          09 Google reviews
-        </span>
+
+        <div style={{ position: "absolute", left: "50%", top: "58%", zIndex: 4, width: 1, height: 1, perspective: 1200 }}>
+          {REVIEWS.map((review, index) => (
+            <ReviewCard
+              key={review.name}
+              review={review}
+              index={index}
+              refCallback={(el) => {
+                if (el) cardsRef.current[index] = el;
+              }}
+            />
+          ))}
+        </div>
+
+        <div style={{ position: "absolute", left: "1.5rem", right: "1.5rem", bottom: "1.4rem", zIndex: 5, display: "grid", gridTemplateColumns: "minmax(0,1fr) auto", alignItems: "center", gap: "1rem" }}>
+          <div style={{ height: 1, background: "rgba(196,149,90,0.25)", overflow: "hidden" }}>
+            <div ref={meterRef} style={{ width: "100%", height: "100%", background: "#C4955A" }} />
+          </div>
+          <span style={{ fontFamily: "'DM Sans','Inter',sans-serif", fontSize: "0.68rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "#8a7355", whiteSpace: "nowrap" }}>
+            09 Google reviews
+          </span>
+        </div>
       </div>
     </section>
   );
@@ -262,97 +168,60 @@ function ReviewCard({ review, index, refCallback }: { review: Review; index: num
       aria-label={`Read ${review.name}'s Google review`}
       style={{
         position: "absolute",
-        left: `calc(${7 + index * 9.8}% - 80px)`,
-        top: index % 2 === 0 ? "18%" : "9%",
-        width: "clamp(190px, 18vw, 292px)",
-        minHeight: "clamp(310px, 39vh, 430px)",
+        left: "50%",
+        top: "50%",
+        width: "clamp(190px, 18vw, 275px)",
+        minHeight: "clamp(285px, 36vh, 390px)",
+        marginLeft: "clamp(-137px, -9vw, -95px)",
+        marginTop: "clamp(-195px, -18vh, -142px)",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        padding: "1.3rem 1.1rem 1rem",
-        borderRadius: 22,
-        border: "4px solid #FAF8F4",
-        background: index % 3 === 0 ? "#C4955A" : "#FAF8F4",
-        color: index % 3 === 0 ? "#1A1A14" : "#1A1A14",
+        padding: "0.72rem 0.72rem 1rem",
+        background: index % 4 === 0 ? "#C4955A" : "#FAF8F4",
+        color: "#1A1A14",
         textDecoration: "none",
-        boxShadow: "0 34px 70px rgba(0,0,0,0.45)",
+        border: "1px solid rgba(232,226,217,0.8)",
+        boxShadow: "0 30px 70px rgba(0,0,0,0.38)",
         willChange: "opacity, transform",
-        overflow: "hidden",
       }}
     >
-      <div
-        aria-hidden="true"
-        style={{
-          position: "absolute",
-          inset: 0,
-          opacity: index % 3 === 0 ? 0.09 : 0.05,
-          background: "repeating-linear-gradient(-45deg, #1A1A14 0 1px, transparent 1px 11px)",
-        }}
-      />
-      <div style={{ position: "relative" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.75rem" }}>
-          <span
-            style={{
-              height: 38,
-              width: 38,
-              flex: "0 0 auto",
-              display: "grid",
-              placeItems: "center",
-              borderRadius: "50%",
-              background: "#1A1A14",
-              color: "#C4955A",
-              fontFamily: "'DM Sans','Inter',sans-serif",
-              fontSize: "0.76rem",
-              fontWeight: 700,
-            }}
-          >
-            {review.name
-              .split(" ")
-              .slice(0, 2)
-              .map((n) => n[0])
-              .join("")}
-          </span>
-          <span style={{ color: "#1A1A14", fontSize: "0.92rem", letterSpacing: "0.02em" }}>★★★★★</span>
+      <div style={{ aspectRatio: "16/10", overflow: "hidden", marginBottom: "0.9rem", background: "#E8E2D9" }}>
+        <img src={BG_IMAGES[index % BG_IMAGES.length]} alt="Architecture and interior work by Terra Space Studio" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", filter: "saturate(0.88)" }} />
+      </div>
+      <div>
+        <div style={{ display: "flex", justifyContent: "space-between", gap: "0.8rem", alignItems: "center", marginBottom: "0.8rem" }}>
+          <span style={{ fontFamily: "'DM Sans','Inter',sans-serif", fontSize: "0.62rem", letterSpacing: "0.18em", textTransform: "uppercase", color: index % 4 === 0 ? "#1A1A14" : "#8a7355" }}>{review.type}</span>
+          <span style={{ color: "#C4955A", fontSize: "0.78rem", letterSpacing: "0.02em" }}>★★★★★</span>
         </div>
-        <p
-          style={{
-            margin: "1.4rem 0 0",
-            fontFamily: "'Cormorant Garamond','Cormorant',serif",
-            fontStyle: "italic",
-            fontWeight: 500,
-            fontSize: "clamp(1.15rem, 1.7vw, 1.5rem)",
-            lineHeight: 1.2,
-          }}
-        >
+        <p style={{ margin: 0, fontFamily: "'Cormorant Garamond','Cormorant',serif", fontStyle: "italic", fontSize: "clamp(1.05rem, 1.5vw, 1.35rem)", lineHeight: 1.18 }}>
           “{review.quote}”
         </p>
       </div>
-      <div style={{ position: "relative" }}>
-        <div style={{ height: 1, background: "rgba(26,26,20,0.18)", marginBottom: "0.9rem" }} />
-        <strong
-          style={{
-            display: "block",
-            fontFamily: "'DM Sans','Inter',sans-serif",
-            fontSize: "0.86rem",
-            lineHeight: 1.15,
-          }}
-        >
-          {review.name}
-        </strong>
-        <span
-          style={{
-            display: "block",
-            marginTop: 5,
-            fontFamily: "'DM Sans','Inter',sans-serif",
-            fontSize: "0.58rem",
-            letterSpacing: "0.18em",
-            textTransform: "uppercase",
-            opacity: 0.72,
-          }}
-        >
-          {review.type} · {review.location}
+      <div style={{ marginTop: "1rem", borderTop: "1px solid rgba(26,26,20,0.16)", paddingTop: "0.8rem" }}>
+        <strong style={{ display: "block", fontFamily: "'DM Sans','Inter',sans-serif", fontSize: "0.82rem", lineHeight: 1.15 }}>{review.name}</strong>
+        <span style={{ display: "block", marginTop: 5, fontFamily: "'DM Sans','Inter',sans-serif", fontSize: "0.58rem", letterSpacing: "0.18em", textTransform: "uppercase", opacity: 0.66 }}>
+          {review.location} · View on Google
         </span>
       </div>
     </a>
   );
 }
+
+const eyebrowStyle: CSSProperties = {
+  margin: "0 0 1rem",
+  fontFamily: "'DM Sans','Inter',sans-serif",
+  fontSize: "0.68rem",
+  color: "#C4955A",
+  textTransform: "uppercase",
+  letterSpacing: "0.32em",
+};
+
+const headlineStyle: CSSProperties = {
+  margin: 0,
+  fontFamily: "'Cormorant Garamond','Cormorant',serif",
+  fontWeight: 300,
+  fontSize: "clamp(3rem, 8vw, 8rem)",
+  lineHeight: 0.88,
+  color: "#FAF8F4",
+};
