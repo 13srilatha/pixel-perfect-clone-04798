@@ -1,16 +1,27 @@
 import portrait from "@/assets/architect-portrait.jpeg";
 import { Reveal } from "./Nav";
 
+/**
+ * Founder & Architect section.
+ * Copy adapted from the Terra Space Studio 2026 brochure — kept honest,
+ * understated, and trust-pouring. No over-claims.
+ */
 const founder = {
   name: "K. Vaasanthi",
   role: "Founder · Architect & Interior Designer",
-  credential: "B.Arch · COA Registered · 6+ years · 40+ projects",
-  para1:
-    "Every project begins with understanding how people live, feel, and experience a space. Not measurements. Not materials. People.",
-  para2:
-    "At Terra Space Studio, we approach design as a balance between functionality, warmth, and timeless simplicity — creating spaces that feel personal, refined, and deeply connected to everyday life.",
-  quote:
-    "From concept to execution, our focus remains on thoughtful detailing, honest materials, and meaningful spatial experiences. Every project. Every detail. Designed with intention.",
+  credential: "B.Arch · COA Registered · Hyderabad | Vijayawada",
+  paras: [
+    "Every project begins with understanding how people live, feel, and experience a space — not measurements, not materials. People.",
+    "At Terra Space Studio, design is a balance between functionality, warmth, and timeless simplicity. We create spaces that feel personal, refined, and deeply connected to everyday life.",
+    "From concept to execution, our focus remains on thoughtful detailing, honest materials, and meaningful spatial experiences.",
+  ],
+  quote: "Every project. Every detail. Designed with intention.",
+  pillars: [
+    { label: "Context",  text: "Site, climate and culture shape the first line on paper." },
+    { label: "Simplicity", text: "Forms and plans simplified until only the essential remains." },
+    { label: "Materiality", text: "Honest materials, natural textures, considered palettes." },
+    { label: "Detail", text: "Proportion and craft, decided early — held to until handover." },
+  ],
 };
 
 export function Architect() {
@@ -33,6 +44,7 @@ export function Architect() {
               />
               <p className="label mt-4 text-caramel">{founder.role}</p>
               <h3 className="font-display text-3xl font-light text-espresso md:text-4xl">{founder.name}</h3>
+              <p className="mt-2 text-sm text-brown/80">{founder.credential}</p>
             </div>
           </Reveal>
 
@@ -40,23 +52,29 @@ export function Architect() {
           <Reveal className="md:col-span-6 md:col-start-7" delay={150}>
             <p className="label mb-4 inline-flex items-center gap-3">
               <span className="h-px w-10 bg-caramel" />
-              The Architect
+              The Founder
             </p>
 
             <h2 className="display text-[clamp(2.25rem,5vw,4rem)] text-espresso">
               Behind every <em className="italic text-caramel">drawing</em>,
-              <br />a person.
+              <br />a person we listened to.
             </h2>
 
             <div className="mt-8 space-y-5 text-lg leading-relaxed text-brown">
-              <p>{founder.para1}</p>
-              <p>{founder.para2}</p>
+              {founder.paras.map((p, i) => <p key={i}>{p}</p>)}
             </div>
 
-            {/* Credentials — minimal */}
-            <p className="mt-8 text-sm text-caramel tracking-wide">{founder.credential}</p>
+            {/* Four pillars from the brochure */}
+            <ul className="mt-10 grid gap-5 sm:grid-cols-2">
+              {founder.pillars.map((p) => (
+                <li key={p.label} className="border-l border-caramel/40 pl-4">
+                  <p className="label text-caramel">{p.label}</p>
+                  <p className="mt-1 text-sm leading-relaxed text-brown">{p.text}</p>
+                </li>
+              ))}
+            </ul>
 
-            {/* The quote — this IS the story */}
+            {/* Closing line — direct quote */}
             <blockquote className="mt-10 border-l-2 border-caramel pl-6">
               <p className="font-display text-xl font-light italic leading-relaxed text-caramel md:text-2xl">
                 "{founder.quote}"
