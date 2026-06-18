@@ -2,7 +2,6 @@ import { useState } from "react";
 import type { ReactNode } from "react";
 import { studio } from "@/data/projects";
 import { Reveal } from "./Nav";
-import { supabase } from "@/integrations/supabase/client";
 
 const STUDIO_MAPS_DIRECTIONS =
   "https://www.google.com/maps/dir/?api=1&destination=Terra+Space+Studio,+Hyderabad";
@@ -145,19 +144,16 @@ function ContactForm() {
     e.preventDefault();
     setError(null);
     setSending(true);
-    const { error: insertError } = await supabase.from("contact_submissions").insert({
-      source: "contact_form",
-      name: name.trim() || null,
-      email: email.trim(),
-      project_type: project,
-      message: message.trim() || "(no message)",
-      recipient: "terraspacestudios07@gmail.com",
-    });
+    // Opens the visitor's email client with the enquiry pre-filled.
+    const subject = `New enquiry — ${project} — ${name || "Website"}`;
+    const body =
+      `Name: ${name}\n` +
+      `Email: ${email}\n` +
+      `Project type: ${project}\n\n` +
+      `Message:\n${message || "(no message)"}`;
+    window.location.href =
+      `mailto:${studio.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     setSending(false);
-    if (insertError) {
-      setError("Could not send right now. Please try again or email us directly.");
-      return;
-    }
     setSent(true);
     setName("");
     setEmail("");
