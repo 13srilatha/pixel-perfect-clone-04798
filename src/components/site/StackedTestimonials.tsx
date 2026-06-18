@@ -1,5 +1,16 @@
-import { useEffect, useRef } from "react";
-import type { CSSProperties } from "react";
+/**
+ * StackedTestimonials — GSAP pinned scroll. Cards fly in from centre,
+ * fan out, then sweep left. Headline stays fixed. "09 Google reviews" link
+ * at the bottom is permanent and clickable.
+ *
+ * FIXES vs current version:
+ * - Cards start at xPercent: 0 (centre) not 145 (right edge)
+ * - Grey diagonal overlay removed
+ * - Cards exit left cleanly, then section unpins naturally so next section follows
+ * - Headline + "See all on Google" always visible
+ * - Architecture context added via dark background + subtle grid texture
+ */
+import { useEffect, useMemo, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -10,89 +21,104 @@ type Review = {
   quote: string;
   type: string;
   location: string;
+  initials: string;
 };
 
 const REVIEWS: Review[] = [
-  { name: "Sai Kiran Galla", quote: "Outstanding experience. Exceptional professionalism, creativity, and attention to detail.", type: "Residential", location: "Hyderabad" },
-  { name: "Sharath Chandra", quote: "Innovative design approach and attention to detail. Highly professional and transparent.", type: "Interior Design", location: "Hyderabad" },
-  { name: "Sharath Dhoni", quote: "Knowledgeable, professional and dedicated to delivering quality work. They understand client needs well.", type: "Commercial", location: "Hyderabad" },
-  { name: "Naresh Chary M", quote: "Exceeded expectations. Creative concepts, practical advice, zero pushy sales tactics.", type: "Renovation", location: "Hyderabad" },
-  { name: "Praneeth Sai", quote: "Combines creativity, technical expertise and modern design concepts.", type: "Residential", location: "Jubilee Hills" },
-  { name: "Sai Charan Dandu", quote: "Excellent architecture firm.", type: "Architecture", location: "Hyderabad" },
-  { name: "Aniket Anand", quote: "Good design is one thing, but good communication is equally important. This firm delivered on both.", type: "Commercial", location: "Hyderabad" },
-  { name: "Nikhitha Sabbani", quote: "They cleared all my doubts and I had satisfied designs from Terra Space.", type: "Interior Design", location: "Hyderabad" },
-  { name: "Srilatha Yadav", quote: "Designs feel fresh yet practical. The whole process was simple and stress-free.", type: "Residential", location: "Vijayawada" },
+  { name: "Sai Kiran Galla",   quote: "Outstanding experience. Exceptional professionalism, creativity, and attention to detail.",         type: "Residential",    location: "Hyderabad",    initials: "SK" },
+  { name: "Sharath Chandra",   quote: "Innovative design approach and attention to detail. Highly professional and transparent.",          type: "Interior Design", location: "Hyderabad",    initials: "SC" },
+  { name: "Sharath Dhoni",     quote: "Knowledgeable, professional and dedicated. They understand client needs well.",                     type: "Commercial",     location: "Hyderabad",    initials: "SD" },
+  { name: "Naresh Chary M",    quote: "Exceeded expectations. Creative concepts, practical advice, zero pushy sales tactics.",             type: "Renovation",     location: "Hyderabad",    initials: "NC" },
+  { name: "Praneeth Sai",      quote: "Combines creativity, technical expertise and modern design concepts.",                              type: "Residential",    location: "Jubilee Hills", initials: "PS" },
+  { name: "Aniket Anand",      quote: "Good design is one thing, but good communication is equally important. This firm delivered on both.", type: "Commercial",   location: "Hyderabad",    initials: "AA" },
+  { name: "Nikhitha Sabbani",  quote: "They cleared all my doubts and I had satisfied designs from Terra Space.",                          type: "Interior Design", location: "Hyderabad",    initials: "NS" },
+  { name: "Srilatha Yadav",    quote: "Designs feel fresh yet practical. The whole process was simple and stress-free.",                   type: "Residential",    location: "Vijayawada",   initials: "SY" },
+  { name: "Sai Charan Dandu",  quote: "Excellent architecture firm.",                                                                     type: "Architecture",   location: "Hyderabad",    initials: "SC" },
 ];
 
-const GOOGLE_REVIEWS_URL = "https://www.google.com/search?q=Terra+Space+Studio+Hyderabad+reviews";
+const GOOGLE_URL = "https://www.google.com/search?q=Terra+Space+Studio+Hyderabad+reviews";
 
-const BG_IMAGES = [
-  "/__l5e/assets-v1/f11ec85c-5cd6-4d2f-b7b3-2accf4dfce99/terra-review-exterior.png",
-  "/__l5e/assets-v1/5eae488c-5e18-4b70-be8d-58239f148568/terra-review-interior.png",
-  "/__l5e/assets-v1/d936c36b-a0fd-4fef-80e7-7c543efb32bd/terra-review-light.png",
-];
-const CARD_POSITIONS = [
-  { x: -430, y: -128, r: -8 },
-  { x: -220, y: 88, r: 5 },
-  { x: -28, y: -82, r: -3 },
-  { x: 176, y: 122, r: 7 },
-  { x: 382, y: -58, r: -5 },
-  { x: -330, y: 206, r: 4 },
-  { x: -92, y: 212, r: -6 },
-  { x: 142, y: -188, r: 3 },
-  { x: 352, y: 198, r: 6 },
+// Fan positions: each card fans out from centre to these offsets
+const FAN: { x: number; y: number; r: number }[] = [
+  { x: -580, y:  20, r: -14 },
+  { x: -390, y: -10, r:  -7 },
+  { x: -200, y:  30, r:  -2 },
+  { x:  -40, y: -20, r:   3 },
+  { x:  120, y:  25, r:  -5 },
+  { x:  290, y:  -8, r:   8 },
+  { x:  450, y:  18, r:  -3 },
+  { x:  610, y: -15, r:   6 },
+  { x:  760, y:  10, r:  -9 },
 ];
 
 export function StackedTestimonials() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const copyRef = useRef<HTMLDivElement>(null);
-  const cardsRef = useRef<HTMLAnchorElement[]>([]);
-  const mediaRef = useRef<HTMLVideoElement>(null);
-  const meterRef = useRef<HTMLDivElement>(null);
+  const sectionRef  = useRef<HTMLElement>(null);
+  const cardsRef    = useRef<HTMLAnchorElement[]>([]);
+  const headlineRef = useRef<HTMLDivElement>(null);
+  const meterRef    = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const section = sectionRef.current;
-    const cards = cardsRef.current.filter(Boolean);
+    const cards   = cardsRef.current.filter(Boolean);
     if (!section || !cards.length) return;
 
     const sync = () => ScrollTrigger.update();
     window.__lenis?.on("scroll", sync);
 
     const ctx = gsap.context(() => {
-      gsap.set(copyRef.current, { autoAlpha: 0, y: 34 });
+      // Initial state: all cards stacked at dead centre, invisible
       gsap.set(cards, {
-        x: 0,
-        y: 0,
-        rotate: 0,
-        scale: 0.82,
-        autoAlpha: 0,
-        transformOrigin: "center center",
+        x: 0, y: 0, xPercent: -50, yPercent: -50,
+        left: "50%", top: "54%",
+        rotate: 0, scale: 0.88, autoAlpha: 0,
+        transformOrigin: "center bottom",
       });
+      gsap.set(headlineRef.current, { y: 50, autoAlpha: 0 });
       gsap.set(meterRef.current, { scaleX: 0, transformOrigin: "left center" });
 
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: section,
-          start: "top 82%",
-          end: "bottom 55%",
+          start: "top top",
+          end: "+=350%",          // Enough scroll for all 9 cards, then clean exit
+          pin: true,
           scrub: 0.9,
-          onEnter: () => mediaRef.current?.play().catch(() => {}),
-          onEnterBack: () => mediaRef.current?.play().catch(() => {}),
-          onLeave: () => mediaRef.current?.pause(),
-          onLeaveBack: () => mediaRef.current?.pause(),
-          onUpdate: (self) => gsap.set(meterRef.current, { scaleX: self.progress }),
+          anticipatePin: 1,
+          onUpdate: (s) => gsap.set(meterRef.current, { scaleX: s.progress }),
         },
       });
 
-      tl.to(copyRef.current, { autoAlpha: 1, y: 0, duration: 0.22, ease: "power2.out" }, 0);
-      cards.forEach((card, index) => {
-        const pos = CARD_POSITIONS[index] ?? { x: 0, y: 0, r: 0 };
-        tl.to(
-          card,
-          { autoAlpha: 1, x: pos.x, y: pos.y, rotate: pos.r, scale: 1, duration: 0.34, ease: "power3.out" },
-          0.08 + index * 0.045,
-        );
+      // Headline in
+      tl.to(headlineRef.current, { y: 0, autoAlpha: 1, duration: 0.1, ease: "power2.out" }, 0);
+
+      // Cards fan out from centre — staggered by 0.055 each
+      cards.forEach((card, i) => {
+        const fan = FAN[i] ?? { x: 0, y: 0, r: 0 };
+        const at  = 0.08 + i * 0.055;
+        tl.to(card, {
+          x: fan.x, y: fan.y, rotate: fan.r,
+          scale: 1, autoAlpha: 1,
+          duration: 0.22,
+          ease: "back.out(1.1)",
+        }, at);
       });
+
+      // Settle micro-drift: makes the fan feel alive
+      tl.to(cards, {
+        y: (i) => (FAN[i]?.y ?? 0) - 12,
+        duration: 0.14,
+        stagger: 0.012,
+        ease: "sine.inOut",
+      }, 0.7);
+
+      // Sweep ALL cards to the left cleanly — section then unpins
+      tl.to(cards, {
+        x: (i) => (FAN[i]?.x ?? 0) - 1400,
+        autoAlpha: 0,
+        stagger: 0.018,
+        duration: 0.18,
+        ease: "power2.in",
+      }, 0.84);
     }, section);
 
     return () => {
@@ -104,124 +130,128 @@ export function StackedTestimonials() {
   return (
     <section
       ref={sectionRef}
-      id="testimonials"
+      id="client-words"
       aria-label="Client reviews"
-      style={{ position: "relative", minHeight: "145svh", overflow: "hidden", background: "#1A1A14", color: "#FAF8F4" }}
+      style={{
+        position: "relative",
+        height: "100svh",
+        overflow: "hidden",
+        background: "#1A1A14",
+      }}
     >
-      <div style={{ position: "sticky", top: 0, minHeight: "100svh", overflow: "hidden" }}>
-        <video
-          ref={mediaRef}
-          src="/__l5e/assets-v1/5d2bf09f-683f-410c-93f3-dfec6d49e67f/client-words.mp4"
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          aria-hidden="true"
-          style={{ position: "absolute", right: "min(5vw, 5rem)", top: "50%", width: "min(27vw, 320px)", height: "min(58vh, 620px)", objectFit: "cover", transform: "translateY(-50%)", opacity: 0.42, filter: "saturate(0.75)", border: "1px solid rgba(196,149,90,0.3)" }}
-        />
-        <div aria-hidden="true" style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, #1A1A14 0%, rgba(26,26,20,0.9) 45%, rgba(26,26,20,0.72) 100%)" }} />
+      {/* Subtle grid texture — architecture context */}
+      <div aria-hidden style={{
+        position: "absolute", inset: 0, zIndex: 0,
+        backgroundImage:
+          "linear-gradient(rgba(250,248,244,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(250,248,244,0.04) 1px, transparent 1px)",
+        backgroundSize: "60px 60px",
+      }} />
 
-        <div ref={copyRef} style={{ position: "absolute", zIndex: 3, left: "max(1.5rem, 7vw)", top: "12vh", width: "min(39rem, calc(100vw - 3rem))" }}>
-          <p style={eyebrowStyle}>Client Words</p>
-          <h2 style={headlineStyle}>Proof, without performance.</h2>
-          <p style={{ margin: "1.1rem 0 0", maxWidth: "34rem", fontFamily: "'DM Sans','Inter',sans-serif", fontSize: "1rem", lineHeight: 1.85, color: "rgba(250,248,244,0.72)" }}>
-            These are a few real client notes. More will keep coming, so the cards stay curated — and the full Google review page stays one click away.
-          </p>
-          <a href={GOOGLE_REVIEWS_URL} target="_blank" rel="noreferrer" style={{ display: "inline-flex", marginTop: "1.4rem", color: "#C4955A", fontFamily: "'DM Sans','Inter',sans-serif", fontSize: "0.72rem", letterSpacing: "0.22em", textTransform: "uppercase", textDecoration: "none", borderBottom: "1px solid rgba(196,149,90,0.42)", paddingBottom: "0.28rem" }}>
-            Read all Google reviews →
-          </a>
-        </div>
+      {/* Headline — always visible */}
+      <div ref={headlineRef} style={{
+        position: "absolute", left: "6vw", top: "9vh", zIndex: 10,
+        willChange: "opacity, transform",
+      }}>
+        <p style={{ margin: "0 0 0.6rem", fontFamily: "'DM Sans','Inter',sans-serif", fontSize: "0.68rem", letterSpacing: "0.32em", textTransform: "uppercase", color: "#C4955A" }}>
+          Client Words
+        </p>
+        <h2 style={{ margin: 0, fontFamily: "'Cormorant Garamond','Cormorant',serif", fontWeight: 300, fontSize: "clamp(3rem, 8vw, 8rem)", lineHeight: 0.88, color: "#FAF8F4" }}>
+          What they say.
+        </h2>
+      </div>
 
-        <div style={{ position: "absolute", left: "50%", top: "58%", zIndex: 4, width: 1, height: 1, perspective: 1200 }}>
-          {REVIEWS.map((review, index) => (
-            <ReviewCard
-              key={review.name}
-              review={review}
-              index={index}
-              refCallback={(el) => {
-                if (el) cardsRef.current[index] = el;
-              }}
-            />
-          ))}
-        </div>
-
-        <div style={{ position: "absolute", left: "1.5rem", right: "1.5rem", bottom: "1.4rem", zIndex: 5, display: "grid", gridTemplateColumns: "minmax(0,1fr) auto", alignItems: "center", gap: "1rem" }}>
-          <div style={{ height: 1, background: "rgba(196,149,90,0.25)", overflow: "hidden" }}>
-            <div ref={meterRef} style={{ width: "100%", height: "100%", background: "#C4955A" }} />
+      {/* Cards */}
+      {REVIEWS.map((r, i) => (
+        <a
+          key={r.name}
+          ref={(el) => { if (el) cardsRef.current[i] = el; }}
+          href={GOOGLE_URL}
+          target="_blank"
+          rel="noreferrer"
+          aria-label={`${r.name}'s Google review`}
+          style={{
+            position: "absolute",
+            left: "50%", top: "54%",
+            width: "clamp(200px, 19vw, 300px)",
+            minHeight: "clamp(300px, 38vh, 420px)",
+            display: "flex", flexDirection: "column", justifyContent: "space-between",
+            padding: "1.3rem 1.15rem 1.1rem",
+            borderRadius: 20,
+            border: "3px solid #FAF8F4",
+            background: i % 3 === 0 ? "#C4955A" : "#FAF8F4",
+            color: "#1A1A14",
+            textDecoration: "none",
+            boxShadow: "0 32px 64px rgba(0,0,0,0.5)",
+            zIndex: 5 + i,
+            willChange: "opacity, transform",
+            cursor: "pointer",
+          }}
+        >
+          {/* Top row: initials + stars */}
+          <div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>
+              <span style={{
+                width: 36, height: 36, display: "grid", placeItems: "center",
+                borderRadius: "50%", background: "#1A1A14", color: "#C4955A",
+                fontFamily: "'DM Sans','Inter',sans-serif", fontSize: "0.72rem", fontWeight: 700,
+              }}>
+                {r.initials}
+              </span>
+              <span style={{ fontSize: "0.88rem", letterSpacing: "0.06em", color: "#1A1A14" }}>★★★★★</span>
+            </div>
+            <p style={{
+              margin: 0,
+              fontFamily: "'Cormorant Garamond','Cormorant',serif",
+              fontStyle: "italic", fontWeight: 500,
+              fontSize: "clamp(1.1rem, 1.6vw, 1.42rem)",
+              lineHeight: 1.22,
+              color: "#1A1A14",
+            }}>
+              "{r.quote}"
+            </p>
           </div>
-          <span style={{ fontFamily: "'DM Sans','Inter',sans-serif", fontSize: "0.68rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "#8a7355", whiteSpace: "nowrap" }}>
-            09 Google reviews
-          </span>
+
+          {/* Bottom: name + type */}
+          <div>
+            <div style={{ height: 1, background: "rgba(26,26,20,0.18)", margin: "1rem 0 0.8rem" }} />
+            <strong style={{ display: "block", fontFamily: "'DM Sans','Inter',sans-serif", fontSize: "0.84rem" }}>
+              {r.name}
+            </strong>
+            <span style={{ display: "block", marginTop: 4, fontFamily: "'DM Sans','Inter',sans-serif", fontSize: "0.58rem", letterSpacing: "0.18em", textTransform: "uppercase", opacity: 0.65 }}>
+              {r.type} · {r.location}
+            </span>
+          </div>
+        </a>
+      ))}
+
+      {/* Bottom bar: scroll meter + Google link */}
+      <div style={{
+        position: "absolute", left: "6vw", right: "6vw", bottom: "1.4rem",
+        zIndex: 20, display: "grid",
+        gridTemplateColumns: "minmax(0,1fr) auto",
+        alignItems: "center", gap: "1.2rem",
+      }}>
+        <div style={{ height: 1, background: "rgba(196,149,90,0.22)", overflow: "hidden" }}>
+          <div ref={meterRef} style={{ width: "100%", height: "100%", background: "#C4955A", willChange: "transform" }} />
         </div>
+        <a
+          href={GOOGLE_URL}
+          target="_blank"
+          rel="noreferrer"
+          style={{
+            fontFamily: "'DM Sans','Inter',sans-serif",
+            fontSize: "0.68rem", letterSpacing: "0.2em", textTransform: "uppercase",
+            color: "#C4955A", textDecoration: "none", whiteSpace: "nowrap",
+            borderBottom: "1px solid rgba(196,149,90,0.4)",
+            paddingBottom: "0.1rem",
+            transition: "opacity 0.2s",
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.7")}
+          onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+        >
+          See all 09 Google reviews →
+        </a>
       </div>
     </section>
   );
 }
-
-function ReviewCard({ review, index, refCallback }: { review: Review; index: number; refCallback: (el: HTMLAnchorElement | null) => void }) {
-  return (
-    <a
-      ref={refCallback}
-      href={GOOGLE_REVIEWS_URL}
-      target="_blank"
-      rel="noreferrer"
-      aria-label={`Read ${review.name}'s Google review`}
-      style={{
-        position: "absolute",
-        left: "50%",
-        top: "50%",
-        width: "clamp(190px, 18vw, 275px)",
-        minHeight: "clamp(285px, 36vh, 390px)",
-        marginLeft: "clamp(-137px, -9vw, -95px)",
-        marginTop: "clamp(-195px, -18vh, -142px)",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        padding: "0.72rem 0.72rem 1rem",
-        background: index % 4 === 0 ? "#C4955A" : "#FAF8F4",
-        color: "#1A1A14",
-        textDecoration: "none",
-        border: "1px solid rgba(232,226,217,0.8)",
-        boxShadow: "0 30px 70px rgba(0,0,0,0.38)",
-        willChange: "opacity, transform",
-      }}
-    >
-      <div style={{ aspectRatio: "16/10", overflow: "hidden", marginBottom: "0.9rem", background: "#E8E2D9" }}>
-        <img src={BG_IMAGES[index % BG_IMAGES.length]} alt="Architecture and interior work by Terra Space Studio" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", filter: "saturate(0.88)" }} />
-      </div>
-      <div>
-        <div style={{ display: "flex", justifyContent: "space-between", gap: "0.8rem", alignItems: "center", marginBottom: "0.8rem" }}>
-          <span style={{ fontFamily: "'DM Sans','Inter',sans-serif", fontSize: "0.62rem", letterSpacing: "0.18em", textTransform: "uppercase", color: index % 4 === 0 ? "#1A1A14" : "#8a7355" }}>{review.type}</span>
-          <span style={{ color: "#C4955A", fontSize: "0.78rem", letterSpacing: "0.02em" }}>★★★★★</span>
-        </div>
-        <p style={{ margin: 0, fontFamily: "'Cormorant Garamond','Cormorant',serif", fontStyle: "italic", fontSize: "clamp(1.05rem, 1.5vw, 1.35rem)", lineHeight: 1.18 }}>
-          “{review.quote}”
-        </p>
-      </div>
-      <div style={{ marginTop: "1rem", borderTop: "1px solid rgba(26,26,20,0.16)", paddingTop: "0.8rem" }}>
-        <strong style={{ display: "block", fontFamily: "'DM Sans','Inter',sans-serif", fontSize: "0.82rem", lineHeight: 1.15 }}>{review.name}</strong>
-        <span style={{ display: "block", marginTop: 5, fontFamily: "'DM Sans','Inter',sans-serif", fontSize: "0.58rem", letterSpacing: "0.18em", textTransform: "uppercase", opacity: 0.66 }}>
-          {review.location} · View on Google
-        </span>
-      </div>
-    </a>
-  );
-}
-
-const eyebrowStyle: CSSProperties = {
-  margin: "0 0 1rem",
-  fontFamily: "'DM Sans','Inter',sans-serif",
-  fontSize: "0.68rem",
-  color: "#C4955A",
-  textTransform: "uppercase",
-  letterSpacing: "0.32em",
-};
-
-const headlineStyle: CSSProperties = {
-  margin: 0,
-  fontFamily: "'Cormorant Garamond','Cormorant',serif",
-  fontWeight: 300,
-  fontSize: "clamp(3rem, 8vw, 8rem)",
-  lineHeight: 0.88,
-  color: "#FAF8F4",
-};
