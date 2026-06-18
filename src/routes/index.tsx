@@ -60,7 +60,6 @@ import { StackedTestimonials } from "@/components/site/StackedTestimonials";
 import { StudioLaunch }       from "@/components/site/StudioLaunch";
 import { Architect }          from "@/components/site/Architect";
 import { Contact }            from "@/components/site/Contact";
-import { BackToTop }          from "@/components/site/BackToTop";
 import { IntroLogo }          from "@/components/site/IntroLogo";
 import { SmoothScroll }       from "@/components/site/SmoothScroll";
 import { WhatsAppFab }        from "@/components/site/WhatsAppFab";
@@ -93,7 +92,6 @@ function Index() {
       <StudioLaunch />
       <Architect />
       <Contact />
-      <BackToTop />
       <WhatsAppFab />
       {/* ChatBot removed — WhatsApp button handles all client contact */}
     </main>
