@@ -731,6 +731,7 @@ function FeaturedInProgress({ project }: { project: Project }) {
         ref={sectionRef}
         className="relative"
         style={{ height: "320vh" }}
+        aria-label="In progress — scroll to see the drawings behind the render"
       >
         <div className="sticky top-0 flex h-screen w-full items-center">
           <article className="relative grid h-full w-full gap-8 overflow-hidden border border-sand bg-cream/40 p-6 md:grid-cols-12 md:p-10">
@@ -946,7 +947,6 @@ function PaletteSvg() {
     </svg>
   );
 }
-
 
 /* ─────────────────────────────────────────────────────────────────────── */
 
