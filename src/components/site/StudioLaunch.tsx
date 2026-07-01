@@ -55,7 +55,7 @@ export function StudioLaunch() {
       ref={sectionRef}
       id="studio-launch"
       aria-label="Studio launch reel"
-      style={{ position: "relative", overflow: "hidden", background: "#FAF8F4", padding: "5rem 1.5rem 8rem" }}
+      style={{ position: "relative", overflow: "hidden", background: "#FAF8F4", padding: "1.5rem 1.5rem 1.5rem" }}
     >
       <div style={{ maxWidth: 1400, margin: "0 auto", minHeight: "92svh", display: "grid", alignItems: "center" }}>
         <a
@@ -78,17 +78,17 @@ export function StudioLaunch() {
           <div ref={veilRef} aria-hidden="true" style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(26,26,20,0.86) 0%, rgba(26,26,20,0.34) 48%, rgba(26,26,20,0.72) 100%)" }} />
           <div ref={copyRef} style={{ position: "absolute", left: "clamp(1.4rem, 6vw, 5rem)", bottom: "clamp(1.4rem, 7vw, 5.5rem)", width: "min(41rem, calc(100% - 2.8rem))" }}>
             <p style={{ margin: "0 0 1rem", fontFamily: "'DM Sans','Inter',sans-serif", fontSize: "0.68rem", letterSpacing: "0.32em", textTransform: "uppercase", color: "#C4955A" }}>
-              Behind the studio door
+              A peek inside the studio
             </p>
-            <h2 style={{ margin: 0, fontFamily: "'Cormorant Garamond','Cormorant',serif", fontWeight: 300, fontSize: "clamp(3rem, 8vw, 8rem)", lineHeight: 0.88, color: "#FAF8F4" }}>
-              You weren't <br />
-              <em style={{ color: "#C4955A", fontStyle: "italic" }}>supposed to see this.</em>
+            <h2 style={{ margin: 0, fontFamily: "'Cormorant Garamond','Cormorant',serif", fontWeight: 300, fontSize: "clamp(2.4rem, 7vw, 6.5rem)", lineHeight: 0.92, color: "#FAF8F4" }}>
+              Where homes <br />
+              <em style={{ color: "#C4955A", fontStyle: "italic" }}>quietly take shape.</em>
             </h2>
-            <p style={{ margin: "1.2rem 0 0", maxWidth: "31rem", fontFamily: "'DM Sans','Inter',sans-serif", fontSize: "1rem", lineHeight: 1.8, color: "rgba(250,248,244,0.74)" }}>
-              A frame from a home we're finishing right now — most of it stays in the studio. The rest lives on Instagram, for the people who care to look.
+            <p style={{ margin: "1.2rem 0 0", maxWidth: "31rem", fontFamily: "'DM Sans','Inter',sans-serif", fontSize: "0.95rem", lineHeight: 1.7, color: "rgba(250,248,244,0.78)" }}>
+              A moment from a project we're finishing right now. The rest of the story lives on Instagram — see it come together, room by room.
             </p>
-            <span style={{ display: "inline-flex", marginTop: "1.5rem", fontFamily: "'DM Sans','Inter',sans-serif", fontSize: "0.72rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "#C4955A", borderBottom: "1px solid rgba(196,149,90,0.5)", paddingBottom: "0.28rem" }}>
-              See it on Instagram →
+            <span style={{ display: "inline-flex", marginTop: "1.4rem", fontFamily: "'DM Sans','Inter',sans-serif", fontSize: "0.72rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "#C4955A", borderBottom: "1px solid rgba(196,149,90,0.5)", paddingBottom: "0.28rem" }}>
+              Watch on Instagram →
             </span>
           </div>
           <span style={{ position: "absolute", right: "1.4rem", top: "1.2rem", fontFamily: "'DM Sans','Inter',sans-serif", fontSize: "0.64rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(250,248,244,0.66)" }}>
