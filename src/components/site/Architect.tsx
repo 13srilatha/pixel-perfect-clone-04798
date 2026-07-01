@@ -26,15 +26,14 @@ const founder = {
 
 export function Architect() {
   return (
-    <section id="architect" className="relative bg-cream py-24 md:py-36">
-      <div className="mx-auto max-w-[1600px] px-6 md:px-10">
-        <div className="grid gap-12 md:grid-cols-12 md:gap-16">
+    <section id="architect" className="relative bg-cream py-12 md:py-20">
+      <div className="mx-auto max-w-[1400px] px-6 md:px-10">
+        <div className="grid gap-10 md:grid-cols-12 md:gap-14">
 
           {/* ── Portrait ── */}
           <Reveal className="md:col-span-5">
             <div className="relative">
-              <div className="absolute -left-3 -top-3 hidden h-full w-full border border-caramel/40 md:block" />
-              <div className="absolute -right-3 -bottom-3 hidden h-1/2 w-1/2 border border-gold/30 md:block" />
+              <div className="absolute -left-2 -top-2 hidden h-full w-full border border-caramel/40 md:block" />
               <img
                 src={portrait}
                 alt={founder.name}
@@ -42,45 +41,35 @@ export function Architect() {
                 loading="lazy"
                 className="relative aspect-[4/5] w-full object-cover"
               />
-              <p className="label mt-4 text-caramel">{founder.role}</p>
-              <h3 className="font-display text-3xl font-light text-espresso md:text-4xl">{founder.name}</h3>
-              <p className="mt-2 text-sm text-brown/80">{founder.credential}</p>
+              <p className="label mt-3 text-caramel text-xs">{founder.role}</p>
+              <h3 className="font-display text-2xl font-light text-espresso md:text-3xl">{founder.name}</h3>
+              <p className="mt-1 text-xs text-brown/80">{founder.credential}</p>
             </div>
           </Reveal>
 
           {/* ── Story ── */}
           <Reveal className="md:col-span-6 md:col-start-7" delay={150}>
-            <p className="label mb-4 inline-flex items-center gap-3">
-              <span className="h-px w-10 bg-caramel" />
+            <p className="label mb-3 inline-flex items-center gap-3 text-xs">
+              <span className="h-px w-8 bg-caramel" />
               The Founder
             </p>
 
-            <h2 className="display text-[clamp(2.25rem,5vw,4rem)] text-espresso">
+            <h2 className="font-display font-light text-[clamp(1.75rem,3.5vw,2.75rem)] leading-tight text-espresso">
               Behind every <em className="italic text-caramel">drawing</em>,
               <br />a person we listened to.
             </h2>
 
-            <div className="mt-8 space-y-5 text-lg leading-relaxed text-brown">
-              {founder.paras.map((p, i) => <p key={i}>{p}</p>)}
+            <div className="mt-6 space-y-4 text-[15px] leading-relaxed text-brown">
+              {founder.paras.slice(0, 2).map((p, i) => <p key={i}>{p}</p>)}
             </div>
 
-            {/* Four pillars from the brochure */}
-            <ul className="mt-10 grid gap-5 sm:grid-cols-2">
-              {founder.pillars.map((p) => (
-                <li key={p.label} className="border-l border-caramel/40 pl-4">
-                  <p className="label text-caramel">{p.label}</p>
-                  <p className="mt-1 text-sm leading-relaxed text-brown">{p.text}</p>
-                </li>
-              ))}
-            </ul>
-
             {/* Closing line — direct quote */}
-            <blockquote className="mt-10 border-l-2 border-caramel pl-6">
-              <p className="font-display text-xl font-light italic leading-relaxed text-caramel md:text-2xl">
+            <blockquote className="mt-8 border-l-2 border-caramel pl-5">
+              <p className="font-display text-lg font-light italic leading-relaxed text-caramel md:text-xl">
                 "{founder.quote}"
               </p>
-              <footer className="mt-4">
-                <cite className="label not-italic text-brown">— K. Vaasanthi, Founder · Terra Space Studio</cite>
+              <footer className="mt-3">
+                <cite className="label not-italic text-brown text-[10px]">— K. Vaasanthi, Founder · Terra Space Studio</cite>
               </footer>
             </blockquote>
           </Reveal>
