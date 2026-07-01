@@ -279,21 +279,20 @@ function CategoryPanel({
       style={{ scale, opacity, width: "100vw" }}
       className="relative h-full flex-shrink-0 overflow-hidden text-left"
     >
-      {/* Image collage backdrop */}
-      <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-1">
-        {items.slice(0, 4).map((p, i) => (
-          <div key={p.id} className="relative overflow-hidden bg-sand">
-            <img
-              src={p.image}
-              alt=""
-              aria-hidden
-              loading="lazy"
-              className="h-full w-full object-cover transition-transform duration-[1200ms] group-hover:scale-105"
-              style={{ filter: "saturate(0.7) brightness(0.55)" }}
-            />
-          </div>
-        ))}
-        {items.length === 0 && <div className="col-span-2 row-span-2 bg-espresso" />}
+      {/* Single hero cover image per category */}
+      <div className="absolute inset-0">
+        {items[0] ? (
+          <img
+            src={items[0].image}
+            alt=""
+            aria-hidden
+            loading="lazy"
+            className="h-full w-full object-cover"
+            style={{ filter: "saturate(0.75) brightness(0.55)" }}
+          />
+        ) : (
+          <div className="h-full w-full bg-espresso" />
+        )}
       </div>
 
       <div className="absolute inset-0 bg-gradient-to-t from-espresso/85 via-espresso/30 to-espresso/60" />
