@@ -340,30 +340,17 @@ function CategoryGallery({
     itemRefs.current[i] = el;
   };
 
-  // Freeze underlying page scroll
+  // Stop Lenis smooth-scroll while overlay is open — otherwise Lenis
+  // hijacks wheel events on the body and the overlay's inner scroller
+  // never receives them, which was surfacing as "something went wrong".
   useEffect(() => {
-    const scrollY = window.scrollY;
-    const bodyStyle = document.body.style;
-    const htmlStyle = document.documentElement.style;
-    const prev = {
-      bOverflow: bodyStyle.overflow,
-      bPos: bodyStyle.position,
-      bTop: bodyStyle.top,
-      bWidth: bodyStyle.width,
-      hOverflow: htmlStyle.overflow,
-    };
-    htmlStyle.overflow = "hidden";
-    bodyStyle.overflow = "hidden";
-    bodyStyle.position = "fixed";
-    bodyStyle.top = `-${scrollY}px`;
-    bodyStyle.width = "100%";
+    const lenis = window.__lenis;
+    lenis?.stop();
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     return () => {
-      htmlStyle.overflow = prev.hOverflow;
-      bodyStyle.overflow = prev.bOverflow;
-      bodyStyle.position = prev.bPos;
-      bodyStyle.top = prev.bTop;
-      bodyStyle.width = prev.bWidth;
-      window.scrollTo({ top: scrollY, left: 0, behavior: "auto" });
+      document.body.style.overflow = prevOverflow;
+      lenis?.start();
     };
   }, []);
 
