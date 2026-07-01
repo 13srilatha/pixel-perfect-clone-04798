@@ -268,7 +268,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const VIDEO_SRC = "/videos/hero-walk.mp4";
+const VIDEO_SRC = "/__l5e/assets-v1/0d750651-aed7-4dec-bfd0-9d3bd9f0ca3b/hero-walk-clean.mp4";
 
 export function HeroWalk() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -340,7 +340,7 @@ export function HeroWalk() {
         muted
         playsInline
         preload="auto"
-        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 1 }}
+        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center center", zIndex: 1 }}
       />
 
       <div style={{

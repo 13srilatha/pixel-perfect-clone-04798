@@ -279,21 +279,20 @@ function CategoryPanel({
       style={{ scale, opacity, width: "100vw" }}
       className="relative h-full flex-shrink-0 overflow-hidden text-left"
     >
-      {/* Image collage backdrop */}
-      <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-1">
-        {items.slice(0, 4).map((p, i) => (
-          <div key={p.id} className="relative overflow-hidden bg-sand">
-            <img
-              src={p.image}
-              alt=""
-              aria-hidden
-              loading="lazy"
-              className="h-full w-full object-cover transition-transform duration-[1200ms] group-hover:scale-105"
-              style={{ filter: "saturate(0.7) brightness(0.55)" }}
-            />
-          </div>
-        ))}
-        {items.length === 0 && <div className="col-span-2 row-span-2 bg-espresso" />}
+      {/* Single hero cover image per category */}
+      <div className="absolute inset-0">
+        {items[0] ? (
+          <img
+            src={items[0].image}
+            alt=""
+            aria-hidden
+            loading="lazy"
+            className="h-full w-full object-cover"
+            style={{ filter: "saturate(0.75) brightness(0.55)" }}
+          />
+        ) : (
+          <div className="h-full w-full bg-espresso" />
+        )}
       </div>
 
       <div className="absolute inset-0 bg-gradient-to-t from-espresso/85 via-espresso/30 to-espresso/60" />
@@ -341,30 +340,17 @@ function CategoryGallery({
     itemRefs.current[i] = el;
   };
 
-  // Freeze underlying page scroll
+  // Stop Lenis smooth-scroll while overlay is open — otherwise Lenis
+  // hijacks wheel events on the body and the overlay's inner scroller
+  // never receives them, which was surfacing as "something went wrong".
   useEffect(() => {
-    const scrollY = window.scrollY;
-    const bodyStyle = document.body.style;
-    const htmlStyle = document.documentElement.style;
-    const prev = {
-      bOverflow: bodyStyle.overflow,
-      bPos: bodyStyle.position,
-      bTop: bodyStyle.top,
-      bWidth: bodyStyle.width,
-      hOverflow: htmlStyle.overflow,
-    };
-    htmlStyle.overflow = "hidden";
-    bodyStyle.overflow = "hidden";
-    bodyStyle.position = "fixed";
-    bodyStyle.top = `-${scrollY}px`;
-    bodyStyle.width = "100%";
+    const lenis = window.__lenis;
+    lenis?.stop();
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     return () => {
-      htmlStyle.overflow = prev.hOverflow;
-      bodyStyle.overflow = prev.bOverflow;
-      bodyStyle.position = prev.bPos;
-      bodyStyle.top = prev.bTop;
-      bodyStyle.width = prev.bWidth;
-      window.scrollTo({ top: scrollY, left: 0, behavior: "auto" });
+      document.body.style.overflow = prevOverflow;
+      lenis?.start();
     };
   }, []);
 
