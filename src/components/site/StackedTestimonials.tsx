@@ -62,11 +62,15 @@ export function StackedTestimonials() {
     const cards   = cardsRef.current.filter(Boolean);
     if (!section || !cards.length) return;
 
+    // Skip the pinned GSAP fan on mobile — use the CSS horizontal
+    // scroll-snap fallback rendered below.
+    const isMobile = window.matchMedia("(max-width: 767px)").matches;
+    if (isMobile) return;
+
     const sync = () => ScrollTrigger.update();
     window.__lenis?.on("scroll", sync);
 
     const ctx = gsap.context(() => {
-      // Initial state: all cards stacked at dead centre, invisible
       gsap.set(cards, {
         x: 0, y: 0, xPercent: -50, yPercent: -50,
         left: "50%", top: "54%",
@@ -80,7 +84,7 @@ export function StackedTestimonials() {
         scrollTrigger: {
           trigger: section,
           start: "top top",
-          end: "+=350%",          // Enough scroll for all 9 cards, then clean exit
+          end: "+=350%",
           pin: true,
           scrub: 0.9,
           anticipatePin: 1,
@@ -88,10 +92,8 @@ export function StackedTestimonials() {
         },
       });
 
-      // Headline in
       tl.to(headlineRef.current, { y: 0, autoAlpha: 1, duration: 0.1, ease: "power2.out" }, 0);
 
-      // Cards fan out from centre — staggered by 0.055 each
       cards.forEach((card, i) => {
         const fan = FAN[i] ?? { x: 0, y: 0, r: 0 };
         const at  = 0.08 + i * 0.055;
@@ -103,7 +105,6 @@ export function StackedTestimonials() {
         }, at);
       });
 
-      // Settle micro-drift: makes the fan feel alive
       tl.to(cards, {
         y: (i) => (FAN[i]?.y ?? 0) - 12,
         duration: 0.14,
@@ -111,7 +112,6 @@ export function StackedTestimonials() {
         ease: "sine.inOut",
       }, 0.7);
 
-      // Sweep ALL cards to the left cleanly — section then unpins
       tl.to(cards, {
         x: (i) => (FAN[i]?.x ?? 0) - 1400,
         autoAlpha: 0,
@@ -126,6 +126,80 @@ export function StackedTestimonials() {
       ctx.revert();
     };
   }, []);
+
+  // Mobile detection for render branch (re-checked on resize via key)
+  const isMobile = typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches;
+
+  if (isMobile) {
+    return (
+      <section
+        id="client-words"
+        aria-label="Client reviews"
+        style={{ position: "relative", background: "#1A1A14", padding: "3.5rem 0 3rem" }}
+      >
+        <div style={{ padding: "0 6vw", marginBottom: "1.5rem" }}>
+          <p style={{ margin: "0 0 0.5rem", fontFamily: "'DM Sans','Inter',sans-serif", fontSize: "0.62rem", letterSpacing: "0.32em", textTransform: "uppercase", color: "#C4955A" }}>
+            Client Words
+          </p>
+          <h2 style={{ margin: 0, fontFamily: "'Cormorant Garamond','Cormorant',serif", fontWeight: 300, fontSize: "clamp(2.2rem, 10vw, 3.4rem)", lineHeight: 0.95, color: "#FAF8F4" }}>
+            What they say.
+          </h2>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            gap: "1rem",
+            overflowX: "auto",
+            scrollSnapType: "x mandatory",
+            padding: "0.5rem 6vw 1.5rem",
+            WebkitOverflowScrolling: "touch",
+          }}
+        >
+          {REVIEWS.map((r, i) => (
+            <a
+              key={r.name}
+              href={GOOGLE_URL}
+              target="_blank"
+              rel="noreferrer"
+              style={{
+                flex: "0 0 78vw",
+                minHeight: 320,
+                scrollSnapAlign: "center",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                padding: "1.2rem 1.1rem 1rem",
+                borderRadius: 18,
+                border: "2px solid #FAF8F4",
+                background: i % 3 === 0 ? "#C4955A" : "#FAF8F4",
+                color: "#1A1A14",
+                textDecoration: "none",
+                boxShadow: "0 18px 40px rgba(0,0,0,0.35)",
+              }}
+            >
+              <div>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.9rem" }}>
+                  <span style={{ width: 34, height: 34, display: "grid", placeItems: "center", borderRadius: "50%", background: "#1A1A14", color: "#C4955A", fontSize: "0.7rem", fontWeight: 700 }}>{r.initials}</span>
+                  <span style={{ fontSize: "0.85rem" }}>★★★★★</span>
+                </div>
+                <p style={{ margin: 0, fontFamily: "'Cormorant Garamond','Cormorant',serif", fontStyle: "italic", fontSize: "1.15rem", lineHeight: 1.3, color: "#1A1A14" }}>"{r.quote}"</p>
+              </div>
+              <div>
+                <div style={{ height: 1, background: "rgba(26,26,20,0.18)", margin: "0.8rem 0 0.6rem" }} />
+                <strong style={{ display: "block", fontSize: "0.82rem" }}>{r.name}</strong>
+                <span style={{ display: "block", marginTop: 3, fontSize: "0.55rem", letterSpacing: "0.16em", textTransform: "uppercase", opacity: 0.65 }}>{r.type} · {r.location}</span>
+              </div>
+            </a>
+          ))}
+        </div>
+        <div style={{ padding: "0 6vw", textAlign: "center" }}>
+          <a href={GOOGLE_URL} target="_blank" rel="noreferrer" style={{ fontFamily: "'DM Sans','Inter',sans-serif", fontSize: "0.68rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "#C4955A", textDecoration: "none", borderBottom: "1px solid rgba(196,149,90,0.4)", paddingBottom: "0.15rem" }}>
+            See all 09 Google reviews →
+          </a>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section
